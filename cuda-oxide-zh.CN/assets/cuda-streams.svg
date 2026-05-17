@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 800" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#79c0ff"/>
+      <stop offset="100%" stop-color="#d2a8ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1260" height="800" fill="#0d1117"/>
+  <rect width="1260" height="800" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">CUDA Streams</text>
+  <line x1="430" y1="58" x2="830" y2="58" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">Ordered queues of GPU operations &#x2014; same stream = FIFO, different streams = concurrent</text>
+
+  <!-- ==================== TOP: Single Stream (FIFO) ==================== -->
+  <g transform="translate(40, 118)">
+    <rect width="1180" height="244" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="244" rx="12" fill="none" stroke="#79c0ff" stroke-width="2"/>
+
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#79c0ff">Single stream &#x2014; sequential execution</text>
+
+    <!-- Timeline axis -->
+    <text x="50" y="92" font-size="14" font-weight="600" fill="#b1bac4">Stream 0</text>
+    <line x1="140" y1="86" x2="1140" y2="86" stroke="#30363d" stroke-width="2"/>
+
+    <!-- Operations on stream -->
+    <rect x="160" y="70" width="200" height="34" rx="6" fill="#d2a8ff" opacity="0.8"/>
+    <text x="260" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">H2D memcpy</text>
+
+    <text x="370" y="92" text-anchor="middle" font-size="16" fill="#79c0ff">&#x2192;</text>
+
+    <rect x="380" y="70" width="260" height="34" rx="6" fill="#f97583" opacity="0.8"/>
+    <text x="510" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">kernel launch</text>
+
+    <text x="650" y="92" text-anchor="middle" font-size="16" fill="#79c0ff">&#x2192;</text>
+
+    <rect x="660" y="70" width="200" height="34" rx="6" fill="#79c0ff" opacity="0.8"/>
+    <text x="760" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">D2H memcpy</text>
+
+    <text x="870" y="92" text-anchor="middle" font-size="16" fill="#79c0ff">&#x2192;</text>
+
+    <rect x="880" y="70" width="120" height="34" rx="6" fill="#e8912d" opacity="0.8"/>
+    <text x="940" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">free</text>
+
+    <!-- Explanation -->
+    <text x="590" y="146" text-anchor="middle" font-size="14" fill="#c9d1d9">Each operation waits for the previous one to complete &#x2014; automatic ordering, no synchronization needed.</text>
+
+    <!-- Code -->
+    <text x="590" y="196" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" fill="#79c0ff">let stream = ctx.default_stream();</text>
+    <text x="590" y="220" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" fill="#b1bac4">// all ops on the same stream &#x2192; sequential</text>
+  </g>
+
+  <!-- ==================== BOTTOM: Multi-Stream (Concurrent) ==================== -->
+  <g transform="translate(40, 400)">
+    <rect width="1180" height="370" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="370" rx="12" fill="none" stroke="#d2a8ff" stroke-width="2"/>
+
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#d2a8ff">Multiple streams &#x2014; concurrent execution</text>
+
+    <!-- Stream A timeline -->
+    <text x="50" y="96" font-size="14" font-weight="600" fill="#b1bac4">Stream A</text>
+    <line x1="140" y1="90" x2="1140" y2="90" stroke="#30363d" stroke-width="2"/>
+
+    <rect x="160" y="74" width="200" height="34" rx="6" fill="#d2a8ff" opacity="0.8"/>
+    <text x="260" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">H2D memcpy</text>
+
+    <rect x="380" y="74" width="260" height="34" rx="6" fill="#f97583" opacity="0.8"/>
+    <text x="510" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">kernel_write</text>
+
+    <!-- Event record marker -->
+    <circle cx="660" cy="90" r="8" fill="#e8912d" stroke="#ffffff" stroke-width="2"/>
+    <text x="660" y="68" text-anchor="middle" font-size="11" font-weight="600" fill="#e8912d">record event</text>
+
+    <rect x="780" y="74" width="180" height="34" rx="6" fill="#f97583" opacity="0.5"/>
+    <text x="870" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">unrelated_work</text>
+
+    <!-- Event connection line (drawn before Stream B elements) -->
+    <line x1="660" y1="98" x2="700" y2="178" stroke="#e8912d" stroke-width="2" stroke-dasharray="6,3"/>
+
+    <!-- Stream B timeline -->
+    <text x="50" y="192" font-size="14" font-weight="600" fill="#b1bac4">Stream B</text>
+    <line x1="140" y1="186" x2="1140" y2="186" stroke="#30363d" stroke-width="2"/>
+
+    <!-- Wait event marker (circle + label to the RIGHT to avoid dashed line overlap) -->
+    <circle cx="700" cy="186" r="8" fill="#e8912d" stroke="#ffffff" stroke-width="2"/>
+    <text x="718" y="162" text-anchor="start" font-size="11" font-weight="600" fill="#e8912d">wait event</text>
+
+    <rect x="720" y="170" width="260" height="34" rx="6" fill="#79c0ff" opacity="0.8"/>
+    <text x="850" y="192" text-anchor="middle" font-size="12" font-weight="700" fill="#ffffff">kernel_read</text>
+
+    <!-- Overlap bracket -->
+    <rect x="380" y="222" width="600" height="26" rx="4" fill="rgba(210, 168, 255, 0.08)" stroke="#d2a8ff" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="680" y="240" text-anchor="middle" font-size="12" font-weight="600" fill="#d2a8ff">kernel_write and kernel_read overlap &#x2014; event ensures data is ready</text>
+
+    <!-- Code -->
+    <text x="280" y="280" text-anchor="start" font-family="'RobotoMono', monospace" font-size="12" fill="#d2a8ff">let stream_b = stream_a.fork()?;</text>
+    <text x="280" y="304" text-anchor="start" font-family="'RobotoMono', monospace" font-size="12" fill="#d2a8ff">stream_b.join(&amp;stream_a)?;</text>
+    <text x="280" y="328" text-anchor="start" font-family="'RobotoMono', monospace" font-size="12" fill="#b1bac4">// explicit sync &#x2014; you control the ordering</text>
+  </g>
+</svg>

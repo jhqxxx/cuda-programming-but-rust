@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 720" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#79c0ff"/>
+      <stop offset="50%" stop-color="#d2a8ff"/>
+      <stop offset="100%" stop-color="#e8912d"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1260" height="720" fill="#0d1117"/>
+  <rect width="1260" height="720" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">Device Code Collector</text>
+  <line x1="390" y1="58" x2="870" y2="58" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">How the compiler discovers which functions to compile for the GPU</text>
+
+  <!-- ==================== STEP 1: Entry point scan (blue) ==================== -->
+  <g transform="translate(40, 118)">
+    <rect width="360" height="200" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="360" height="200" rx="12" fill="none" stroke="#79c0ff" stroke-width="2"/>
+
+    <rect x="2" y="2" width="356" height="44" rx="10" fill="#1c2128"/>
+    <text x="180" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#79c0ff">1. Find entry points</text>
+
+    <text x="24" y="76" font-size="14" fill="#c9d1d9">Scan CGUs for</text>
+    <text x="24" y="96" font-family="'RobotoMono', monospace" font-size="13" fill="#79c0ff">cuda_oxide_kernel_*</text>
+    <text x="24" y="118" font-size="13" fill="#b1bac4">prefix (from #[kernel])</text>
+
+    <rect x="24" y="140" width="312" height="34" rx="6" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="1"/>
+    <text x="180" y="162" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" fill="#79c0ff">cuda_oxide_kernel_vecadd</text>
+  </g>
+
+  <!-- Arrow 1→2 -->
+  <line x1="408" y1="218" x2="448" y2="218" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="446,212 458,218 446,224" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- ==================== STEP 2: Call graph traversal (purple) ==================== -->
+  <g transform="translate(460, 118)">
+    <rect width="360" height="200" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="360" height="200" rx="12" fill="none" stroke="#d2a8ff" stroke-width="2"/>
+
+    <rect x="2" y="2" width="356" height="44" rx="10" fill="#1c2128"/>
+    <text x="180" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#d2a8ff">2. Walk call graph</text>
+
+    <!-- Call tree: root -->
+    <rect x="110" y="64" width="140" height="30" rx="6" fill="rgba(210, 168, 255, 0.15)" stroke="#d2a8ff" stroke-width="1.5"/>
+    <text x="180" y="84" text-anchor="middle" font-size="12" font-weight="700" fill="#d2a8ff">vecadd</text>
+
+    <!-- Elbow connectors (90-degree bends) -->
+    <path d="M 140,94 L 140,106 L 81,106 L 81,118" fill="none" stroke="#d2a8ff" stroke-width="1.5" opacity="0.6"/>
+    <path d="M 220,94 L 220,106 L 279,106 L 279,118" fill="none" stroke="#d2a8ff" stroke-width="1.5" opacity="0.6"/>
+
+    <!-- Children -->
+    <rect x="16" y="118" width="130" height="28" rx="6" fill="rgba(210, 168, 255, 0.12)" stroke="#d2a8ff" stroke-width="1"/>
+    <text x="81" y="137" text-anchor="middle" font-size="11" font-weight="700" fill="#d2a8ff">clamp()</text>
+
+    <rect x="214" y="118" width="130" height="28" rx="6" fill="rgba(210, 168, 255, 0.12)" stroke="#d2a8ff" stroke-width="1"/>
+    <text x="279" y="137" text-anchor="middle" font-size="11" font-weight="700" fill="#d2a8ff">thread::index_1d</text>
+
+    <!-- Deeper callee -->
+    <line x1="279" y1="146" x2="279" y2="166" stroke="#d2a8ff" stroke-width="1.5" opacity="0.4"/>
+    <rect x="214" y="166" width="130" height="24" rx="6" fill="rgba(210, 168, 255, 0.08)" stroke="#d2a8ff" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="279" y="183" text-anchor="middle" font-size="10" font-weight="600" fill="#b1bac4">cuda_device intrinsic</text>
+  </g>
+
+  <!-- Arrow 2→3 -->
+  <line x1="828" y1="218" x2="868" y2="218" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="866,212 878,218 866,224" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- ==================== STEP 3: Crate filter (amber) ==================== -->
+  <g transform="translate(880, 118)">
+    <rect width="340" height="200" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="340" height="200" rx="12" fill="none" stroke="#e8912d" stroke-width="2"/>
+
+    <rect x="2" y="2" width="336" height="44" rx="10" fill="#1c2128"/>
+    <text x="170" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#e8912d">3. Filter by crate</text>
+
+    <!-- Allowed -->
+    <rect x="16" y="60" width="150" height="30" rx="6" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="1"/>
+    <text x="91" y="80" text-anchor="middle" font-size="12" font-weight="600" fill="#79c0ff">local crate &#x2714;</text>
+
+    <rect x="16" y="98" width="150" height="30" rx="6" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="1"/>
+    <text x="91" y="118" text-anchor="middle" font-size="12" font-weight="600" fill="#79c0ff">cuda_device &#x2714;</text>
+
+    <rect x="16" y="136" width="150" height="30" rx="6" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="1"/>
+    <text x="91" y="156" text-anchor="middle" font-size="12" font-weight="600" fill="#79c0ff">core &#x2714;</text>
+
+    <!-- Forbidden -->
+    <rect x="180" y="60" width="144" height="30" rx="6" fill="rgba(249, 117, 131, 0.12)" stroke="#f97583" stroke-width="1"/>
+    <text x="252" y="80" text-anchor="middle" font-size="12" font-weight="600" fill="#f97583">std &#x2718;</text>
+
+    <rect x="180" y="98" width="144" height="30" rx="6" fill="rgba(249, 117, 131, 0.12)" stroke="#f97583" stroke-width="1"/>
+    <text x="252" y="118" text-anchor="middle" font-size="12" font-weight="600" fill="#f97583">alloc &#x2718;</text>
+
+    <rect x="180" y="136" width="144" height="30" rx="6" fill="rgba(249, 117, 131, 0.12)" stroke="#f97583" stroke-width="1"/>
+    <text x="252" y="156" text-anchor="middle" font-size="12" font-weight="600" fill="#f97583">compile error</text>
+  </g>
+
+  <!-- ==================== BOTTOM: Output ==================== -->
+  <g transform="translate(40, 360)">
+    <rect width="1180" height="320" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="320" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="15" font-weight="700" fill="#c9d1d9">Output: PTX module</text>
+
+    <!-- .entry (amber — kernel entry points) -->
+    <g transform="translate(60, 70)">
+      <rect width="500" height="100" rx="10" fill="rgba(232, 145, 45, 0.08)" stroke="#e8912d" stroke-width="1.5"/>
+      <rect x="1" y="8" width="3" height="84" rx="1.5" fill="#e8912d" opacity="0.8"/>
+      <text x="256" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#e8912d">.entry (kernel entry points)</text>
+      <text x="256" y="56" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" fill="#c9d1d9">.entry vecadd(.param .u64 a_ptr, ...)</text>
+      <text x="256" y="82" text-anchor="middle" font-size="12" fill="#b1bac4">Callable from host via cuda_launch!</text>
+    </g>
+
+    <!-- .func (purple — device helpers) -->
+    <g transform="translate(620, 70)">
+      <rect width="500" height="100" rx="10" fill="rgba(210, 168, 255, 0.08)" stroke="#d2a8ff" stroke-width="1.5"/>
+      <rect x="1" y="8" width="3" height="84" rx="1.5" fill="#d2a8ff" opacity="0.8"/>
+      <text x="256" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#d2a8ff">.func (device helpers)</text>
+      <text x="256" y="56" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" fill="#c9d1d9">.func clamp(.param .f32 x, ...)</text>
+      <text x="256" y="82" text-anchor="middle" font-size="12" fill="#b1bac4">Auto-discovered or #[device] &#x2014; typically inlined</text>
+    </g>
+
+    <!-- Auto-discovery note -->
+    <g transform="translate(60, 196)">
+      <rect width="1060" height="90" rx="10" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="530" y="30" text-anchor="middle" font-size="14" font-weight="600" fill="#c9d1d9">Auto-discovery vs explicit #[device]</text>
+      <text x="530" y="56" text-anchor="middle" font-size="13" fill="#b1bac4">Functions called from a kernel in the same crate are compiled for the GPU automatically &#x2014; no annotation needed.</text>
+      <text x="530" y="78" text-anchor="middle" font-size="13" fill="#b1bac4">#[device] is only required for standalone device libraries, cross-crate helpers, or device FFI.</text>
+    </g>
+  </g>
+</svg>

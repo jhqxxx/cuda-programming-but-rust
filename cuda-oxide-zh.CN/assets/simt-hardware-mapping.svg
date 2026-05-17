@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 970" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1260" height="970" fill="#0d1117"/>
+  <rect width="1260" height="970" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">Hardware Mapping</text>
+  <line x1="400" y1="58" x2="860" y2="58" stroke="#76B900" stroke-width="2" opacity="0.6"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">Blocks are assigned to Streaming Multiprocessors (SMs) by the GPU scheduler</text>
+
+  <!-- ==================== TOP: Grid of Blocks (2 rows x 4 cols, aligned with SMs) ==================== -->
+  <g transform="translate(40, 118)">
+    <rect width="1180" height="186" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="186" rx="12" fill="none" stroke="#ffffff" stroke-width="2"/>
+
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="30" text-anchor="middle" font-size="17" font-weight="700" fill="#c9d1d9">GRID (8 blocks) &#x2014; <tspan fill="#76B900">programmer controls dimensions</tspan></text>
+
+    <!-- Row labels -->
+    <text x="50" y="93" text-anchor="middle" font-size="11" font-weight="600" fill="#b1bac4">wave 0</text>
+    <text x="50" y="151" text-anchor="middle" font-size="11" font-weight="600" fill="#9ca3af">wave 1</text>
+
+    <!-- Wave 0: immediate dispatch (full opacity, columns aligned with SMs) -->
+    <rect x="95" y="62" width="128" height="50" rx="8" fill="#f97583"/><text x="159" y="93" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">Block 0</text>
+    <rect x="385" y="62" width="128" height="50" rx="8" fill="#56d364"/><text x="449" y="93" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">Block 1</text>
+    <rect x="675" y="62" width="128" height="50" rx="8" fill="#79c0ff"/><text x="739" y="93" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">Block 2</text>
+    <rect x="965" y="62" width="128" height="50" rx="8" fill="#d2a8ff"/><text x="1029" y="93" text-anchor="middle" font-size="14" font-weight="700" fill="#fff">Block 3</text>
+
+    <!-- Wave 1: queued (faded, same columns) -->
+    <rect x="95" y="120" width="128" height="50" rx="8" fill="#f97583" opacity="0.45"/><text x="159" y="151" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" opacity="0.8">Block 4</text>
+    <rect x="385" y="120" width="128" height="50" rx="8" fill="#56d364" opacity="0.45"/><text x="449" y="151" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" opacity="0.8">Block 5</text>
+    <rect x="675" y="120" width="128" height="50" rx="8" fill="#79c0ff" opacity="0.45"/><text x="739" y="151" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" opacity="0.8">Block 6</text>
+    <rect x="965" y="120" width="128" height="50" rx="8" fill="#d2a8ff" opacity="0.45"/><text x="1029" y="151" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" opacity="0.8">Block 7</text>
+  </g>
+
+  <!-- ==================== LEVEL 1 CONNECTORS: Grid bottom to Scheduler top ==================== -->
+  <line x1="199" y1="304" x2="199" y2="370" stroke="#f97583" stroke-width="2.5" opacity="0.6"/>
+  <line x1="489" y1="304" x2="489" y2="370" stroke="#56d364" stroke-width="2.5" opacity="0.6"/>
+  <line x1="779" y1="304" x2="779" y2="370" stroke="#79c0ff" stroke-width="2.5" opacity="0.6"/>
+  <line x1="1069" y1="304" x2="1069" y2="370" stroke="#d2a8ff" stroke-width="2.5" opacity="0.6"/>
+
+  <!-- ==================== MIDDLE: GPU Scheduler ==================== -->
+  <g transform="translate(40, 370)">
+    <rect width="1180" height="52" rx="10" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="52" rx="10" fill="none" stroke="#e8912d" stroke-width="2"/>
+    <text x="590" y="33" text-anchor="middle" font-size="16" font-weight="700" fill="#e8912d">GPU Scheduler &#x2014; assigns blocks to SMs</text>
+  </g>
+
+  <!-- ==================== LEVEL 2 CONNECTORS: Scheduler bottom to SM box ==================== -->
+  <line x1="199" y1="422" x2="199" y2="452" stroke="#f97583" stroke-width="2.5" opacity="0.6"/>
+  <line x1="489" y1="422" x2="489" y2="452" stroke="#56d364" stroke-width="2.5" opacity="0.6"/>
+  <line x1="779" y1="422" x2="779" y2="452" stroke="#79c0ff" stroke-width="2.5" opacity="0.6"/>
+  <line x1="1069" y1="422" x2="1069" y2="452" stroke="#d2a8ff" stroke-width="2.5" opacity="0.6"/>
+
+  <!-- Small downward arrows -->
+  <polygon points="199,458 193,448 205,448" fill="#f97583" opacity="0.6"/>
+  <polygon points="489,458 483,448 495,448" fill="#56d364" opacity="0.6"/>
+  <polygon points="779,458 773,448 785,448" fill="#79c0ff" opacity="0.6"/>
+  <polygon points="1069,458 1063,448 1075,448" fill="#d2a8ff" opacity="0.6"/>
+
+  <!-- ==================== BOTTOM: SMs ==================== -->
+  <g transform="translate(40, 464)">
+    <rect width="1180" height="290" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="290" rx="12" fill="none" stroke="#ffffff" stroke-width="2"/>
+
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="30" text-anchor="middle" font-size="17" font-weight="700" fill="#c9d1d9">GPU HARDWARE &#x2014; <tspan fill="#e8912d">4 Streaming Multiprocessors</tspan></text>
+
+    <!-- SM 0 -->
+    <g transform="translate(22, 64)">
+      <rect width="274" height="200" rx="10" fill="#0d1117" stroke="#e8912d" stroke-width="2"/>
+      <text x="137" y="30" text-anchor="middle" font-size="17" font-weight="700" fill="#e8912d">SM 0</text>
+
+      <g transform="translate(16, 46)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">4 Warp Schedulers</text>
+      </g>
+      <g transform="translate(16, 82)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">128 CUDA Cores</text>
+      </g>
+      <g transform="translate(16, 118)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">256 KB Shared Mem / L1</text>
+      </g>
+      <g transform="translate(16, 160)">
+        <rect width="114" height="26" rx="6" fill="#f97583" opacity="0.3"/><text x="57" y="18" text-anchor="middle" font-size="12" font-weight="600" fill="#f97583">Block 0</text>
+        <rect x="122" y="0" width="114" height="26" rx="6" fill="#f97583" opacity="0.15"/><text x="179" y="18" text-anchor="middle" font-size="12" font-weight="600" fill="#f97583" opacity="0.7">Block 4</text>
+      </g>
+    </g>
+
+    <!-- SM 1 -->
+    <g transform="translate(312, 64)">
+      <rect width="274" height="200" rx="10" fill="#0d1117" stroke="#e8912d" stroke-width="2"/>
+      <text x="137" y="30" text-anchor="middle" font-size="17" font-weight="700" fill="#e8912d">SM 1</text>
+
+      <g transform="translate(16, 46)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">4 Warp Schedulers</text>
+      </g>
+      <g transform="translate(16, 82)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">128 CUDA Cores</text>
+      </g>
+      <g transform="translate(16, 118)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">256 KB Shared Mem / L1</text>
+      </g>
+      <g transform="translate(16, 160)">
+        <rect width="114" height="26" rx="6" fill="#56d364" opacity="0.3"/><text x="57" y="18" text-anchor="middle" font-size="12" font-weight="600" fill="#56d364">Block 1</text>
+        <rect x="122" y="0" width="114" height="26" rx="6" fill="#56d364" opacity="0.15"/><text x="179" y="18" text-anchor="middle" font-size="12" font-weight="600" fill="#56d364" opacity="0.7">Block 5</text>
+      </g>
+    </g>
+
+    <!-- SM 2 -->
+    <g transform="translate(602, 64)">
+      <rect width="274" height="200" rx="10" fill="#0d1117" stroke="#e8912d" stroke-width="2"/>
+      <text x="137" y="30" text-anchor="middle" font-size="17" font-weight="700" fill="#e8912d">SM 2</text>
+
+      <g transform="translate(16, 46)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">4 Warp Schedulers</text>
+      </g>
+      <g transform="translate(16, 82)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">128 CUDA Cores</text>
+      </g>
+      <g transform="translate(16, 118)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">256 KB Shared Mem / L1</text>
+      </g>
+      <g transform="translate(16, 160)">
+        <rect width="114" height="26" rx="6" fill="#79c0ff" opacity="0.3"/><text x="57" y="18" text-anchor="middle" font-size="12" font-weight="600" fill="#79c0ff">Block 2</text>
+        <rect x="122" y="0" width="114" height="26" rx="6" fill="#79c0ff" opacity="0.15"/><text x="179" y="18" text-anchor="middle" font-size="12" font-weight="600" fill="#79c0ff" opacity="0.7">Block 6</text>
+      </g>
+    </g>
+
+    <!-- SM 3 -->
+    <g transform="translate(892, 64)">
+      <rect width="274" height="200" rx="10" fill="#0d1117" stroke="#e8912d" stroke-width="2"/>
+      <text x="137" y="30" text-anchor="middle" font-size="17" font-weight="700" fill="#e8912d">SM 3</text>
+
+      <g transform="translate(16, 46)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">4 Warp Schedulers</text>
+      </g>
+      <g transform="translate(16, 82)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">128 CUDA Cores</text>
+      </g>
+      <g transform="translate(16, 118)">
+        <rect width="242" height="28" rx="6" fill="#21262d"/>
+        <text x="121" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="500" fill="#b1bac4">256 KB Shared Mem / L1</text>
+      </g>
+      <g transform="translate(16, 160)">
+        <rect width="114" height="26" rx="6" fill="#d2a8ff" opacity="0.3"/><text x="57" y="18" text-anchor="middle" font-size="12" font-weight="600" fill="#d2a8ff">Block 3</text>
+        <rect x="122" y="0" width="114" height="26" rx="6" fill="#d2a8ff" opacity="0.15"/><text x="179" y="18" text-anchor="middle" font-size="12" font-weight="600" fill="#d2a8ff" opacity="0.7">Block 7</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ==================== BOTTOM: Callout ==================== -->
+  <g transform="translate(40, 790)">
+    <rect width="1180" height="148" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="148" rx="12" fill="none" stroke="#30363d" stroke-width="1.5"/>
+
+    <g transform="translate(40, 32)">
+      <rect x="-16" y="-18" width="560" height="30" rx="6" fill="#76B900" opacity="0.1"/>
+      <text x="0" y="0" font-size="15" fill="#c9d1d9"><tspan font-weight="700" fill="#76B900">You control:</tspan>  grid dimensions, block size, shared memory</text>
+
+      <rect x="-16" y="18" width="700" height="30" rx="6" fill="#e8912d" opacity="0.1"/>
+      <text x="0" y="36" font-size="15" fill="#c9d1d9"><tspan font-weight="700" fill="#e8912d">Hardware controls:</tspan>  which SM runs which block, scheduling order, warp dispatch</text>
+
+      <text x="0" y="80" font-size="14" font-weight="500" fill="#b1bac4">More blocks than SMs?  The scheduler queues the surplus and runs them as resources free up.</text>
+    </g>
+  </g>
+</svg>

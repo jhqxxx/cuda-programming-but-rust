@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 700" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1260" height="700" fill="#0d1117"/>
+  <rect width="1260" height="700" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">Argument Scalarization</text>
+  <line x1="370" y1="58" x2="890" y2="58" stroke="#76B900" stroke-width="2" opacity="0.6"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">How Rust types cross the host &#x2192; device ABI boundary</text>
+
+  <!-- ==================== LEFT: Host side (Rust signature) ==================== -->
+  <g transform="translate(40, 120)">
+    <rect width="340" height="460" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="340" height="460" rx="12" fill="none" stroke="#79c0ff" stroke-width="2"/>
+
+    <rect x="2" y="2" width="336" height="44" rx="10" fill="#1c2128"/>
+    <text x="170" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#79c0ff">Host (Rust)</text>
+
+    <!-- Kernel signature -->
+    <text x="24" y="80" font-family="'RobotoMono', monospace" font-size="13" fill="#76B900">#[kernel]</text>
+    <text x="24" y="100" font-family="'RobotoMono', monospace" font-size="13" fill="#c9d1d9">fn vecadd(</text>
+    <text x="44" y="124" font-family="'RobotoMono', monospace" font-size="13" fill="#c9d1d9">a: <tspan fill="#79c0ff">&amp;[f32]</tspan>,</text>
+    <text x="44" y="148" font-family="'RobotoMono', monospace" font-size="13" fill="#c9d1d9">b: <tspan fill="#79c0ff">&amp;[f32]</tspan>,</text>
+    <text x="44" y="172" font-family="'RobotoMono', monospace" font-size="13" fill="#c9d1d9">c: <tspan fill="#d2a8ff">DisjointSlice&lt;f32&gt;</tspan>,</text>
+    <text x="24" y="196" font-family="'RobotoMono', monospace" font-size="13" fill="#c9d1d9">)</text>
+
+    <!-- Launch macro -->
+    <line x1="24" y1="220" x2="316" y2="220" stroke="#30363d" stroke-width="1"/>
+    <text x="170" y="250" text-anchor="middle" font-size="14" font-weight="600" fill="#c9d1d9">cuda_launch! args:</text>
+
+    <!-- Arg boxes -->
+    <rect x="24" y="270" width="292" height="40" rx="8" fill="rgba(121, 192, 255, 0.1)" stroke="#79c0ff" stroke-width="1"/>
+    <text x="170" y="296" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" fill="#79c0ff">slice(a_dev)</text>
+
+    <rect x="24" y="322" width="292" height="40" rx="8" fill="rgba(121, 192, 255, 0.1)" stroke="#79c0ff" stroke-width="1"/>
+    <text x="170" y="348" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" fill="#79c0ff">slice(b_dev)</text>
+
+    <rect x="24" y="374" width="292" height="40" rx="8" fill="rgba(210, 168, 255, 0.1)" stroke="#d2a8ff" stroke-width="1"/>
+    <text x="170" y="400" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" fill="#d2a8ff">slice_mut(c_dev)</text>
+  </g>
+
+  <!-- ==================== ARROW: Host -> ABI ==================== -->
+  <line x1="392" y1="350" x2="444" y2="350" stroke="#e8912d" stroke-width="2.5" opacity="0.6"/>
+  <polygon points="440,344 452,350 440,356" fill="#e8912d" opacity="0.6"/>
+
+  <!-- ==================== CENTER: ABI boundary (scalarization) ==================== -->
+  <g transform="translate(460, 120)">
+    <rect width="340" height="460" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="340" height="460" rx="12" fill="none" stroke="#e8912d" stroke-width="2"/>
+
+    <rect x="2" y="2" width="336" height="44" rx="10" fill="#1c2128"/>
+    <text x="170" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#e8912d">ABI Boundary (scalarized)</text>
+
+    <text x="170" y="78" text-anchor="middle" font-size="13" font-weight="600" fill="#b1bac4">cuLaunchKernel params[]</text>
+
+    <!-- Param 0: a_ptr -->
+    <rect x="20" y="100" width="300" height="34" rx="6" fill="rgba(121, 192, 255, 0.15)"/>
+    <text x="32" y="122" font-family="'RobotoMono', monospace" font-size="12" fill="#79c0ff">param[0]</text>
+    <text x="290" y="122" text-anchor="end" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">a_ptr: *const f32</text>
+
+    <!-- Param 1: a_len -->
+    <rect x="20" y="142" width="300" height="34" rx="6" fill="rgba(121, 192, 255, 0.1)"/>
+    <text x="32" y="164" font-family="'RobotoMono', monospace" font-size="12" fill="#79c0ff">param[1]</text>
+    <text x="290" y="164" text-anchor="end" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">a_len: u64</text>
+
+    <!-- Param 2: b_ptr -->
+    <rect x="20" y="192" width="300" height="34" rx="6" fill="rgba(121, 192, 255, 0.15)"/>
+    <text x="32" y="214" font-family="'RobotoMono', monospace" font-size="12" fill="#79c0ff">param[2]</text>
+    <text x="290" y="214" text-anchor="end" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">b_ptr: *const f32</text>
+
+    <!-- Param 3: b_len -->
+    <rect x="20" y="234" width="300" height="34" rx="6" fill="rgba(121, 192, 255, 0.1)"/>
+    <text x="32" y="256" font-family="'RobotoMono', monospace" font-size="12" fill="#79c0ff">param[3]</text>
+    <text x="290" y="256" text-anchor="end" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">b_len: u64</text>
+
+    <!-- Param 4: c_ptr -->
+    <rect x="20" y="284" width="300" height="34" rx="6" fill="rgba(210, 168, 255, 0.15)"/>
+    <text x="32" y="306" font-family="'RobotoMono', monospace" font-size="12" fill="#d2a8ff">param[4]</text>
+    <text x="290" y="306" text-anchor="end" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">c_ptr: *mut f32</text>
+
+    <!-- Param 5: c_len -->
+    <rect x="20" y="326" width="300" height="34" rx="6" fill="rgba(210, 168, 255, 0.1)"/>
+    <text x="32" y="348" font-family="'RobotoMono', monospace" font-size="12" fill="#d2a8ff">param[5]</text>
+    <text x="290" y="348" text-anchor="end" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">c_len: u64</text>
+
+    <!-- Note -->
+    <line x1="20" y1="380" x2="320" y2="380" stroke="#30363d" stroke-width="1"/>
+    <text x="170" y="408" text-anchor="middle" font-size="13" fill="#e8912d" font-weight="600">Each slice &#x2192; (ptr, len)</text>
+    <text x="170" y="430" text-anchor="middle" font-size="13" fill="#b1bac4">Structs &#x2192; flattened fields</text>
+    <text x="170" y="452" text-anchor="middle" font-size="13" fill="#b1bac4">ZSTs &#x2192; stripped</text>
+  </g>
+
+  <!-- ==================== ARROW: ABI -> Device ==================== -->
+  <line x1="812" y1="350" x2="864" y2="350" stroke="#d2a8ff" stroke-width="2.5" opacity="0.6"/>
+  <polygon points="860,344 872,350 860,356" fill="#d2a8ff" opacity="0.6"/>
+
+  <!-- ==================== RIGHT: Device side (reconstituted) ==================== -->
+  <g transform="translate(880, 120)">
+    <rect width="340" height="460" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="340" height="460" rx="12" fill="none" stroke="#d2a8ff" stroke-width="2"/>
+
+    <rect x="2" y="2" width="336" height="44" rx="10" fill="#1c2128"/>
+    <text x="170" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#d2a8ff">Device (PTX kernel)</text>
+
+    <!-- PTX code -->
+    <text x="24" y="80" font-family="'RobotoMono', monospace" font-size="13" fill="#d2a8ff">.entry vecadd(</text>
+    <text x="44" y="104" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">.param .u64 a_ptr,</text>
+    <text x="44" y="124" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">.param .u64 a_len,</text>
+    <text x="44" y="148" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">.param .u64 b_ptr,</text>
+    <text x="44" y="168" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">.param .u64 b_len,</text>
+    <text x="44" y="192" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">.param .u64 c_ptr,</text>
+    <text x="44" y="212" font-family="'RobotoMono', monospace" font-size="12" fill="#c9d1d9">.param .u64 c_len</text>
+    <text x="24" y="236" font-family="'RobotoMono', monospace" font-size="13" fill="#d2a8ff">)</text>
+
+    <line x1="24" y1="260" x2="316" y2="260" stroke="#30363d" stroke-width="1"/>
+
+    <!-- Reconstitution note -->
+    <text x="170" y="294" text-anchor="middle" font-size="14" font-weight="600" fill="#d2a8ff">Compiler reconstitutes</text>
+    <text x="170" y="318" text-anchor="middle" font-size="14" fill="#c9d1d9">Kernel code sees normal</text>
+    <text x="170" y="340" text-anchor="middle" font-size="14" fill="#c9d1d9">Rust types:</text>
+
+    <rect x="24" y="362" width="292" height="36" rx="8" fill="rgba(210, 168, 255, 0.1)" stroke="#d2a8ff" stroke-width="1"/>
+    <text x="170" y="386" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" fill="#d2a8ff">a: &amp;[f32]</text>
+
+    <rect x="24" y="410" width="292" height="36" rx="8" fill="rgba(210, 168, 255, 0.1)" stroke="#d2a8ff" stroke-width="1"/>
+    <text x="170" y="434" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" fill="#d2a8ff">c: DisjointSlice&lt;f32&gt;</text>
+  </g>
+
+  <!-- ==================== BOTTOM: Summary ==================== -->
+  <g transform="translate(40, 610)">
+    <rect width="1180" height="56" rx="10" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="56" rx="10" fill="none" stroke="#30363d" stroke-width="1"/>
+    <text x="590" y="24" text-anchor="middle" font-size="14" fill="#c9d1d9">Scalarization is invisible to kernel authors &#x2014; you write normal</text>
+    <text x="590" y="46" text-anchor="middle" font-size="14" fill="#c9d1d9"><tspan font-family="'RobotoMono', monospace" fill="#79c0ff">&amp;[f32]</tspan> in Rust and the <tspan font-family="'RobotoMono', monospace" fill="#e8912d">cuda_launch!</tspan> macro + compiler handle the rest</text>
+  </g>
+</svg>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 820" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="speedGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e8912d"/>
+      <stop offset="33%" stop-color="#f97583"/>
+      <stop offset="66%" stop-color="#79c0ff"/>
+      <stop offset="100%" stop-color="#d2a8ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1260" height="820" fill="#0d1117"/>
+  <rect width="1260" height="820" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">CUDA Memory Hierarchy</text>
+  <line x1="380" y1="58" x2="880" y2="58" stroke="#76B900" stroke-width="2" opacity="0.6"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">Faster and smaller at the top, larger and slower at the bottom</text>
+
+  <!-- ==================== LEFT COLUMN: Memory tiers ==================== -->
+
+  <!-- Tier 1: Registers (amber) -->
+  <g transform="translate(140, 120)">
+    <rect width="520" height="90" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="520" height="90" rx="12" fill="none" stroke="#e8912d" stroke-width="2"/>
+    <text x="260" y="32" text-anchor="middle" font-size="18" font-weight="700" fill="#e8912d">Registers</text>
+    <text x="260" y="56" text-anchor="middle" font-size="14" fill="#c9d1d9">Per thread  &#xB7;  ~255 &#xD7; 32-bit  &#xB7;  0 cycles</text>
+    <text x="260" y="78" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" fill="#b1bac4">let x: f32 = a[idx] + b[idx];</text>
+  </g>
+
+  <!-- Arrow 1->2 -->
+  <line x1="400" y1="210" x2="400" y2="246" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="394,242 400,254 406,242" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- Tier 2: Shared Memory (coral) -->
+  <g transform="translate(140, 258)">
+    <rect width="520" height="90" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="520" height="90" rx="12" fill="none" stroke="#f97583" stroke-width="2"/>
+    <text x="260" y="32" text-anchor="middle" font-size="18" font-weight="700" fill="#f97583">Shared Memory</text>
+    <text x="260" y="56" text-anchor="middle" font-size="14" fill="#c9d1d9">Per block  &#xB7;  48&#x2013;228 KB  &#xB7;  ~5 cycles</text>
+    <text x="260" y="78" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" fill="#b1bac4">SharedArray&lt;f32, 256&gt;</text>
+  </g>
+
+  <!-- Arrow 2->3 -->
+  <line x1="400" y1="348" x2="400" y2="384" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="394,380 400,392 406,380" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- Tier 3: L1 / L2 Cache (blue) -->
+  <g transform="translate(140, 396)">
+    <rect width="520" height="90" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="520" height="90" rx="12" fill="none" stroke="#79c0ff" stroke-width="2"/>
+    <text x="260" y="32" text-anchor="middle" font-size="18" font-weight="700" fill="#79c0ff">L1 / L2 Cache</text>
+    <text x="260" y="56" text-anchor="middle" font-size="14" fill="#c9d1d9">L1 per SM  &#xB7;  L2 chip-wide (up to 50 MB)  &#xB7;  ~30 cycles</text>
+    <text x="260" y="78" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" fill="#b1bac4">Hardware-managed (automatic)</text>
+  </g>
+
+  <!-- Arrow 3->4 -->
+  <line x1="400" y1="486" x2="400" y2="522" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="394,518 400,530 406,518" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- Tier 4: Global Memory (purple) -->
+  <g transform="translate(140, 534)">
+    <rect width="520" height="90" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="520" height="90" rx="12" fill="none" stroke="#d2a8ff" stroke-width="2"/>
+    <text x="260" y="32" text-anchor="middle" font-size="18" font-weight="700" fill="#d2a8ff">Global Memory (HBM / DRAM)</text>
+    <text x="260" y="56" text-anchor="middle" font-size="14" fill="#c9d1d9">All threads  &#xB7;  16&#x2013;80 GB  &#xB7;  ~400 cycles</text>
+    <text x="260" y="78" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" fill="#b1bac4">DeviceBuffer&lt;T&gt;, DeviceBox&lt;T&gt;</text>
+  </g>
+
+  <!-- ==================== RIGHT COLUMN: Scope & Visibility ==================== -->
+  <g transform="translate(720, 120)">
+    <rect width="420" height="504" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="420" height="504" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+
+    <rect x="2" y="2" width="416" height="44" rx="10" fill="#1c2128"/>
+    <text x="210" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#c9d1d9">Scope &amp; Visibility</text>
+
+    <!-- Registers scope (amber) -->
+    <g transform="translate(24, 68)">
+      <rect width="372" height="56" rx="8" fill="rgba(232, 145, 45, 0.1)" stroke="#e8912d" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="186" y="24" text-anchor="middle" font-size="14" font-weight="600" fill="#e8912d">Thread 0</text>
+      <text x="186" y="44" text-anchor="middle" font-size="12" fill="#b1bac4">Private to each thread &#x2014; not shared</text>
+    </g>
+
+    <!-- Shared scope (coral) -->
+    <g transform="translate(24, 142)">
+      <rect width="372" height="76" rx="8" fill="rgba(249, 117, 131, 0.1)" stroke="#f97583" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="186" y="24" text-anchor="middle" font-size="14" font-weight="600" fill="#f97583">Block (0, 0)</text>
+      <text x="186" y="44" text-anchor="middle" font-size="12" fill="#b1bac4">Visible to all threads in the block</text>
+      <text x="186" y="62" text-anchor="middle" font-size="12" fill="#b1bac4">Requires sync_threads() for safe sharing</text>
+    </g>
+
+    <!-- Cache scope (blue) -->
+    <g transform="translate(24, 236)">
+      <rect width="372" height="56" rx="8" fill="rgba(121, 192, 255, 0.1)" stroke="#79c0ff" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="186" y="24" text-anchor="middle" font-size="14" font-weight="600" fill="#79c0ff">SM / Chip</text>
+      <text x="186" y="44" text-anchor="middle" font-size="12" fill="#b1bac4">Transparent caching &#x2014; no user control</text>
+    </g>
+
+    <!-- Global scope (purple) -->
+    <g transform="translate(24, 310)">
+      <rect width="372" height="76" rx="8" fill="rgba(210, 168, 255, 0.1)" stroke="#d2a8ff" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="186" y="24" text-anchor="middle" font-size="14" font-weight="600" fill="#d2a8ff">All SMs / Host</text>
+      <text x="186" y="44" text-anchor="middle" font-size="12" fill="#b1bac4">Visible to every thread in every block</text>
+      <text x="186" y="62" text-anchor="middle" font-size="12" fill="#b1bac4">Host transfers via DeviceBuffer</text>
+    </g>
+
+    <!-- Speed gradient -->
+    <g transform="translate(24, 410)">
+      <rect width="372" height="72" rx="8" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="186" y="24" text-anchor="middle" font-size="14" font-weight="600" fill="#c9d1d9">Performance gradient</text>
+      <text x="40" y="52" font-size="13" font-weight="600" fill="#e8912d">FAST</text>
+      <line x1="85" y1="48" x2="287" y2="48" stroke="url(#speedGrad)" stroke-width="3" stroke-linecap="round"/>
+      <text x="332" y="52" text-anchor="end" font-size="13" font-weight="600" fill="#d2a8ff">SLOW</text>
+    </g>
+  </g>
+
+  <!-- ==================== BOTTOM: cuda-oxide API mapping ==================== -->
+  <g transform="translate(40, 670)">
+    <rect width="1180" height="110" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="110" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+
+    <rect x="2" y="2" width="1176" height="40" rx="10" fill="#1c2128"/>
+    <text x="590" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#c9d1d9">cuda-oxide Rust API</text>
+
+    <text x="148" y="68" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" fill="#e8912d">let x = a[i];</text>
+    <text x="148" y="90" text-anchor="middle" font-size="11" font-weight="600" fill="#b1bac4">registers</text>
+
+    <line x1="295" y1="52" x2="295" y2="96" stroke="#30363d" stroke-width="1"/>
+
+    <text x="443" y="68" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" fill="#f97583">SharedArray&lt;T, N&gt;</text>
+    <text x="443" y="90" text-anchor="middle" font-size="11" font-weight="600" fill="#b1bac4">shared memory</text>
+
+    <line x1="590" y1="52" x2="590" y2="96" stroke="#30363d" stroke-width="1"/>
+
+    <text x="738" y="68" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" fill="#79c0ff">(automatic)</text>
+    <text x="738" y="90" text-anchor="middle" font-size="11" font-weight="600" fill="#b1bac4">L1 / L2 cache</text>
+
+    <line x1="885" y1="52" x2="885" y2="96" stroke="#30363d" stroke-width="1"/>
+
+    <text x="1033" y="68" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" fill="#d2a8ff">DeviceBuffer&lt;T&gt;</text>
+    <text x="1033" y="90" text-anchor="middle" font-size="11" font-weight="600" fill="#b1bac4">global memory</text>
+  </g>
+</svg>
