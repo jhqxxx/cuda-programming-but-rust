@@ -1,0 +1,194 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 960"
+     font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'NVIDIA';
+        src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/NVIDIASans_W_Rg.woff2') format('woff2');
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: 'NVIDIA';
+        src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/NVIDIASans_W_Bd.woff2') format('woff2');
+        font-weight: 700;
+      }
+      @font-face {
+        font-family: 'RobotoMono';
+        src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/roboto-mono/RobotoMono-Regular.ttf') format('truetype');
+        font-weight: 400;
+      }
+    </style>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5" opacity="0.5"/>
+    </pattern>
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/>
+    </filter>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#79c0ff" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#d2a8ff" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#e8912d" stop-opacity="0.8"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 10 4 L 0 8 Z" fill="#c9d1d9" opacity="0.8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1260" height="960" fill="#0d1117"/>
+  <rect width="1260" height="960" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="630" y="48" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="700">TMA Async Bulk Copy Pipeline</text>
+  <text x="630" y="72" text-anchor="middle" fill="#b1bac4" font-size="14" font-weight="600">Hardware-accelerated global-to-shared transfers with mbarrier completion tracking</text>
+  <line x1="330" y1="82" x2="930" y2="82" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+
+  <!-- ============ LEFT: HOST SETUP ============ -->
+  <rect x="40" y="110" width="260" height="330" rx="12" fill="#161b22" filter="url(#shadow)"/>
+  <rect x="40" y="110" width="260" height="36" rx="12" fill="#1c2128"/>
+  <rect x="40" y="134" width="260" height="12" fill="#1c2128"/>
+  <rect x="40" y="110" width="260" height="330" rx="12" fill="none" stroke="#79c0ff" stroke-width="3"/>
+  <text x="170" y="134" text-anchor="middle" fill="#79c0ff" font-size="14" font-weight="700">Host Setup</text>
+
+  <rect x="60" y="168" width="220" height="74" rx="8" fill="rgba(121,192,255,0.12)" stroke="#79c0ff" stroke-width="1.5"/>
+  <rect x="60" y="168" width="3" height="74" rx="1.5" fill="#79c0ff" opacity="0.8"/>
+  <text x="78" y="190" fill="#79c0ff" font-size="12" font-weight="700" font-family="'RobotoMono', monospace">TmaDescriptor</text>
+  <text x="78" y="210" fill="#b1bac4" font-size="11" font-weight="600">128 bytes, opaque, host-built</text>
+  <text x="78" y="228" fill="#9ca3af" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">cuTensorMapEncodeTiled()</text>
+
+  <rect x="60" y="258" width="220" height="86" rx="8" fill="rgba(121,192,255,0.08)" stroke="#30363d" stroke-width="1"/>
+  <text x="78" y="280" fill="#c9d1d9" font-size="11" font-weight="600">Encodes:</text>
+  <text x="78" y="298" fill="#b1bac4" font-size="10" font-weight="600">* Global base address + dimensions</text>
+  <text x="78" y="316" fill="#b1bac4" font-size="10" font-weight="600">* Element type, stride, box size</text>
+  <text x="78" y="334" fill="#b1bac4" font-size="10" font-weight="600">* Swizzle mode for bank conflicts</text>
+
+  <text x="170" y="410" text-anchor="middle" fill="#9ca3af" font-size="11" font-weight="600">Passed as kernel argument</text>
+
+  <!-- ============ CENTER: DEVICE KERNEL ============ -->
+  <rect x="360" y="110" width="530" height="570" rx="12" fill="#161b22" filter="url(#shadow)"/>
+  <rect x="360" y="110" width="530" height="36" rx="12" fill="#1c2128"/>
+  <rect x="360" y="134" width="530" height="12" fill="#1c2128"/>
+  <rect x="360" y="110" width="530" height="570" rx="12" fill="none" stroke="#d2a8ff" stroke-width="3"/>
+  <text x="625" y="134" text-anchor="middle" fill="#d2a8ff" font-size="14" font-weight="700">Device Kernel -- TMA Load Pipeline</text>
+
+  <!-- Step 1 -->
+  <g transform="translate(380, 166)">
+    <rect x="0" y="0" width="490" height="64" rx="8" fill="rgba(232,145,45,0.12)" stroke="#e8912d" stroke-width="1.5"/>
+    <circle cx="20" cy="20" r="14" fill="rgba(232,145,45,0.3)" stroke="#e8912d" stroke-width="1.5"/>
+    <text x="20" y="25" text-anchor="middle" fill="#e8912d" font-size="14" font-weight="700">1</text>
+    <text x="44" y="22" fill="#e8912d" font-size="13" font-weight="700">Initialize mbarrier</text>
+    <text x="44" y="42" fill="#b1bac4" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">let bar = TmaBarrierHandle::from_static(ptr).init(count);</text>
+    <text x="44" y="56" fill="#9ca3af" font-size="10" font-weight="600">One thread inits, fence_proxy_async ensures visibility</text>
+  </g>
+
+  <!-- Step 2 -->
+  <g transform="translate(380, 252)">
+    <rect x="0" y="0" width="490" height="80" rx="8" fill="rgba(210,168,255,0.12)" stroke="#d2a8ff" stroke-width="1.5"/>
+    <circle cx="20" cy="20" r="14" fill="rgba(210,168,255,0.3)" stroke="#d2a8ff" stroke-width="1.5"/>
+    <text x="20" y="25" text-anchor="middle" fill="#d2a8ff" font-size="14" font-weight="700">2</text>
+    <text x="44" y="22" fill="#d2a8ff" font-size="13" font-weight="700">Issue async bulk copy (one thread)</text>
+    <text x="44" y="42" fill="#b1bac4" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">bar.arrive_expect_tx(tile_bytes);</text>
+    <text x="44" y="58" fill="#b1bac4" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">cp_async_bulk_tensor_2d_g2s(dst, desc, x, y, bar);</text>
+    <text x="44" y="72" fill="#9ca3af" font-size="10" font-weight="600">TMA engine copies asynchronously -- thread returns immediately</text>
+  </g>
+
+  <!-- Step 3 -->
+  <g transform="translate(380, 354)">
+    <rect x="0" y="0" width="490" height="56" rx="8" fill="rgba(232,145,45,0.12)" stroke="#e8912d" stroke-width="1.5"/>
+    <circle cx="20" cy="20" r="14" fill="rgba(232,145,45,0.3)" stroke="#e8912d" stroke-width="1.5"/>
+    <text x="20" y="25" text-anchor="middle" fill="#e8912d" font-size="14" font-weight="700">3</text>
+    <text x="44" y="22" fill="#e8912d" font-size="13" font-weight="700">All other threads arrive at barrier</text>
+    <text x="44" y="42" fill="#b1bac4" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">let token = bar.arrive();</text>
+  </g>
+
+  <!-- Step 4 -->
+  <g transform="translate(380, 432)">
+    <rect x="0" y="0" width="490" height="56" rx="8" fill="rgba(249,117,131,0.12)" stroke="#f97583" stroke-width="1.5"/>
+    <circle cx="20" cy="20" r="14" fill="rgba(249,117,131,0.3)" stroke="#f97583" stroke-width="1.5"/>
+    <text x="20" y="25" text-anchor="middle" fill="#f97583" font-size="14" font-weight="700">4</text>
+    <text x="44" y="22" fill="#f97583" font-size="13" font-weight="700">Wait for TMA completion</text>
+    <text x="44" y="42" fill="#b1bac4" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">bar.wait(token);</text>
+    <text x="230" y="42" fill="#9ca3af" font-size="10" font-weight="600">Blocks until all arrivals + TX bytes</text>
+  </g>
+
+  <!-- Step 5 -->
+  <g transform="translate(380, 510)">
+    <rect x="0" y="0" width="490" height="56" rx="8" fill="rgba(121,192,255,0.12)" stroke="#79c0ff" stroke-width="1.5"/>
+    <circle cx="20" cy="20" r="14" fill="rgba(121,192,255,0.3)" stroke="#79c0ff" stroke-width="1.5"/>
+    <text x="20" y="25" text-anchor="middle" fill="#79c0ff" font-size="14" font-weight="700">5</text>
+    <text x="44" y="22" fill="#79c0ff" font-size="13" font-weight="700">Compute from shared memory</text>
+    <text x="44" y="42" fill="#b1bac4" font-size="11" font-weight="600">Tile is now in SharedArray -- proceed as usual</text>
+  </g>
+
+  <!-- Step 6 -->
+  <g transform="translate(380, 588)">
+    <rect x="0" y="0" width="490" height="48" rx="8" fill="rgba(210,168,255,0.08)" stroke="#30363d" stroke-width="1"/>
+    <circle cx="20" cy="19" r="14" fill="rgba(210,168,255,0.2)" stroke="#d2a8ff" stroke-width="1"/>
+    <text x="20" y="24" text-anchor="middle" fill="#d2a8ff" font-size="14" font-weight="700">6</text>
+    <text x="44" y="22" fill="#d2a8ff" font-size="12" font-weight="600">Cleanup (if not reusing barrier)</text>
+    <text x="44" y="40" fill="#b1bac4" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">bar.inval();</text>
+  </g>
+
+  <!-- ============ RIGHT: TMA ENGINE ============ -->
+  <rect x="960" y="110" width="260" height="380" rx="12" fill="#161b22" filter="url(#shadow)"/>
+  <rect x="960" y="110" width="260" height="36" rx="12" fill="#1c2128"/>
+  <rect x="960" y="134" width="260" height="12" fill="#1c2128"/>
+  <rect x="960" y="110" width="260" height="380" rx="12" fill="none" stroke="#e8912d" stroke-width="3"/>
+  <text x="1090" y="134" text-anchor="middle" fill="#e8912d" font-size="14" font-weight="700">TMA Engine</text>
+
+  <!-- Global Memory box -->
+  <rect x="990" y="170" width="200" height="52" rx="8" fill="rgba(232,145,45,0.12)" stroke="#e8912d" stroke-width="1.5"/>
+  <text x="1090" y="192" text-anchor="middle" fill="#e8912d" font-size="12" font-weight="700">Global Memory</text>
+  <text x="1090" y="210" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">Tensor (2D/3D/4D/5D)</text>
+
+  <line x1="1090" y1="222" x2="1090" y2="264" stroke="#c9d1d9" stroke-width="2" opacity="0.7" marker-end="url(#arrow)"/>
+  <text x="1118" y="248" fill="#d2a8ff" font-size="10" font-weight="700">ASYNC</text>
+
+  <!-- TMA Unit box -->
+  <rect x="990" y="268" width="200" height="52" rx="8" fill="rgba(210,168,255,0.15)" stroke="#d2a8ff" stroke-width="2"/>
+  <text x="1090" y="290" text-anchor="middle" fill="#d2a8ff" font-size="12" font-weight="700">TMA Unit (Hardware)</text>
+  <text x="1090" y="308" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">Descriptor &#x2192; address xlate</text>
+
+  <line x1="1090" y1="320" x2="1090" y2="362" stroke="#c9d1d9" stroke-width="2" opacity="0.7" marker-end="url(#arrow)"/>
+
+  <!-- Shared Memory box -->
+  <rect x="990" y="366" width="200" height="52" rx="8" fill="rgba(232,145,45,0.12)" stroke="#e8912d" stroke-width="1.5"/>
+  <text x="1090" y="388" text-anchor="middle" fill="#e8912d" font-size="12" font-weight="700">Shared Memory</text>
+  <text x="1090" y="406" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">128-byte aligned destination</text>
+
+  <!-- mbarrier signal annotation (between TMA Unit and Shared Memory, inside panel) -->
+  <text x="1090" y="344" text-anchor="middle" fill="#f97583" font-size="10" font-weight="700">mbarrier signal on completion</text>
+
+  <!-- ============ BOTTOM: COMPARISON PANEL ============ -->
+  <rect x="40" y="740" width="1180" height="180" rx="12" fill="#161b22" filter="url(#shadow)"/>
+  <rect x="40" y="740" width="1180" height="36" rx="12" fill="#1c2128"/>
+  <rect x="40" y="764" width="1180" height="12" fill="#1c2128"/>
+  <rect x="40" y="740" width="1180" height="180" rx="12" fill="none" stroke="#30363d" stroke-width="3"/>
+  <text x="630" y="764" text-anchor="middle" fill="#ffffff" font-size="13" font-weight="700">Manual Thread Load vs TMA Bulk Copy</text>
+
+  <!-- Manual load -->
+  <g transform="translate(80, 798)">
+    <text x="0" y="0" fill="#f97583" font-size="13" font-weight="700">Manual (all threads load)</text>
+    <rect x="0" y="12" width="480" height="26" rx="4" fill="rgba(249,117,131,0.08)"/>
+    <rect x="0" y="12" width="170" height="26" rx="4" fill="rgba(249,117,131,0.2)" stroke="#f97583" stroke-width="1"/>
+    <text x="85" y="30" text-anchor="middle" fill="#f97583" font-size="10" font-weight="600">128 threads issue 128 loads</text>
+    <rect x="180" y="12" width="50" height="26" rx="4" fill="rgba(232,145,45,0.2)" stroke="#e8912d" stroke-width="1"/>
+    <text x="205" y="30" text-anchor="middle" fill="#e8912d" font-size="10" font-weight="600">sync</text>
+    <rect x="240" y="12" width="140" height="26" rx="4" fill="rgba(121,192,255,0.2)" stroke="#79c0ff" stroke-width="1"/>
+    <text x="310" y="30" text-anchor="middle" fill="#79c0ff" font-size="10" font-weight="600">Compute</text>
+    <text x="0" y="58" fill="#9ca3af" font-size="10" font-weight="600">All threads busy loading -- none computing during load phase</text>
+  </g>
+
+  <!-- TMA load -->
+  <g transform="translate(650, 798)">
+    <text x="0" y="0" fill="#d2a8ff" font-size="13" font-weight="700">TMA (1 thread + hardware)</text>
+    <rect x="0" y="12" width="480" height="26" rx="4" fill="rgba(210,168,255,0.08)"/>
+    <rect x="0" y="12" width="40" height="26" rx="4" fill="rgba(210,168,255,0.2)" stroke="#d2a8ff" stroke-width="1"/>
+    <text x="20" y="30" text-anchor="middle" fill="#d2a8ff" font-size="9" font-weight="600">issue</text>
+    <rect x="50" y="12" width="130" height="26" rx="4" fill="rgba(232,145,45,0.15)" stroke="#e8912d" stroke-width="1" stroke-dasharray="4,2"/>
+    <text x="115" y="30" text-anchor="middle" fill="#e8912d" font-size="10" font-weight="600">HW copy (async)</text>
+    <rect x="190" y="12" width="140" height="26" rx="4" fill="rgba(121,192,255,0.2)" stroke="#79c0ff" stroke-width="1"/>
+    <text x="260" y="30" text-anchor="middle" fill="#79c0ff" font-size="10" font-weight="600">Compute (overlapped)</text>
+    <text x="0" y="58" fill="#9ca3af" font-size="10" font-weight="600">127 threads free for other work while TMA loads next tile</text>
+  </g>
+</svg>

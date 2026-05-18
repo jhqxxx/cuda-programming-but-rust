@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 980" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/></pattern>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#79c0ff"/><stop offset="50%" stop-color="#e8912d"/><stop offset="100%" stop-color="#d2a8ff"/></linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1260" height="980" fill="#0d1117"/>
+  <rect width="1260" height="980" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title block -->
+  <text x="630" y="40" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">Compiler Pipeline</text>
+  <line x1="380" y1="54" x2="880" y2="54" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+  <text x="630" y="76" text-anchor="middle" font-size="16" fill="#b1bac4">From Rust source to PTX assembly</text>
+
+  <!-- Stage 1: Rust Source (y=100) -->
+  <rect x="270" y="100" width="300" height="52" rx="12" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="420" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">Rust Source</text>
+  <text x="420" y="140" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#79c0ff">#[kernel]</text>
+
+  <!-- Arrow 1 + label: rustc frontend -->
+  <line x1="420" y1="158" x2="420" y2="172" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,168 420,180 426,168" fill="#c9d1d9" opacity="0.7"/>
+  <rect x="355" y="182" width="130" height="22" rx="11" fill="#79c0ff" fill-opacity="0.12" stroke="#79c0ff" stroke-opacity="0.4" stroke-width="0.5"/>
+  <text x="420" y="197" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#79c0ff">rustc frontend</text>
+  <line x1="420" y1="204" x2="420" y2="218" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,214 420,226 426,214" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- Stage 2: rustc Frontend (y=228) -->
+  <rect x="270" y="228" width="300" height="52" rx="12" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="420" y="259" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">rustc Frontend</text>
+
+  <!-- Arrow 2 + label: rustc_public bridge -->
+  <line x1="420" y1="286" x2="420" y2="300" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,296 420,308 426,296" fill="#c9d1d9" opacity="0.7"/>
+  <rect x="341" y="310" width="158" height="22" rx="11" fill="#79c0ff" fill-opacity="0.12" stroke="#79c0ff" stroke-opacity="0.4" stroke-width="0.5"/>
+  <text x="420" y="325" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#79c0ff">rustc_public bridge</text>
+  <line x1="420" y1="332" x2="420" y2="346" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,342 420,354 426,342" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- Stage 3: Stable MIR (y=356) -->
+  <rect x="270" y="356" width="300" height="52" rx="12" fill="#161b22" stroke="#79c0ff" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="420" y="378" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">Stable MIR</text>
+  <text x="420" y="396" text-anchor="middle" font-size="12" fill="#b1bac4">(rustc_public)</text>
+
+  <!-- Arrow 3 + label: mir-importer -->
+  <line x1="420" y1="414" x2="420" y2="428" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,424 420,436 426,424" fill="#c9d1d9" opacity="0.7"/>
+  <rect x="362" y="438" width="116" height="22" rx="11" fill="#e8912d" fill-opacity="0.12" stroke="#e8912d" stroke-opacity="0.4" stroke-width="0.5"/>
+  <text x="420" y="453" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#e8912d">mir-importer</text>
+  <line x1="420" y1="460" x2="420" y2="474" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,470 420,482 426,470" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- Stage 4: MIR Dialect (y=484) -->
+  <rect x="270" y="484" width="300" height="52" rx="12" fill="#161b22" stroke="#e8912d" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="420" y="506" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">MIR Dialect</text>
+  <text x="420" y="524" text-anchor="middle" font-size="12" fill="#b1bac4">(pliron)</text>
+
+  <!-- Arrow 4 + label: mir-lower -->
+  <line x1="420" y1="542" x2="420" y2="556" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,552 420,564 426,552" fill="#c9d1d9" opacity="0.7"/>
+  <rect x="372" y="566" width="96" height="22" rx="11" fill="#e8912d" fill-opacity="0.12" stroke="#e8912d" stroke-opacity="0.4" stroke-width="0.5"/>
+  <text x="420" y="581" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#e8912d">mir-lower</text>
+  <line x1="420" y1="588" x2="420" y2="602" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,598 420,610 426,598" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- Stage 5: LLVM Dialect (y=612) -->
+  <rect x="270" y="612" width="300" height="52" rx="12" fill="#161b22" stroke="#e8912d" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="420" y="634" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">LLVM Dialect</text>
+  <text x="420" y="652" text-anchor="middle" font-size="12" fill="#b1bac4">(pliron)</text>
+
+  <!-- Arrow 5 + label: textual export -->
+  <line x1="420" y1="670" x2="420" y2="684" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,680 420,692 426,680" fill="#c9d1d9" opacity="0.7"/>
+  <rect x="355" y="694" width="130" height="22" rx="11" fill="#d2a8ff" fill-opacity="0.12" stroke="#d2a8ff" stroke-opacity="0.4" stroke-width="0.5"/>
+  <text x="420" y="709" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#d2a8ff">textual export</text>
+  <line x1="420" y1="716" x2="420" y2="730" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,726 420,738 426,726" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- Stage 6: LLVM IR (y=740) -->
+  <rect x="270" y="740" width="300" height="52" rx="12" fill="#161b22" stroke="#d2a8ff" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="420" y="762" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">LLVM IR</text>
+  <text x="420" y="780" text-anchor="middle" font-size="12" fill="#b1bac4">(.ll file)</text>
+
+  <!-- Arrow 6 + label: llc (NVPTX) -->
+  <line x1="420" y1="798" x2="420" y2="812" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,808 420,820 426,808" fill="#c9d1d9" opacity="0.7"/>
+  <rect x="365" y="822" width="110" height="22" rx="11" fill="#d2a8ff" fill-opacity="0.12" stroke="#d2a8ff" stroke-opacity="0.4" stroke-width="0.5"/>
+  <text x="420" y="837" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#d2a8ff">llc (NVPTX)</text>
+  <line x1="420" y1="844" x2="420" y2="858" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="414,854 420,866 426,854" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- Stage 7: PTX (y=868) -->
+  <rect x="270" y="868" width="300" height="52" rx="12" fill="#161b22" stroke="#d2a8ff" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="420" y="890" text-anchor="middle" font-size="14" font-weight="700" fill="#ffffff">PTX</text>
+  <text x="420" y="908" text-anchor="middle" font-size="12" fill="#b1bac4">(.ptx file)</text>
+
+  <!-- Annotation panel: rustc (stages 1 to 3) -->
+  <line x1="780" y1="100" x2="780" y2="408" stroke="#79c0ff" stroke-width="1.5" opacity="0.5"/>
+  <line x1="770" y1="100" x2="780" y2="100" stroke="#79c0ff" stroke-width="1.5" opacity="0.5"/>
+  <line x1="770" y1="408" x2="780" y2="408" stroke="#79c0ff" stroke-width="1.5" opacity="0.5"/>
+  <text x="800" y="248" font-size="16" font-weight="700" fill="#79c0ff" opacity="0.8">rustc</text>
+  <text x="800" y="268" font-size="12" fill="#79c0ff" opacity="0.5">Frontend + Stable MIR</text>
+
+  <!-- Annotation panel: pliron (stages 4 to 5) -->
+  <line x1="780" y1="484" x2="780" y2="664" stroke="#e8912d" stroke-width="1.5" opacity="0.5"/>
+  <line x1="770" y1="484" x2="780" y2="484" stroke="#e8912d" stroke-width="1.5" opacity="0.5"/>
+  <line x1="770" y1="664" x2="780" y2="664" stroke="#e8912d" stroke-width="1.5" opacity="0.5"/>
+  <text x="800" y="570" font-size="16" font-weight="700" fill="#e8912d" opacity="0.8">pliron</text>
+  <text x="800" y="590" font-size="12" fill="#e8912d" opacity="0.5">MLIR in Rust</text>
+
+  <!-- Annotation panel: LLVM (stages 6 to 7) -->
+  <line x1="780" y1="740" x2="780" y2="920" stroke="#d2a8ff" stroke-width="1.5" opacity="0.5"/>
+  <line x1="770" y1="740" x2="780" y2="740" stroke="#d2a8ff" stroke-width="1.5" opacity="0.5"/>
+  <line x1="770" y1="920" x2="780" y2="920" stroke="#d2a8ff" stroke-width="1.5" opacity="0.5"/>
+  <text x="800" y="826" font-size="16" font-weight="700" fill="#d2a8ff" opacity="0.8">LLVM</text>
+  <text x="800" y="846" font-size="12" fill="#d2a8ff" opacity="0.5">NVPTX Backend</text>
+
+</svg>

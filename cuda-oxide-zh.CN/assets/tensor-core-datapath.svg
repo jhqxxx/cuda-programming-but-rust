@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 1000"
+     font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'NVIDIA';
+        src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/NVIDIASans_W_Rg.woff2') format('woff2');
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: 'NVIDIA';
+        src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/NVIDIASans_W_Bd.woff2') format('woff2');
+        font-weight: 700;
+      }
+      @font-face {
+        font-family: 'RobotoMono';
+        src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/roboto-mono/RobotoMono-Regular.ttf') format('truetype');
+        font-weight: 400;
+      }
+    </style>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5" opacity="0.5"/>
+    </pattern>
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/>
+    </filter>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97583" stop-opacity="0.8"/>
+      <stop offset="33%" stop-color="#e8912d" stop-opacity="0.8"/>
+      <stop offset="66%" stop-color="#d2a8ff" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#79c0ff" stop-opacity="0.8"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 10 4 L 0 8 Z" fill="#c9d1d9" opacity="0.8"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1260" height="1000" fill="#0d1117"/>
+  <rect width="1260" height="1000" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="630" y="48" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="700">Matrix Multiply Accelerators -- Hopper &amp; Blackwell</text>
+  <text x="630" y="72" text-anchor="middle" fill="#b1bac4" font-size="14" font-weight="600">From shared memory to tensor cores: WGMMA (SM 90) and tcgen05 (SM 100)</text>
+  <line x1="310" y1="82" x2="950" y2="82" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+
+  <!--
+    Panel layout (border-on-top technique):
+      Hopper:   x=40,  w=555  (ends 595)
+      gap: 70px
+      Blackwell: x=665, w=555  (ends 1220)
+  -->
+
+  <!-- ============ HOPPER / WGMMA PANEL ============ -->
+  <rect x="40" y="110" width="555" height="470" rx="12" fill="#161b22" filter="url(#shadow)"/>
+  <rect x="40" y="110" width="555" height="36" rx="12" fill="#1c2128"/>
+  <rect x="40" y="134" width="555" height="12" fill="#1c2128"/>
+  <rect x="40" y="110" width="555" height="470" rx="12" fill="none" stroke="#f97583" stroke-width="3"/>
+  <text x="317" y="134" text-anchor="middle" fill="#f97583" font-size="15" font-weight="700">Hopper -- WGMMA (SM 90)</text>
+
+  <!-- Hopper dataflow (left column) -->
+  <g transform="translate(65, 170)">
+    <rect x="0" y="0" width="210" height="60" rx="8" fill="rgba(232,145,45,0.12)" stroke="#e8912d" stroke-width="1.5"/>
+    <text x="105" y="24" text-anchor="middle" fill="#e8912d" font-size="13" font-weight="700">Shared Memory</text>
+    <text x="105" y="44" text-anchor="middle" fill="#b1bac4" font-size="11" font-weight="600">A &amp; B tiles (TMA loaded)</text>
+
+    <line x1="105" y1="60" x2="105" y2="98" stroke="#c9d1d9" stroke-width="2" opacity="0.7" marker-end="url(#arrow)"/>
+
+    <rect x="0" y="102" width="210" height="50" rx="8" fill="rgba(210,168,255,0.12)" stroke="#d2a8ff" stroke-width="1.5"/>
+    <text x="105" y="124" text-anchor="middle" fill="#d2a8ff" font-size="12" font-weight="700">SMEM Descriptors</text>
+    <text x="105" y="140" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600">Address + stride + swizzle</text>
+
+    <line x1="105" y1="152" x2="105" y2="190" stroke="#c9d1d9" stroke-width="2" opacity="0.7" marker-end="url(#arrow)"/>
+
+    <rect x="0" y="194" width="210" height="80" rx="8" fill="rgba(249,117,131,0.15)" stroke="#f97583" stroke-width="2"/>
+    <text x="105" y="218" text-anchor="middle" fill="#f97583" font-size="13" font-weight="700">Warpgroup MMA</text>
+    <text x="105" y="236" text-anchor="middle" fill="#b1bac4" font-size="11" font-weight="600">4 warps = 128 threads</text>
+    <text x="105" y="254" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">D = A x B + D (async)</text>
+
+    <line x1="105" y1="274" x2="105" y2="312" stroke="#c9d1d9" stroke-width="2" opacity="0.7" marker-end="url(#arrow)"/>
+
+    <rect x="0" y="316" width="210" height="54" rx="8" fill="rgba(121,192,255,0.12)" stroke="#79c0ff" stroke-width="1.5"/>
+    <text x="105" y="338" text-anchor="middle" fill="#79c0ff" font-size="13" font-weight="700">Register File</text>
+    <text x="105" y="356" text-anchor="middle" fill="#b1bac4" font-size="11" font-weight="600">D accumulator (per-thread)</text>
+  </g>
+
+  <!-- Hopper key properties (right column) -->
+  <g transform="translate(310, 170)">
+    <rect x="0" y="0" width="260" height="300" rx="8" fill="rgba(249,117,131,0.06)" stroke="#30363d" stroke-width="1"/>
+    <text x="16" y="26" fill="#f97583" font-size="13" font-weight="700">Key Properties</text>
+
+    <text x="16" y="56" fill="#c9d1d9" font-size="11" font-weight="600">Operand source:</text>
+    <text x="16" y="74" fill="#b1bac4" font-size="11" font-weight="600">  A from SMEM, B from SMEM</text>
+
+    <text x="16" y="100" fill="#c9d1d9" font-size="11" font-weight="600">Accumulator:</text>
+    <text x="16" y="118" fill="#b1bac4" font-size="11" font-weight="600">  D in registers (per-thread f32)</text>
+
+    <text x="16" y="144" fill="#c9d1d9" font-size="11" font-weight="600">Warpgroup size:</text>
+    <text x="16" y="162" fill="#b1bac4" font-size="11" font-weight="600">  4 warps x 32 = 128 threads</text>
+
+    <text x="16" y="188" fill="#c9d1d9" font-size="11" font-weight="600">Shapes (MxNxK):</text>
+    <text x="16" y="206" fill="#b1bac4" font-size="11" font-weight="600">  64x64x16, 64x128x16, 64x256x16</text>
+
+    <text x="16" y="232" fill="#c9d1d9" font-size="11" font-weight="600">Element types:</text>
+    <text x="16" y="250" fill="#b1bac4" font-size="11" font-weight="600">  f16, bf16, tf32, f8 (Hopper)</text>
+
+    <text x="16" y="276" fill="#c9d1d9" font-size="11" font-weight="600">Execution model:</text>
+    <text x="16" y="294" fill="#b1bac4" font-size="11" font-weight="600">  Async -- commit + mbarrier wait</text>
+  </g>
+
+  <!-- ============ BLACKWELL / TCGEN05 PANEL ============ -->
+  <rect x="665" y="110" width="555" height="470" rx="12" fill="#161b22" filter="url(#shadow)"/>
+  <rect x="665" y="110" width="555" height="36" rx="12" fill="#1c2128"/>
+  <rect x="665" y="134" width="555" height="12" fill="#1c2128"/>
+  <rect x="665" y="110" width="555" height="470" rx="12" fill="none" stroke="#d2a8ff" stroke-width="3"/>
+  <text x="942" y="134" text-anchor="middle" fill="#d2a8ff" font-size="15" font-weight="700">Blackwell -- tcgen05 (SM 100)</text>
+
+  <!-- Blackwell dataflow (left column) -->
+  <g transform="translate(690, 170)">
+    <rect x="0" y="0" width="210" height="60" rx="8" fill="rgba(232,145,45,0.12)" stroke="#e8912d" stroke-width="1.5"/>
+    <text x="105" y="24" text-anchor="middle" fill="#e8912d" font-size="13" font-weight="700">Shared Memory</text>
+    <text x="105" y="44" text-anchor="middle" fill="#b1bac4" font-size="11" font-weight="600">A &amp; B tiles (TMA loaded)</text>
+
+    <line x1="105" y1="60" x2="105" y2="98" stroke="#c9d1d9" stroke-width="2" opacity="0.7" marker-end="url(#arrow)"/>
+
+    <rect x="0" y="102" width="210" height="60" rx="8" fill="rgba(210,168,255,0.12)" stroke="#d2a8ff" stroke-width="1.5"/>
+    <text x="105" y="124" text-anchor="middle" fill="#d2a8ff" font-size="12" font-weight="700">Descriptors</text>
+    <text x="105" y="140" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600">SMEM desc + Instruction desc</text>
+    <text x="105" y="154" text-anchor="middle" fill="#9ca3af" font-size="9" font-weight="600">(element type, shape, transpose)</text>
+
+    <line x1="105" y1="162" x2="105" y2="200" stroke="#c9d1d9" stroke-width="2" opacity="0.7" marker-end="url(#arrow)"/>
+
+    <rect x="0" y="204" width="210" height="80" rx="8" fill="rgba(210,168,255,0.2)" stroke="#d2a8ff" stroke-width="2"/>
+    <text x="105" y="228" text-anchor="middle" fill="#d2a8ff" font-size="13" font-weight="700">Single-Thread MMA</text>
+    <text x="105" y="246" text-anchor="middle" fill="#b1bac4" font-size="11" font-weight="600">1 thread issues instruction</text>
+    <text x="105" y="264" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">D = A x B + D (into TMEM)</text>
+
+    <line x1="105" y1="284" x2="105" y2="322" stroke="#c9d1d9" stroke-width="2" opacity="0.7" marker-end="url(#arrow)"/>
+
+    <rect x="0" y="326" width="210" height="54" rx="8" fill="rgba(249,117,131,0.15)" stroke="#f97583" stroke-width="1.5"/>
+    <text x="105" y="348" text-anchor="middle" fill="#f97583" font-size="13" font-weight="700">Tensor Memory (TMEM)</text>
+    <text x="105" y="366" text-anchor="middle" fill="#b1bac4" font-size="11" font-weight="600">Dedicated accumulator storage</text>
+  </g>
+
+  <!-- Blackwell key properties (right column) -->
+  <g transform="translate(935, 170)">
+    <rect x="0" y="0" width="260" height="300" rx="8" fill="rgba(210,168,255,0.06)" stroke="#30363d" stroke-width="1"/>
+    <text x="16" y="26" fill="#d2a8ff" font-size="13" font-weight="700">Key Properties</text>
+
+    <text x="16" y="56" fill="#c9d1d9" font-size="11" font-weight="600">Operand source:</text>
+    <text x="16" y="74" fill="#b1bac4" font-size="11" font-weight="600">  A from SMEM or TMEM, B from SMEM</text>
+
+    <text x="16" y="100" fill="#c9d1d9" font-size="11" font-weight="600">Accumulator:</text>
+    <text x="16" y="118" fill="#b1bac4" font-size="11" font-weight="600">  D in TMEM (dedicated, not registers)</text>
+
+    <text x="16" y="144" fill="#c9d1d9" font-size="11" font-weight="600">Issuing model:</text>
+    <text x="16" y="162" fill="#b1bac4" font-size="11" font-weight="600">  Single thread (not warpgroup)</text>
+
+    <text x="16" y="188" fill="#c9d1d9" font-size="11" font-weight="600">Shapes (MxN):</text>
+    <text x="16" y="206" fill="#b1bac4" font-size="11" font-weight="600">  128x256, 256x64, 256x128, ...</text>
+
+    <text x="16" y="232" fill="#c9d1d9" font-size="11" font-weight="600">Element types:</text>
+    <text x="16" y="250" fill="#b1bac4" font-size="11" font-weight="600">  f16, bf16, tf32 (datacenter SM 100a)</text>
+
+    <text x="16" y="276" fill="#c9d1d9" font-size="11" font-weight="600">New concepts:</text>
+    <text x="16" y="294" fill="#b1bac4" font-size="11" font-weight="600">  TMEM, TmemGuard, stmatrix epilog</text>
+  </g>
+
+  <!-- ============ BOTTOM COMPARISON PANEL ============ -->
+  <rect x="40" y="630" width="1180" height="330" rx="12" fill="#161b22" filter="url(#shadow)"/>
+  <rect x="40" y="630" width="1180" height="36" rx="12" fill="#1c2128"/>
+  <rect x="40" y="654" width="1180" height="12" fill="#1c2128"/>
+  <rect x="40" y="630" width="1180" height="330" rx="12" fill="none" stroke="#30363d" stroke-width="3"/>
+  <text x="630" y="654" text-anchor="middle" fill="#ffffff" font-size="14" font-weight="700">Evolution of NVIDIA Matrix Accelerators</text>
+
+  <!-- Timeline: wider gaps between boxes (46px) -->
+  <g transform="translate(70, 690)">
+    <rect x="0" y="0" width="210" height="84" rx="8" fill="rgba(121,192,255,0.08)" stroke="#30363d" stroke-width="1"/>
+    <text x="105" y="22" text-anchor="middle" fill="#79c0ff" font-size="12" font-weight="700">Volta / Turing</text>
+    <text x="105" y="40" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">wmma (per-warp)</text>
+    <text x="105" y="56" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600">16x16x16 fragments</text>
+    <text x="105" y="72" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600">Registers in/out</text>
+
+    <line x1="210" y1="42" x2="252" y2="42" stroke="#c9d1d9" stroke-width="2" opacity="0.6" marker-end="url(#arrow)"/>
+
+    <rect x="256" y="0" width="210" height="84" rx="8" fill="rgba(121,192,255,0.08)" stroke="#30363d" stroke-width="1"/>
+    <text x="361" y="22" text-anchor="middle" fill="#79c0ff" font-size="12" font-weight="700">Ampere</text>
+    <text x="361" y="40" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">mma.sync (per-warp)</text>
+    <text x="361" y="56" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600">16x8x16, tf32 support</text>
+    <text x="361" y="72" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600">Registers in/out</text>
+
+    <line x1="466" y1="42" x2="508" y2="42" stroke="#c9d1d9" stroke-width="2" opacity="0.6" marker-end="url(#arrow)"/>
+
+    <rect x="512" y="0" width="210" height="84" rx="8" fill="rgba(249,117,131,0.12)" stroke="#f97583" stroke-width="1.5"/>
+    <text x="617" y="22" text-anchor="middle" fill="#f97583" font-size="12" font-weight="700">Hopper</text>
+    <text x="617" y="40" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">WGMMA (warpgroup, async)</text>
+    <text x="617" y="56" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600">64xNx16, SMEM operands</text>
+    <text x="617" y="72" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600">+ TMA + clusters</text>
+
+    <line x1="722" y1="42" x2="764" y2="42" stroke="#c9d1d9" stroke-width="2" opacity="0.6" marker-end="url(#arrow)"/>
+
+    <rect x="768" y="0" width="220" height="84" rx="8" fill="rgba(210,168,255,0.15)" stroke="#d2a8ff" stroke-width="2"/>
+    <text x="878" y="22" text-anchor="middle" fill="#d2a8ff" font-size="12" font-weight="700">Blackwell</text>
+    <text x="878" y="40" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">tcgen05 (single-thread, TMEM)</text>
+    <text x="878" y="56" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600">128x256+, dedicated accum</text>
+    <text x="878" y="72" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600">+ TMA multicast + CG2</text>
+  </g>
+
+  <!-- Trend insight box -->
+  <g transform="translate(70, 806)">
+    <rect x="0" y="0" width="1060" height="90" rx="8" fill="rgba(210,168,255,0.08)" stroke="#d2a8ff" stroke-width="1.5" stroke-opacity="0.5"/>
+    <rect x="0" y="0" width="3" height="90" rx="1.5" fill="#d2a8ff" opacity="0.8"/>
+    <text x="20" y="24" fill="#d2a8ff" font-size="13" font-weight="700">Trend</text>
+    <text x="20" y="46" fill="#c9d1d9" font-size="12" font-weight="600">Each generation moves operands closer to the compute units (registers &#x2192; SMEM &#x2192; TMEM) and widens the</text>
+    <text x="20" y="64" fill="#c9d1d9" font-size="12" font-weight="600">issuing scope (warp &#x2192; warpgroup &#x2192; single thread). The programmer writes fewer instructions for larger tiles</text>
+    <text x="20" y="82" fill="#c9d1d9" font-size="12" font-weight="600">while the hardware handles data movement and synchronization internally.</text>
+  </g>
+</svg>

@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 1020" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#79c0ff"/>
+      <stop offset="100%" stop-color="#d2a8ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1260" height="1020" fill="#0d1117"/>
+  <rect width="1260" height="1020" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">Codegen Backend Flow</text>
+  <line x1="380" y1="58" x2="880" y2="58" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">From cargo oxide build to PTX output</text>
+
+  <!-- Main panel -->
+  <g transform="translate(40, 118)">
+    <rect width="1180" height="880" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="880" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+
+    <!-- Step 1: cargo oxide build -->
+    <g transform="translate(420, 28)">
+      <rect width="340" height="44" rx="8" fill="rgba(121, 192, 255, 0.08)" stroke="#79c0ff" stroke-width="1.5"/>
+      <text x="170" y="28" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="14" font-weight="700" fill="#79c0ff">cargo oxide build</text>
+    </g>
+
+    <!-- Arrow 1: cargo build -> rustc -->
+    <line x1="590" y1="72" x2="590" y2="94" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="584,90 590,102 596,90" fill="#c9d1d9" opacity="0.7"/>
+
+    <!-- Step 2: rustc with backend -->
+    <g transform="translate(315, 106)">
+      <rect width="550" height="44" rx="8" fill="rgba(121, 192, 255, 0.08)" stroke="#79c0ff" stroke-width="1.5"/>
+      <text x="275" y="28" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#79c0ff">rustc -Z codegen-backend=librustc_codegen_cuda.so</text>
+    </g>
+
+    <!-- Arrow 2: rustc -> codegen_crate -->
+    <line x1="590" y1="150" x2="590" y2="172" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="584,168 590,180 596,168" fill="#c9d1d9" opacity="0.7"/>
+
+    <!-- Step 3: codegen_crate -->
+    <g transform="translate(370, 184)">
+      <rect width="440" height="44" rx="8" fill="rgba(232, 145, 45, 0.08)" stroke="#e8912d" stroke-width="1.5"/>
+      <text x="220" y="28" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" font-weight="700" fill="#e8912d">codegen_crate(tcx)</text>
+    </g>
+    <text x="830" y="212" font-size="11" fill="#9ca3af">called per crate</text>
+
+    <!-- Arrow 3: codegen_crate -> Scan CGUs -->
+    <line x1="590" y1="228" x2="590" y2="250" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="584,246 590,258 596,246" fill="#c9d1d9" opacity="0.7"/>
+
+    <!-- Step 4: Scan CGUs -->
+    <g transform="translate(340, 262)">
+      <rect width="500" height="44" rx="8" fill="rgba(232, 145, 45, 0.08)" stroke="#e8912d" stroke-width="1.5"/>
+      <text x="250" y="28" text-anchor="middle" font-size="13" font-weight="600" fill="#e8912d">Scan CGUs for cuda_oxide_kernel_* / cuda_oxide_device_*</text>
+    </g>
+
+    <!-- Decision branch stem -->
+    <line x1="590" y1="306" x2="590" y2="336" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+
+    <!-- Left branch: none found (fits between bypass line at x=140 and Device Pipeline at x=340) -->
+    <line x1="590" y1="336" x2="248" y2="336" stroke="#9ca3af" stroke-width="1.5" opacity="0.5"/>
+    <line x1="248" y1="336" x2="248" y2="358" stroke="#9ca3af" stroke-width="1.5" opacity="0.5"/>
+    <polygon points="242,354 248,366 254,354" fill="#9ca3af" opacity="0.5"/>
+    <text x="400" y="330" font-size="11" font-weight="600" fill="#9ca3af">none found</text>
+    <rect x="168" y="370" width="160" height="36" rx="6" fill="rgba(156, 163, 175, 0.06)" stroke="#9ca3af" stroke-width="1" opacity="0.5"/>
+    <text x="248" y="394" text-anchor="middle" font-size="12" fill="#9ca3af" opacity="0.7">Skip device pipeline</text>
+
+    <!-- Right branch: found -->
+    <line x1="590" y1="336" x2="590" y2="358" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="584,354 590,366 596,354" fill="#c9d1d9" opacity="0.7"/>
+    <text x="680" y="330" font-size="11" font-weight="600" fill="#f97583">kernels found!</text>
+
+    <!-- ===== Device Pipeline container ===== -->
+    <g transform="translate(340, 372)">
+      <rect width="660" height="400" rx="10" fill="rgba(210, 168, 255, 0.03)" stroke="#d2a8ff" stroke-width="1" stroke-dasharray="6,3" opacity="0.6"/>
+      <text x="330" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#d2a8ff" opacity="0.8">Device Pipeline</text>
+
+      <!-- Collector -->
+      <g transform="translate(60, 48)">
+        <rect width="440" height="42" rx="8" fill="rgba(232, 145, 45, 0.08)" stroke="#e8912d" stroke-width="1.5"/>
+        <text x="220" y="27" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#e8912d">collector::collect_device_functions()</text>
+      </g>
+
+      <!-- Sub-items for collector -->
+      <g transform="translate(530, 52)" opacity="0.7">
+        <rect x="0" y="0" width="3" height="12" rx="1" fill="#e8912d"/>
+        <text x="10" y="11" font-size="10" fill="#b1bac4">BFS walk from kernels</text>
+        <rect x="0" y="20" width="3" height="12" rx="1" fill="#e8912d"/>
+        <text x="10" y="31" font-size="10" fill="#b1bac4">crate + stub filtering</text>
+      </g>
+
+      <!-- Arrow: collector -> device_codegen -->
+      <line x1="280" y1="90" x2="280" y2="114" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+      <polygon points="274,110 280,122 286,110" fill="#c9d1d9" opacity="0.7"/>
+
+      <!-- device_codegen -->
+      <g transform="translate(60, 126)">
+        <rect width="440" height="42" rx="8" fill="rgba(232, 145, 45, 0.08)" stroke="#e8912d" stroke-width="1.5"/>
+        <text x="220" y="27" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#e8912d">device_codegen::generate_device_code()</text>
+      </g>
+
+      <!-- Arrow: device_codegen -> stable MIR -->
+      <line x1="280" y1="168" x2="280" y2="192" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+      <polygon points="274,188 280,200 286,188" fill="#c9d1d9" opacity="0.7"/>
+
+      <!-- Stable MIR bridge -->
+      <g transform="translate(60, 204)">
+        <rect width="440" height="42" rx="8" fill="rgba(121, 192, 255, 0.08)" stroke="#79c0ff" stroke-width="1.5"/>
+        <text x="220" y="27" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#79c0ff">rustc_internal::run(tcx, ...) &#x2192; stable MIR</text>
+      </g>
+
+      <!-- Arrow: stable MIR -> mir_importer -->
+      <line x1="280" y1="246" x2="280" y2="270" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+      <polygon points="274,266 280,278 286,266" fill="#c9d1d9" opacity="0.7"/>
+
+      <!-- mir_importer pipeline -->
+      <g transform="translate(60, 282)">
+        <rect width="440" height="42" rx="8" fill="rgba(210, 168, 255, 0.08)" stroke="#d2a8ff" stroke-width="1.5"/>
+        <text x="220" y="27" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#d2a8ff">mir_importer::run_pipeline()</text>
+      </g>
+
+      <!-- Arrow: mir_importer -> PTX -->
+      <line x1="280" y1="324" x2="280" y2="346" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+      <polygon points="274,342 280,354 286,342" fill="#c9d1d9" opacity="0.7"/>
+
+      <!-- PTX output pill -->
+      <g transform="translate(225, 358)">
+        <rect width="110" height="30" rx="15" fill="rgba(210, 168, 255, 0.2)" stroke="#d2a8ff" stroke-width="1.5"/>
+        <text x="55" y="20" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" font-weight="700" fill="#d2a8ff" filter="url(#glow)">output.ptx</text>
+      </g>
+    </g>
+
+    <!-- Always: LLVM host codegen -->
+    <g transform="translate(220, 810)">
+      <rect width="620" height="44" rx="8" fill="rgba(121, 192, 255, 0.08)" stroke="#79c0ff" stroke-width="1.5"/>
+      <text x="310" y="28" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" font-weight="700" fill="#79c0ff">self.llvm_backend.codegen_crate(tcx)</text>
+    </g>
+    <text x="860" y="838" font-size="12" font-weight="600" fill="#79c0ff">always runs</text>
+
+    <!-- Bypass arrow: from codegen_crate left edge, down the left gutter, into LLVM box -->
+    <path d="M 370,206 H 140 V 826 H 214" fill="none" stroke="#79c0ff" stroke-width="1.5" opacity="0.5" stroke-dasharray="6,3"/>
+    <polygon points="212,820 224,826 212,832" fill="#79c0ff" opacity="0.5"/>
+  </g>
+</svg>

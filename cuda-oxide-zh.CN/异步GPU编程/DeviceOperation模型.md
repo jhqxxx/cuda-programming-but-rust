@@ -4,7 +4,7 @@
 
 ## 为什么需要惰性操作？ 
 
-在 CUDA C++ 中，你通过创建多个 `cudaStream_t` 句柄并将内核启动和内存拷贝显式放置到它们之上来构建并发性。程序员在每个调用点决定使用哪个流。这将 GPU 工作的**定义**与**调度决策**耦合在一起，使得事后组合和重新安排工作变得困难。
+在 CUDA C++ 中，你通过创建多个 `cudaStream_t` 句柄并将kernel启动和内存拷贝显式放置到它们之上来构建并发性。程序员在每个调用点决定使用哪个流。这将 GPU 工作的**定义**与**调度决策**耦合在一起，使得事后组合和重新安排工作变得困难。
 
 cuda-oxide 采取了一种不同的方法。`DeviceOperation` 描述 GPU 工作而不绑定到任何流。你可以使用组合子（`and_then`、`zip!`）组合操作，将它们跨函数边界传递，存储在集合中，并只在最后一刻决定如何调度它们。这与 Rust 的 `Iterator` 背后的理念相同——惰性构建流水线，在执行点急切执行。
 
@@ -51,7 +51,7 @@ op.sync()?;
 
 在创建 `op` 时，GPU 上什么都没有发生。该方法构建了一个 `AsyncKernelLaunch` 值，它记住要调用哪个函数、传递什么参数以及如何配置网格——但它不接触任何流。它是一张放在柜台上的配方卡。
 
-当你调用 `.sync()` 时，调度策略从其池中选择一个流，提交内核，并阻塞直到流空闲。这一行就是配方变成烹饪好的餐点的地方。
+当你调用 `.sync()` 时，调度策略从其池中选择一个流，提交kernel，并阻塞直到流空闲。这一行就是配方变成烹饪好的餐点的地方。
 
 ## 什么构成了 `DeviceOperation`
 
@@ -68,7 +68,7 @@ pub trait DeviceOperation: Send + Sized + IntoFuture {
 }
 ```
 
-**`Output`** 是操作完成时产生的 Rust 值。对于内核启动，这是 `()`——内核为了设备内存上的副作用而运行。对于设备到主机的拷贝，它可能是 `Vec<f32>`。对于内存分配，它可能是拥有指针的 `DeviceBox<[f32]>`。
+**`Output`** 是操作完成时产生的 Rust 值。对于kernel启动，这是 `()`——kernel为了设备内存上的副作用而运行。对于设备到主机的拷贝，它可能是 `Vec<f32>`。对于内存分配，它可能是拥有指针的 `DeviceBox<[f32]>`。
 
 **`execute`** 是实际 GPU 工作发生的地方。它接收一个 `ExecutionContext`——分配的厨房——并向其中的流提交工作。该方法是 `unsafe` 的，因为 GPU 工作可能在它返回时仍在进行中；调用者负责在读取结果之前进行同步。
 
@@ -76,7 +76,7 @@ pub trait DeviceOperation: Send + Sized + IntoFuture {
 
 你很少需要自己实现 `DeviceOperation`。该 crate 提供了一组实现它的类型，你可以使用组合子来组合它们：
 
-- **`AsyncKernelLaunch`**——由类型化异步启动方法产生。启动一个内核。
+- **`AsyncKernelLaunch`**——由类型化异步启动方法产生。启动一个kernel。
 - **`Value<T>`**——包装主机端值。无 GPU 工作。立即返回 `T`。
 - **`AndThen`**——链式连接两个操作：运行 A，将结果传递给 B。
 - **`Zip`**——运行两个操作并将两个结果作为元组返回。
@@ -98,7 +98,7 @@ pub struct ExecutionContext {
 
 操作本身从不创建流。调度策略（在《调度与流》中介绍）创建 `ExecutionContext` 并将其传递给 `execute`。这就是分离的核心：操作描述**什么**，上下文提供**在哪里**。
 
-在 `execute` 实现内部，你使用 `ctx.get_cuda_stream()` 访问流，使用 `ctx.get_cuda_context()` 访问 CUDA 上下文。对于大多数操作，这就是你需要的全部——在流上排队一个内核或内存拷贝，然后你就完成了。
+在 `execute` 实现内部，你使用 `ctx.get_cuda_stream()` 访问流，使用 `ctx.get_cuda_context()` 访问 CUDA 上下文。对于大多数操作，这就是你需要的全部——在流上排队一个kernel或内存拷贝，然后你就完成了。
 
 ## 执行配方：四种执行方式 
 
@@ -207,7 +207,7 @@ fn h2d(host_data: Vec<f32>) -> impl DeviceOperation<Output = DeviceBox<[f32]>> {
 
 > **提示**
 > 
-> `with_context` 是需要 `CUstream` 的原始驱动调用的逃生舱口。对于内核启动，优先使用生成的异步启动方法，因为它们处理参数编组和缓冲区生命周期。
+> `with_context` 是需要 `CUstream` 的原始驱动调用的逃生舱口。对于kernel启动，优先使用生成的异步启动方法，因为它们处理参数编组和缓冲区生命周期。
 
 ## GPU 如何告诉 Rust 它已完成 
 
@@ -227,10 +227,10 @@ fn h2d(host_data: Vec<f32>) -> impl DeviceOperation<Output = DeviceBox<[f32]>> {
 **第一次轮询**时，future：
 
 1. 在操作上调用 `execute()`，向流提交 GPU 工作。
-2. 在**同一流**上排队一个 `cuLaunchHostFunc` 回调，紧接在 GPU 工作之后。CUDA 保证流顺序：这个回调在内核完成之前不会触发。
+2. 在**同一流**上排队一个 `cuLaunchHostFunc` 回调，紧接在 GPU 工作之后。CUDA 保证流顺序：这个回调在kernel完成之前不会触发。
 3. 返回 `Poll::Pending`。异步运行时停放任务并继续。
 
-当 **GPU 完成**内核时，CUDA 驱动程序在一个驱动线程上调用主机回调。回调设置一个 `AtomicBool` 标志并唤醒任务的 `AtomicWaker`。异步运行时注意到唤醒并重新轮询 future。
+当 **GPU 完成**kernel时，CUDA 驱动程序在一个驱动线程上调用主机回调。回调设置一个 `AtomicBool` 标志并唤醒任务的 `AtomicWaker`。异步运行时注意到唤醒并重新轮询 future。
 
 **第二次轮询**时，future 看到标志并返回 `Poll::Ready(Ok(result))`。任务用该值恢复。
 

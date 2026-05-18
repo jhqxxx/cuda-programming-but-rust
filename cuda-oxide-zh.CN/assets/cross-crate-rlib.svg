@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 740" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/></pattern>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#79c0ff"/><stop offset="100%" stop-color="#d2a8ff"/></linearGradient>
+  </defs>
+
+  <rect width="1260" height="740" fill="#0d1117"/>
+  <rect width="1260" height="740" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">Cross-Crate Device Compilation</text>
+  <line x1="340" y1="58" x2="920" y2="58" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">How MIR flows from dependency crates to PTX via .rlib metadata</text>
+
+  <!-- ==================== Phase 1 ==================== -->
+  <rect x="40" y="104" width="1180" height="230" rx="12" fill="#161b22" filter="url(#shadow)"/>
+  <rect x="40" y="104" width="1180" height="230" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+  <rect x="42" y="106" width="1176" height="36" rx="10" fill="#1c2128"/>
+  <text x="64" y="130" font-size="15" font-weight="700" fill="#79c0ff">Phase 1</text>
+  <text x="144" y="130" font-size="15" font-weight="500" fill="#c9d1d9">Compiling cuda_device</text>
+  <text x="1090" y="130" font-size="11" fill="#9ca3af">no kernels found</text>
+
+  <!-- cuda_device.rs -->
+  <rect x="80" y="170" width="150" height="40" rx="8" fill="rgba(121, 192, 255, 0.08)" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="155" y="195" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" font-weight="700" fill="#79c0ff">cuda_device.rs</text>
+
+  <!-- Arrow: cuda_device.rs -> rustc -->
+  <line x1="236" y1="190" x2="288" y2="190" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="286,184 298,190 286,196" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- rustc -->
+  <rect x="300" y="170" width="120" height="40" rx="8" fill="rgba(121, 192, 255, 0.08)" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="360" y="195" text-anchor="middle" font-size="14" font-weight="700" fill="#79c0ff">rustc</text>
+
+  <!-- Arrow: rustc -> .rlib -->
+  <line x1="426" y1="190" x2="496" y2="190" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="494,184 508,190 494,196" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- cuda_device.rlib container -->
+  <rect x="510" y="156" width="670" height="160" rx="10" fill="rgba(121, 192, 255, 0.03)" stroke="#79c0ff" stroke-width="1" stroke-dasharray="6,3"/>
+  <text x="845" y="180" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="14" font-weight="700" fill="#79c0ff">cuda_device.rlib</text>
+
+  <!-- Object code (dimmed) -->
+  <rect x="534" y="196" width="290" height="100" rx="8" fill="rgba(156, 163, 175, 0.05)" stroke="#9ca3af" stroke-width="1" opacity="0.5"/>
+  <text x="679" y="228" text-anchor="middle" font-size="13" font-weight="600" fill="#9ca3af" opacity="0.6">object code (host)</text>
+  <text x="679" y="250" text-anchor="middle" font-size="11" fill="#9ca3af" opacity="0.4">compiled x86_64 machine code</text>
+  <text x="679" y="270" text-anchor="middle" font-size="11" fill="#9ca3af" opacity="0.4">not used for device compilation</text>
+
+  <!-- .rmeta (highlighted) -->
+  <rect x="848" y="196" width="310" height="100" rx="8" fill="rgba(232, 145, 45, 0.08)" stroke="#e8912d" stroke-width="2"/>
+  <rect x="850" y="198" width="4" height="96" rx="2" fill="#e8912d" opacity="0.8"/>
+  <text x="1003" y="228" text-anchor="middle" font-size="15" font-weight="700" fill="#e8912d" filter="url(#glow)">.rmeta</text>
+  <text x="1003" y="252" text-anchor="middle" font-size="12" fill="#b1bac4">types + trait impls +</text>
+  <text x="1003" y="272" text-anchor="middle" font-size="13" font-weight="700" fill="#e8912d">serialized optimized MIR</text>
+
+  <!-- ==================== Cross-crate arrow ==================== -->
+  <!-- Clean dashed arrow from Phase 2 top up to .rmeta bottom -->
+  <line x1="1003" y1="374" x2="1003" y2="306" stroke="#e8912d" stroke-width="2" stroke-dasharray="8,4" opacity="0.7"/>
+  <polygon points="997,310 1003,296 1009,310" fill="#e8912d" opacity="0.8"/>
+  <text x="1044" y="340" font-size="12" font-weight="600" fill="#e8912d">reads MIR</text>
+  <text x="1044" y="356" font-size="12" font-weight="600" fill="#e8912d">from .rmeta</text>
+
+  <!-- ==================== Phase 2 ==================== -->
+  <rect x="40" y="380" width="1180" height="330" rx="12" fill="#161b22" filter="url(#shadow)"/>
+  <rect x="40" y="380" width="1180" height="330" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+  <rect x="42" y="382" width="1176" height="36" rx="10" fill="#1c2128"/>
+  <text x="64" y="406" font-size="15" font-weight="700" fill="#d2a8ff">Phase 2</text>
+  <text x="144" y="406" font-size="15" font-weight="500" fill="#c9d1d9">Compiling vecadd (later)</text>
+  <text x="1060" y="406" font-size="11" fill="#f97583" font-weight="600">kernel found!</text>
+
+  <!-- vecadd.rs -->
+  <rect x="80" y="446" width="140" height="40" rx="8" fill="rgba(210, 168, 255, 0.08)" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="150" y="471" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" font-weight="700" fill="#d2a8ff">vecadd.rs</text>
+
+  <!-- Arrow: vecadd.rs -> rustc -->
+  <line x1="226" y1="466" x2="278" y2="466" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="276,460 288,466 276,472" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- rustc -->
+  <rect x="290" y="446" width="120" height="40" rx="8" fill="rgba(121, 192, 255, 0.08)" stroke="#79c0ff" stroke-width="1.5"/>
+  <text x="350" y="471" text-anchor="middle" font-size="14" font-weight="700" fill="#79c0ff">rustc</text>
+
+  <!-- Arrow: rustc -> codegen_crate -->
+  <line x1="416" y1="466" x2="476" y2="466" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="474,460 488,466 474,472" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- codegen_crate container -->
+  <rect x="490" y="432" width="690" height="260" rx="10" fill="rgba(210, 168, 255, 0.03)" stroke="#d2a8ff" stroke-width="1" stroke-dasharray="6,3" opacity="0.6"/>
+  <text x="835" y="458" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" font-weight="700" fill="#e8912d">codegen_crate()</text>
+
+  <!-- Step items with accent bars -->
+  <rect x="520" y="476" width="4" height="16" rx="2" fill="#f97583" opacity="0.8"/>
+  <text x="534" y="490" font-size="13" font-weight="600" fill="#f97583">collector finds #[kernel]</text>
+
+  <rect x="520" y="508" width="4" height="16" rx="2" fill="#e8912d" opacity="0.8"/>
+  <text x="534" y="522" font-size="13" font-weight="600" fill="#e8912d">BFS walks into cuda_device::thread::index_1d()</text>
+
+  <rect x="520" y="540" width="4" height="16" rx="2" fill="#e8912d" opacity="0.8"/>
+  <text x="534" y="554" font-size="13" font-weight="600" fill="#e8912d">tcx.instance_mir() reads from .rmeta</text>
+
+  <!-- Arrow: steps -> pipeline -->
+  <line x1="660" y1="568" x2="660" y2="594" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="654,590 660,604 666,590" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- Pipeline box -->
+  <rect x="520" y="606" width="380" height="38" rx="8" fill="rgba(210, 168, 255, 0.08)" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="710" y="630" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#d2a8ff">device pipeline compiles to PTX</text>
+
+  <!-- Arrow: pipeline -> PTX -->
+  <line x1="906" y1="625" x2="966" y2="625" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+  <polygon points="964,619 978,625 964,631" fill="#c9d1d9" opacity="0.7"/>
+
+  <!-- PTX output pill -->
+  <rect x="980" y="610" width="90" height="30" rx="15" fill="rgba(210, 168, 255, 0.2)" stroke="#d2a8ff" stroke-width="1.5"/>
+  <text x="1025" y="630" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="13" font-weight="700" fill="#d2a8ff" filter="url(#glow)">PTX</text>
+</svg>

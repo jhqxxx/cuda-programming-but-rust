@@ -1,0 +1,231 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 900"
+     font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style>
+      @font-face {
+        font-family: 'NVIDIA';
+        src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/NVIDIASans_W_Rg.woff2') format('woff2');
+        font-weight: 400;
+      }
+      @font-face {
+        font-family: 'NVIDIA';
+        src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/NVIDIASans_W_Bd.woff2') format('woff2');
+        font-weight: 700;
+      }
+      @font-face {
+        font-family: 'RobotoMono';
+        src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/roboto-mono/RobotoMono-Regular.ttf') format('truetype');
+        font-weight: 400;
+      }
+    </style>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5" opacity="0.5"/>
+    </pattern>
+    <filter id="shadow">
+      <feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/>
+    </filter>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#79c0ff" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#e8912d" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#f97583" stop-opacity="0.8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1260" height="900" fill="#0d1117"/>
+  <rect width="1260" height="900" fill="url(#grid)"/>
+
+  <!-- Title -->
+  <text x="630" y="48" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="700">Thread Block Clusters &amp; Distributed Shared Memory</text>
+  <text x="630" y="72" text-anchor="middle" fill="#b1bac4" font-size="14" font-weight="600">Hopper+ cooperative groups with cross-block shared memory access</text>
+  <line x1="330" y1="82" x2="930" y2="82" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+
+  <!-- CLUSTER CONTAINER -->
+  <rect x="40" y="108" width="1180" height="440" rx="16" fill="rgba(232,145,45,0.05)" stroke="#e8912d" stroke-width="2" stroke-dasharray="8,4" filter="url(#shadow)"/>
+  <text x="630" y="136" text-anchor="middle" fill="#e8912d" font-size="16" font-weight="700">Cluster (4 blocks, launched with #[cluster_launch(4, 1, 1)])</text>
+
+  <!--
+    Layout: 4 blocks, each 240px wide, 260px tall
+    Positions: x = 80, 370, 660, 950  (gaps of 50px)
+    Blocks top: y = 158, bottom: y = 418
+    Arrows at y = 462 (below blocks with 44px clearance)
+    DSMEM label at y = 500
+    Cluster container bottom: y = 548
+  -->
+
+  <!-- Block 0 -->
+  <g transform="translate(80, 158)">
+    <rect x="0" y="0" width="240" height="260" rx="12" fill="#161b22" stroke="#f97583" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="240" height="32" rx="12" fill="#1c2128"/>
+    <text x="120" y="22" text-anchor="middle" fill="#f97583" font-size="13" font-weight="700">Block 0 (rank 0)</text>
+
+    <g transform="translate(16, 44)">
+      <text x="0" y="14" fill="#9ca3af" font-size="10" font-weight="600">Threads 0..127</text>
+      <g transform="translate(0, 22)">
+        <rect x="0" y="0" width="18" height="14" rx="2" fill="rgba(249,117,131,0.3)" stroke="#f97583" stroke-width="0.5"/>
+        <rect x="22" y="0" width="18" height="14" rx="2" fill="rgba(249,117,131,0.3)" stroke="#f97583" stroke-width="0.5"/>
+        <rect x="44" y="0" width="18" height="14" rx="2" fill="rgba(249,117,131,0.3)" stroke="#f97583" stroke-width="0.5"/>
+        <rect x="66" y="0" width="18" height="14" rx="2" fill="rgba(249,117,131,0.3)" stroke="#f97583" stroke-width="0.5"/>
+        <text x="96" y="12" fill="#9ca3af" font-size="10" font-weight="600">...</text>
+      </g>
+    </g>
+
+    <rect x="16" y="100" width="208" height="70" rx="8" fill="rgba(249,117,131,0.1)" stroke="#f97583" stroke-width="1.5"/>
+    <text x="120" y="122" text-anchor="middle" fill="#f97583" font-size="12" font-weight="700">Shared Memory</text>
+    <text x="120" y="140" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">SharedArray&lt;f32, 1024&gt;</text>
+    <text x="120" y="158" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">Local writes + remote reads</text>
+
+    <rect x="16" y="184" width="208" height="36" rx="6" fill="rgba(232,145,45,0.1)" stroke="#e8912d" stroke-width="1" stroke-dasharray="4,2"/>
+    <text x="120" y="200" text-anchor="middle" fill="#e8912d" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">map_shared_rank(ptr, 1)</text>
+    <text x="120" y="214" text-anchor="middle" fill="#9ca3af" font-size="9" font-weight="600">&#x2192; reads Block 1 SMEM</text>
+
+    <rect x="16" y="230" width="208" height="22" rx="4" fill="rgba(249,117,131,0.06)"/>
+    <text x="120" y="246" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">Scheduled on SM (same GPC)</text>
+  </g>
+
+  <!-- Block 1 -->
+  <g transform="translate(370, 158)">
+    <rect x="0" y="0" width="240" height="260" rx="12" fill="#161b22" stroke="#e8912d" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="240" height="32" rx="12" fill="#1c2128"/>
+    <text x="120" y="22" text-anchor="middle" fill="#e8912d" font-size="13" font-weight="700">Block 1 (rank 1)</text>
+
+    <g transform="translate(16, 44)">
+      <text x="0" y="14" fill="#9ca3af" font-size="10" font-weight="600">Threads 0..127</text>
+      <g transform="translate(0, 22)">
+        <rect x="0" y="0" width="18" height="14" rx="2" fill="rgba(232,145,45,0.3)" stroke="#e8912d" stroke-width="0.5"/>
+        <rect x="22" y="0" width="18" height="14" rx="2" fill="rgba(232,145,45,0.3)" stroke="#e8912d" stroke-width="0.5"/>
+        <rect x="44" y="0" width="18" height="14" rx="2" fill="rgba(232,145,45,0.3)" stroke="#e8912d" stroke-width="0.5"/>
+        <rect x="66" y="0" width="18" height="14" rx="2" fill="rgba(232,145,45,0.3)" stroke="#e8912d" stroke-width="0.5"/>
+        <text x="96" y="12" fill="#9ca3af" font-size="10" font-weight="600">...</text>
+      </g>
+    </g>
+
+    <rect x="16" y="100" width="208" height="70" rx="8" fill="rgba(232,145,45,0.1)" stroke="#e8912d" stroke-width="1.5"/>
+    <text x="120" y="122" text-anchor="middle" fill="#e8912d" font-size="12" font-weight="700">Shared Memory</text>
+    <text x="120" y="140" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">SharedArray&lt;f32, 1024&gt;</text>
+    <text x="120" y="158" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">Local writes + remote reads</text>
+
+    <rect x="16" y="230" width="208" height="22" rx="4" fill="rgba(232,145,45,0.06)"/>
+    <text x="120" y="246" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">Scheduled on SM (same GPC)</text>
+  </g>
+
+  <!-- Block 2 -->
+  <g transform="translate(660, 158)">
+    <rect x="0" y="0" width="240" height="260" rx="12" fill="#161b22" stroke="#79c0ff" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="240" height="32" rx="12" fill="#1c2128"/>
+    <text x="120" y="22" text-anchor="middle" fill="#79c0ff" font-size="13" font-weight="700">Block 2 (rank 2)</text>
+
+    <g transform="translate(16, 44)">
+      <text x="0" y="14" fill="#9ca3af" font-size="10" font-weight="600">Threads 0..127</text>
+      <g transform="translate(0, 22)">
+        <rect x="0" y="0" width="18" height="14" rx="2" fill="rgba(121,192,255,0.3)" stroke="#79c0ff" stroke-width="0.5"/>
+        <rect x="22" y="0" width="18" height="14" rx="2" fill="rgba(121,192,255,0.3)" stroke="#79c0ff" stroke-width="0.5"/>
+        <rect x="44" y="0" width="18" height="14" rx="2" fill="rgba(121,192,255,0.3)" stroke="#79c0ff" stroke-width="0.5"/>
+        <rect x="66" y="0" width="18" height="14" rx="2" fill="rgba(121,192,255,0.3)" stroke="#79c0ff" stroke-width="0.5"/>
+        <text x="96" y="12" fill="#9ca3af" font-size="10" font-weight="600">...</text>
+      </g>
+    </g>
+
+    <rect x="16" y="100" width="208" height="70" rx="8" fill="rgba(121,192,255,0.1)" stroke="#79c0ff" stroke-width="1.5"/>
+    <text x="120" y="122" text-anchor="middle" fill="#79c0ff" font-size="12" font-weight="700">Shared Memory</text>
+    <text x="120" y="140" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">SharedArray&lt;f32, 1024&gt;</text>
+    <text x="120" y="158" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">Local writes + remote reads</text>
+
+    <rect x="16" y="230" width="208" height="22" rx="4" fill="rgba(121,192,255,0.06)"/>
+    <text x="120" y="246" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">Scheduled on SM (same GPC)</text>
+  </g>
+
+  <!-- Block 3 -->
+  <g transform="translate(950, 158)">
+    <rect x="0" y="0" width="240" height="260" rx="12" fill="#161b22" stroke="#d2a8ff" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="0" y="0" width="240" height="32" rx="12" fill="#1c2128"/>
+    <text x="120" y="22" text-anchor="middle" fill="#d2a8ff" font-size="13" font-weight="700">Block 3 (rank 3)</text>
+
+    <g transform="translate(16, 44)">
+      <text x="0" y="14" fill="#9ca3af" font-size="10" font-weight="600">Threads 0..127</text>
+      <g transform="translate(0, 22)">
+        <rect x="0" y="0" width="18" height="14" rx="2" fill="rgba(210,168,255,0.3)" stroke="#d2a8ff" stroke-width="0.5"/>
+        <rect x="22" y="0" width="18" height="14" rx="2" fill="rgba(210,168,255,0.3)" stroke="#d2a8ff" stroke-width="0.5"/>
+        <rect x="44" y="0" width="18" height="14" rx="2" fill="rgba(210,168,255,0.3)" stroke="#d2a8ff" stroke-width="0.5"/>
+        <rect x="66" y="0" width="18" height="14" rx="2" fill="rgba(210,168,255,0.3)" stroke="#d2a8ff" stroke-width="0.5"/>
+        <text x="96" y="12" fill="#9ca3af" font-size="10" font-weight="600">...</text>
+      </g>
+    </g>
+
+    <rect x="16" y="100" width="208" height="70" rx="8" fill="rgba(210,168,255,0.1)" stroke="#d2a8ff" stroke-width="1.5"/>
+    <text x="120" y="122" text-anchor="middle" fill="#d2a8ff" font-size="12" font-weight="700">Shared Memory</text>
+    <text x="120" y="140" text-anchor="middle" fill="#b1bac4" font-size="10" font-weight="600" font-family="'RobotoMono', monospace">SharedArray&lt;f32, 1024&gt;</text>
+    <text x="120" y="158" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">Local writes + remote reads</text>
+
+    <rect x="16" y="230" width="208" height="22" rx="4" fill="rgba(210,168,255,0.06)"/>
+    <text x="120" y="246" text-anchor="middle" fill="#9ca3af" font-size="10" font-weight="600">Scheduled on SM (same GPC)</text>
+  </g>
+
+  <!--
+    DSMEM arrows BELOW blocks (blocks end at y=158+260=418)
+    Arrow row at y=455, well below the block boxes.
+    Long horizontal arrows spanning between block centers.
+  -->
+
+  <!-- Arrow: Block 0 center to Block 1 center -->
+  <line x1="200" y1="455" x2="490" y2="455" stroke="#e8912d" stroke-width="2" opacity="0.6" stroke-dasharray="6,4"/>
+  <polygon points="490,455 482,450 482,460" fill="#e8912d" opacity="0.7"/>
+  <polygon points="200,455 208,450 208,460" fill="#e8912d" opacity="0.7"/>
+
+  <!-- Arrow: Block 1 center to Block 2 center -->
+  <line x1="490" y1="455" x2="780" y2="455" stroke="#79c0ff" stroke-width="2" opacity="0.6" stroke-dasharray="6,4"/>
+  <polygon points="780,455 772,450 772,460" fill="#79c0ff" opacity="0.7"/>
+  <polygon points="490,455 498,450 498,460" fill="#79c0ff" opacity="0.7"/>
+
+  <!-- Arrow: Block 2 center to Block 3 center -->
+  <line x1="780" y1="455" x2="1070" y2="455" stroke="#d2a8ff" stroke-width="2" opacity="0.6" stroke-dasharray="6,4"/>
+  <polygon points="1070,455 1062,450 1062,460" fill="#d2a8ff" opacity="0.7"/>
+  <polygon points="780,455 788,450 788,460" fill="#d2a8ff" opacity="0.7"/>
+
+  <!-- Small vertical stubs connecting each arrow row to the block above -->
+  <line x1="200" y1="420" x2="200" y2="455" stroke="#f97583" stroke-width="1.5" opacity="0.4" stroke-dasharray="3,3"/>
+  <line x1="490" y1="420" x2="490" y2="455" stroke="#e8912d" stroke-width="1.5" opacity="0.4" stroke-dasharray="3,3"/>
+  <line x1="780" y1="420" x2="780" y2="455" stroke="#79c0ff" stroke-width="1.5" opacity="0.4" stroke-dasharray="3,3"/>
+  <line x1="1070" y1="420" x2="1070" y2="455" stroke="#d2a8ff" stroke-width="1.5" opacity="0.4" stroke-dasharray="3,3"/>
+
+  <!-- DSMEM label well below arrows -->
+  <text x="630" y="498" text-anchor="middle" fill="#e8912d" font-size="12" font-weight="700">Distributed Shared Memory (DSMEM) -- cross-block read access via shared memory address space</text>
+
+  <!-- BOTTOM: API + SYNC PANELS (pushed down for breathing room) -->
+  <rect x="50" y="570" width="560" height="280" rx="12" fill="#161b22" stroke="#e8912d" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="50" y="570" width="560" height="30" rx="12" fill="#1c2128"/>
+  <text x="330" y="590" text-anchor="middle" fill="#e8912d" font-size="13" font-weight="700">DSMEM Access Pattern</text>
+
+  <g transform="translate(72, 618)" font-family="'RobotoMono', monospace" font-size="11" font-weight="600">
+    <text x="0" y="0" fill="#9ca3af">// Each block writes its own shared memory</text>
+    <text x="0" y="20" fill="#c9d1d9"><tspan fill="#d2a8ff">unsafe</tspan> { SMEM[tid] = compute_result; }</text>
+    <text x="0" y="48" fill="#c9d1d9">thread::<tspan fill="#e8912d">sync_threads</tspan>();      <tspan fill="#9ca3af">// block-local sync</tspan></text>
+    <text x="0" y="68" fill="#c9d1d9">cluster::<tspan fill="#e8912d">cluster_sync</tspan>();    <tspan fill="#9ca3af">// cluster-wide sync</tspan></text>
+    <text x="0" y="96" fill="#9ca3af">// Now read neighbor block's data</text>
+    <text x="0" y="116" fill="#c9d1d9"><tspan fill="#d2a8ff">let</tspan> neighbor_rank = (block_rank() + 1) % cluster_size();</text>
+    <text x="0" y="144" fill="#9ca3af">// Preferred: dsmem_read_u32 (correct ld.shared::cluster)</text>
+    <text x="0" y="164" fill="#c9d1d9"><tspan fill="#d2a8ff">let</tspan> val = <tspan fill="#d2a8ff">unsafe</tspan> {</text>
+    <text x="0" y="184" fill="#c9d1d9">    cluster::<tspan fill="#79c0ff">dsmem_read_u32</tspan>(SMEM.as_ptr() <tspan fill="#d2a8ff">as</tspan> _, neighbor_rank)</text>
+    <text x="0" y="204" fill="#c9d1d9">};</text>
+  </g>
+
+  <!-- Cluster Primitives panel -->
+  <rect x="650" y="570" width="560" height="280" rx="12" fill="#161b22" stroke="#79c0ff" stroke-width="2" filter="url(#shadow)"/>
+  <rect x="650" y="570" width="560" height="30" rx="12" fill="#1c2128"/>
+  <text x="930" y="590" text-anchor="middle" fill="#79c0ff" font-size="13" font-weight="700">Cluster Primitives</text>
+
+  <g transform="translate(676, 618)">
+    <text x="0" y="0" fill="#f97583" font-size="12" font-weight="700">Identity</text>
+    <text x="0" y="22" fill="#b1bac4" font-size="11" font-weight="600" font-family="'RobotoMono', monospace">block_rank()    &#x2192; 0..cluster_size()-1</text>
+    <text x="0" y="40" fill="#b1bac4" font-size="11" font-weight="600" font-family="'RobotoMono', monospace">cluster_size()  &#x2192; total blocks in cluster</text>
+    <text x="0" y="58" fill="#b1bac4" font-size="11" font-weight="600" font-family="'RobotoMono', monospace">cluster_idx()   &#x2192; cluster ID in the grid</text>
+
+    <text x="0" y="92" fill="#e8912d" font-size="12" font-weight="700">Synchronization</text>
+    <text x="0" y="114" fill="#b1bac4" font-size="11" font-weight="600" font-family="'RobotoMono', monospace">cluster_sync()  &#x2192; barrier across all blocks</text>
+    <text x="0" y="132" fill="#b1bac4" font-size="11" font-weight="600" font-family="'RobotoMono', monospace">mbarrier_arrive_cluster(remote_addr)</text>
+
+    <text x="0" y="166" fill="#d2a8ff" font-size="12" font-weight="700">DSMEM</text>
+    <text x="0" y="188" fill="#b1bac4" font-size="11" font-weight="600" font-family="'RobotoMono', monospace">map_shared_rank(ptr, rank)  &#x2192; remote ptr</text>
+    <text x="0" y="206" fill="#b1bac4" font-size="11" font-weight="600" font-family="'RobotoMono', monospace">dsmem_read_u32(ptr, rank)   &#x2192; remote value</text>
+  </g>
+</svg>
