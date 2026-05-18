@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 850" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#79c0ff"/>
+      <stop offset="50%" stop-color="#e8912d"/>
+      <stop offset="100%" stop-color="#d2a8ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1260" height="850" fill="#0d1117"/>
+  <rect width="1260" height="850" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">DeviceOperation Lifecycle</text>
+  <line x1="340" y1="58" x2="920" y2="58" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">From lazy recipe to GPU result &#x2014; decoupling what from where</text>
+
+  <!-- ==================== MAIN: Four Lifecycle Phases ==================== -->
+  <g transform="translate(40, 118)">
+    <rect width="1180" height="400" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="400" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#c9d1d9">Recipe &#x2192; Kitchen &#x2192; Result</text>
+
+    <!-- Phase 1: Define (Blue) -->
+    <g transform="translate(24, 62)">
+      <rect width="248" height="310" rx="10" fill="rgba(121, 192, 255, 0.08)" stroke="#79c0ff" stroke-width="1.5"/>
+      <!-- Step number -->
+      <circle cx="30" cy="30" r="16" fill="#79c0ff" opacity="0.9"/>
+      <text x="30" y="36" text-anchor="middle" font-size="14" font-weight="700" fill="#0d1117">1</text>
+      <text x="56" y="36" font-size="16" font-weight="700" fill="#79c0ff">Define</text>
+      <text x="124" y="56" text-anchor="middle" font-size="12" font-weight="600" fill="#b1bac4">Build the recipe</text>
+
+      <!-- Code block -->
+      <rect x="12" y="74" width="224" height="110" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="24" y="96" font-family="'RobotoMono', monospace" font-size="11" fill="#79c0ff">cuda_launch_async! {</text>
+      <text x="24" y="114" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">  kernel: vecadd,</text>
+      <text x="24" y="132" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">  module: module,</text>
+      <text x="24" y="150" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">  config: cfg,</text>
+      <text x="24" y="168" font-family="'RobotoMono', monospace" font-size="11" fill="#79c0ff">}</text>
+
+      <!-- Type badge -->
+      <rect x="24" y="198" width="200" height="28" rx="6" fill="rgba(121, 192, 255, 0.15)" stroke="#79c0ff" stroke-width="1"/>
+      <text x="124" y="217" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" font-weight="700" fill="#79c0ff">AsyncKernelLaunch</text>
+
+      <!-- Status -->
+      <rect x="3" y="246" width="3" height="44" rx="1" fill="#79c0ff" opacity="0.6"/>
+      <text x="18" y="264" font-size="12" font-weight="600" fill="#79c0ff">Lazy &#x2014; no GPU work yet</text>
+      <text x="18" y="282" font-size="11" fill="#9ca3af">Pure description, movable</text>
+    </g>
+
+    <!-- Arrow 1->2 -->
+    <line x1="282" y1="218" x2="302" y2="218" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="300,212 312,218 300,224" fill="#c9d1d9" opacity="0.7"/>
+
+    <!-- Phase 2: Schedule (Amber) -->
+    <g transform="translate(318, 62)">
+      <rect width="248" height="310" rx="10" fill="rgba(232, 145, 45, 0.08)" stroke="#e8912d" stroke-width="1.5"/>
+      <circle cx="30" cy="30" r="16" fill="#e8912d" opacity="0.9"/>
+      <text x="30" y="36" text-anchor="middle" font-size="14" font-weight="700" fill="#0d1117">2</text>
+      <text x="56" y="36" font-size="16" font-weight="700" fill="#e8912d">Schedule</text>
+      <text x="124" y="56" text-anchor="middle" font-size="12" font-weight="600" fill="#b1bac4">Pick a kitchen</text>
+
+      <!-- Stream pool visual -->
+      <text x="124" y="84" text-anchor="middle" font-size="12" font-weight="600" fill="#e8912d">StreamPoolRoundRobin</text>
+      <g transform="translate(24, 96)">
+        <rect width="44" height="28" rx="4" fill="#30363d" stroke="#9ca3af" stroke-width="1"/>
+        <text x="22" y="18" text-anchor="middle" font-size="10" font-weight="600" fill="#9ca3af">S0</text>
+        <rect x="52" width="44" height="28" rx="4" fill="#30363d" stroke="#9ca3af" stroke-width="1"/>
+        <text x="74" y="18" text-anchor="middle" font-size="10" font-weight="600" fill="#9ca3af">S1</text>
+        <rect x="104" width="44" height="28" rx="4" fill="rgba(232, 145, 45, 0.25)" stroke="#e8912d" stroke-width="2"/>
+        <text x="126" y="18" text-anchor="middle" font-size="10" font-weight="700" fill="#e8912d">S2</text>
+        <rect x="156" width="44" height="28" rx="4" fill="#30363d" stroke="#9ca3af" stroke-width="1"/>
+        <text x="178" y="18" text-anchor="middle" font-size="10" font-weight="600" fill="#9ca3af">S3</text>
+        <!-- Selection arrow -->
+        <polygon points="120,32 126,42 132,32" fill="#e8912d" opacity="0.8"/>
+      </g>
+
+      <!-- ExecutionContext -->
+      <rect x="12" y="152" width="224" height="60" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="124" y="172" text-anchor="middle" font-size="11" font-weight="600" fill="#e8912d">ExecutionContext</text>
+      <text x="124" y="192" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="10" fill="#c9d1d9">{ device: 0, stream: S2 }</text>
+
+      <!-- Status -->
+      <rect x="3" y="246" width="3" height="44" rx="1" fill="#e8912d" opacity="0.6"/>
+      <text x="18" y="264" font-size="12" font-weight="600" fill="#e8912d">Round-robin &#x2192; Stream 2</text>
+      <text x="18" y="282" font-size="11" fill="#9ca3af">Lock-free, AtomicUsize</text>
+    </g>
+
+    <!-- Arrow 2->3 -->
+    <line x1="576" y1="218" x2="596" y2="218" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="594,212 606,218 594,224" fill="#c9d1d9" opacity="0.7"/>
+
+    <!-- Phase 3: Execute (Coral) -->
+    <g transform="translate(612, 62)">
+      <rect width="248" height="310" rx="10" fill="rgba(249, 117, 131, 0.08)" stroke="#f97583" stroke-width="1.5"/>
+      <circle cx="30" cy="30" r="16" fill="#f97583" opacity="0.9"/>
+      <text x="30" y="36" text-anchor="middle" font-size="14" font-weight="700" fill="#0d1117">3</text>
+      <text x="56" y="36" font-size="16" font-weight="700" fill="#f97583">Execute</text>
+      <text x="124" y="56" text-anchor="middle" font-size="12" font-weight="600" fill="#b1bac4">Cook the meal</text>
+
+      <!-- Stream timeline -->
+      <text x="20" y="84" font-size="11" font-weight="600" fill="#b1bac4">Stream 2</text>
+      <line x1="16" y1="96" x2="232" y2="96" stroke="#30363d" stroke-width="2"/>
+      <rect x="20" y="86" width="120" height="22" rx="4" fill="#f97583" opacity="0.7"/>
+      <text x="80" y="101" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">kernel</text>
+      <rect x="148" y="86" width="76" height="22" rx="4" fill="#e8912d" opacity="0.7"/>
+      <text x="186" y="101" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">callback</text>
+
+      <!-- Code -->
+      <rect x="12" y="122" width="224" height="80" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="24" y="142" font-family="'RobotoMono', monospace" font-size="11" fill="#f97583">execute(ctx)</text>
+      <text x="24" y="162" font-family="'RobotoMono', monospace" font-size="10" fill="#c9d1d9">&#x2192; submit kernel</text>
+      <text x="24" y="182" font-family="'RobotoMono', monospace" font-size="10" fill="#e8912d">&#x2192; cuLaunchHostFunc</text>
+
+      <!-- Status -->
+      <rect x="3" y="246" width="3" height="44" rx="1" fill="#f97583" opacity="0.6"/>
+      <text x="18" y="264" font-size="12" font-weight="600" fill="#f97583">GPU work in flight</text>
+      <text x="18" y="282" font-size="11" fill="#9ca3af">Host thread is free</text>
+    </g>
+
+    <!-- Arrow 3->4 -->
+    <line x1="870" y1="218" x2="890" y2="218" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="888,212 900,218 888,224" fill="#c9d1d9" opacity="0.7"/>
+
+    <!-- Phase 4: Complete (Purple) -->
+    <g transform="translate(906, 62)">
+      <rect width="248" height="310" rx="10" fill="rgba(210, 168, 255, 0.08)" stroke="#d2a8ff" stroke-width="1.5"/>
+      <circle cx="30" cy="30" r="16" fill="#d2a8ff" opacity="0.9"/>
+      <text x="30" y="36" text-anchor="middle" font-size="14" font-weight="700" fill="#0d1117">4</text>
+      <text x="56" y="36" font-size="16" font-weight="700" fill="#d2a8ff">Complete</text>
+      <text x="124" y="56" text-anchor="middle" font-size="12" font-weight="600" fill="#b1bac4">Serve the result</text>
+
+      <!-- Callback -> Wake flow -->
+      <rect x="16" y="76" width="216" height="32" rx="6" fill="rgba(232, 145, 45, 0.12)" stroke="#e8912d" stroke-width="1"/>
+      <text x="124" y="97" text-anchor="middle" font-size="11" font-weight="600" fill="#e8912d">GPU done &#x2192; callback fires</text>
+
+      <line x1="124" y1="108" x2="124" y2="124" stroke="#c9d1d9" stroke-width="1.5" opacity="0.6"/>
+      <polygon points="118,122 124,130 130,122" fill="#c9d1d9" opacity="0.6"/>
+
+      <rect x="16" y="132" width="216" height="32" rx="6" fill="rgba(210, 168, 255, 0.12)" stroke="#d2a8ff" stroke-width="1"/>
+      <text x="124" y="153" text-anchor="middle" font-size="11" font-weight="600" fill="#d2a8ff">AtomicBool + AtomicWaker</text>
+
+      <line x1="124" y1="164" x2="124" y2="180" stroke="#c9d1d9" stroke-width="1.5" opacity="0.6"/>
+      <polygon points="118,178 124,186 130,178" fill="#c9d1d9" opacity="0.6"/>
+
+      <rect x="12" y="188" width="224" height="36" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="124" y="211" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#d2a8ff" filter="url(#glow)">Poll::Ready(Ok(result))</text>
+
+      <!-- Status -->
+      <rect x="3" y="246" width="3" height="44" rx="1" fill="#d2a8ff" opacity="0.6"/>
+      <text x="18" y="264" font-size="12" font-weight="600" fill="#d2a8ff">Zero-busy-wait delivery</text>
+      <text x="18" y="282" font-size="11" fill="#9ca3af">No thread spins or sleeps</text>
+    </g>
+  </g>
+
+  <!-- ==================== BOTTOM: Four Execution Methods ==================== -->
+  <g transform="translate(40, 558)">
+    <rect width="1180" height="252" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="252" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#c9d1d9">Four Ways to Execute</text>
+
+    <!-- .sync() (Blue) -->
+    <g transform="translate(20, 62)">
+      <rect width="272" height="168" rx="8" fill="rgba(121, 192, 255, 0.08)" stroke="#79c0ff" stroke-width="1.5"/>
+      <rect x="3" y="8" width="3" height="30" rx="1" fill="#79c0ff" opacity="0.8"/>
+      <text x="18" y="26" font-family="'RobotoMono', monospace" font-size="15" font-weight="700" fill="#79c0ff">.sync()</text>
+      <text x="18" y="52" font-size="13" font-weight="600" fill="#c9d1d9">Block and wait</text>
+      <text x="18" y="74" font-size="11" fill="#b1bac4">Policy picks stream, executes,</text>
+      <text x="18" y="90" font-size="11" fill="#b1bac4">and blocks until idle.</text>
+      <!-- Timeline bar -->
+      <rect x="18" y="108" width="236" height="16" rx="3" fill="#30363d"/>
+      <rect x="18" y="108" width="100" height="16" rx="3" fill="#79c0ff" opacity="0.5"/>
+      <text x="68" y="120" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">GPU work</text>
+      <rect x="118" y="108" width="136" height="16" rx="3" fill="#79c0ff" opacity="0.2"/>
+      <text x="186" y="120" text-anchor="middle" font-size="8" font-weight="600" fill="#79c0ff">thread blocked</text>
+      <text x="18" y="148" font-size="11" font-weight="600" fill="#9ca3af">Scripts, tests, simple programs</text>
+    </g>
+
+    <!-- .await (Purple) -->
+    <g transform="translate(308, 62)">
+      <rect width="272" height="168" rx="8" fill="rgba(210, 168, 255, 0.08)" stroke="#d2a8ff" stroke-width="1.5"/>
+      <rect x="3" y="8" width="3" height="30" rx="1" fill="#d2a8ff" opacity="0.8"/>
+      <text x="18" y="26" font-family="'RobotoMono', monospace" font-size="15" font-weight="700" fill="#d2a8ff">.await</text>
+      <text x="18" y="52" font-size="13" font-weight="600" fill="#c9d1d9">Yield and resume</text>
+      <text x="18" y="74" font-size="11" fill="#b1bac4">Converts to DeviceFuture, yields</text>
+      <text x="18" y="90" font-size="11" fill="#b1bac4">task while GPU works.</text>
+      <!-- Timeline bar -->
+      <rect x="18" y="108" width="236" height="16" rx="3" fill="#30363d"/>
+      <rect x="18" y="108" width="100" height="16" rx="3" fill="#d2a8ff" opacity="0.5"/>
+      <text x="68" y="120" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">GPU work</text>
+      <rect x="118" y="108" width="136" height="16" rx="3" fill="#56d364" opacity="0.2"/>
+      <text x="186" y="120" text-anchor="middle" font-size="8" font-weight="600" fill="#56d364">thread free</text>
+      <text x="18" y="148" font-size="11" font-weight="600" fill="#9ca3af">Tokio, concurrent workloads</text>
+    </g>
+
+    <!-- .sync_on(&stream) (Amber) -->
+    <g transform="translate(596, 62)">
+      <rect width="272" height="168" rx="8" fill="rgba(232, 145, 45, 0.08)" stroke="#e8912d" stroke-width="1.5"/>
+      <rect x="3" y="8" width="3" height="30" rx="1" fill="#e8912d" opacity="0.8"/>
+      <text x="18" y="26" font-family="'RobotoMono', monospace" font-size="15" font-weight="700" fill="#e8912d">.sync_on(&amp;stream)</text>
+      <text x="18" y="52" font-size="13" font-weight="600" fill="#c9d1d9">You choose the stream</text>
+      <text x="18" y="74" font-size="11" fill="#b1bac4">Bypasses the scheduling policy.</text>
+      <text x="18" y="90" font-size="11" fill="#b1bac4">You supply the stream, blocks.</text>
+      <!-- Timeline bar -->
+      <rect x="18" y="108" width="236" height="16" rx="3" fill="#30363d"/>
+      <rect x="18" y="108" width="100" height="16" rx="3" fill="#e8912d" opacity="0.5"/>
+      <text x="68" y="120" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">your stream</text>
+      <rect x="118" y="108" width="136" height="16" rx="3" fill="#e8912d" opacity="0.2"/>
+      <text x="186" y="120" text-anchor="middle" font-size="8" font-weight="600" fill="#e8912d">thread blocked</text>
+      <text x="18" y="148" font-size="11" font-weight="600" fill="#9ca3af">Library interop, profiling</text>
+    </g>
+
+    <!-- async_on(&stream) (Coral) -->
+    <g transform="translate(884, 62)">
+      <rect width="272" height="168" rx="8" fill="rgba(249, 117, 131, 0.08)" stroke="#f97583" stroke-width="1.5"/>
+      <rect x="3" y="8" width="3" height="30" rx="1" fill="#f97583" opacity="0.8"/>
+      <text x="18" y="26" font-family="'RobotoMono', monospace" font-size="14" font-weight="700" fill="#f97583">async_on(&amp;stream)</text>
+      <text x="18" y="52" font-size="13" font-weight="600" fill="#c9d1d9">Fire and forget</text>
+      <text x="18" y="74" font-size="11" fill="#b1bac4">Submits work and returns</text>
+      <text x="18" y="90" font-size="11" fill="#b1bac4">immediately. You must sync.</text>
+      <!-- Timeline bar -->
+      <rect x="18" y="108" width="236" height="16" rx="3" fill="#30363d"/>
+      <rect x="18" y="108" width="100" height="16" rx="3" fill="#f97583" opacity="0.5"/>
+      <text x="68" y="120" text-anchor="middle" font-size="8" font-weight="700" fill="#fff">GPU work</text>
+      <rect x="118" y="108" width="60" height="16" rx="3" fill="#f97583" opacity="0.15"/>
+      <text x="148" y="120" text-anchor="middle" font-size="8" font-weight="600" fill="#f97583">&#x2192;</text>
+      <text x="206" y="120" text-anchor="middle" font-size="8" font-weight="600" fill="#9ca3af">manual sync</text>
+      <text x="18" y="148" font-size="11" font-weight="600" fill="#f97583">unsafe &#x2014; expert only</text>
+    </g>
+  </g>
+</svg>

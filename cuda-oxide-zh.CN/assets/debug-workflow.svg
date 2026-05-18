@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 800" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <filter id="softGlow"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97583"/>
+      <stop offset="50%" stop-color="#e8912d"/>
+      <stop offset="100%" stop-color="#d2a8ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1260" height="800" fill="#0d1117"/>
+  <rect width="1260" height="800" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">Debugging Workflow</text>
+  <line x1="400" y1="58" x2="860" y2="58" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">Identifying and fixing kernel problems</text>
+
+  <!-- Three branches (drawn FIRST so the box paints on top) -->
+  <!-- Left elbow: down, curve left, horizontal, curve down, down -->
+  <path d="M 530,164 V 188 Q 530,200 518,200 H 212 Q 200,200 200,212 V 234" fill="none" stroke="#f97583" stroke-width="2" opacity="0.7"/>
+  <polygon points="194,232 200,244 206,232" fill="#f97583" opacity="0.7"/>
+  <!-- Center: straight down -->
+  <line x1="630" y1="174" x2="630" y2="234" stroke="#e8912d" stroke-width="2" opacity="0.7"/>
+  <polygon points="624,230 630,242 636,230" fill="#e8912d" opacity="0.7"/>
+  <!-- Right elbow: down, curve right, horizontal, curve down, down -->
+  <path d="M 730,164 V 188 Q 730,200 742,200 H 1048 Q 1060,200 1060,212 V 234" fill="none" stroke="#d2a8ff" stroke-width="2" opacity="0.7"/>
+  <polygon points="1054,232 1060,244 1066,232" fill="#d2a8ff" opacity="0.7"/>
+
+  <!-- ==================== TOP: Problem node (on top of arrows) ==================== -->
+  <g transform="translate(465, 110)">
+    <rect width="330" height="64" rx="14" fill="#161b22" filter="url(#softGlow)"/>
+    <rect width="330" height="64" rx="14" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+    <text x="165" y="40" text-anchor="middle" font-size="19" font-weight="700" fill="#ffffff">Kernel problem</text>
+  </g>
+
+  <!-- ==================== BRANCH 1: Compile error (coral) ==================== -->
+  <g transform="translate(40, 240)">
+    <rect width="320" height="80" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="320" height="80" rx="12" fill="none" stroke="#f97583" stroke-width="2"/>
+    <text x="160" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#f97583">Compile error</text>
+    <text x="160" y="56" text-anchor="middle" font-size="13" fill="#c9d1d9">Forbidden crate, unsupported type,</text>
+    <text x="160" y="72" text-anchor="middle" font-size="13" fill="#c9d1d9">missing #[kernel]</text>
+  </g>
+
+  <line x1="200" y1="320" x2="200" y2="362" stroke="#f97583" stroke-width="2" opacity="0.7"/>
+  <polygon points="194,358 200,370 206,358" fill="#f97583" opacity="0.7"/>
+
+  <g transform="translate(40, 376)">
+    <rect width="320" height="100" rx="10" fill="rgba(249, 117, 131, 0.06)" stroke="#f97583" stroke-width="1.5"/>
+    <text x="160" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#f97583">Tools</text>
+    <rect x="16" y="42" width="138" height="30" rx="6" fill="rgba(249, 117, 131, 0.12)"/>
+    <text x="85" y="62" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#f97583">cargo oxide pipeline</text>
+    <rect x="166" y="42" width="138" height="30" rx="6" fill="rgba(249, 117, 131, 0.12)"/>
+    <text x="235" y="62" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#f97583">cargo oxide doctor</text>
+    <text x="160" y="88" text-anchor="middle" font-size="12" fill="#b1bac4">Read compiler diagnostics</text>
+  </g>
+
+  <!-- ==================== BRANCH 2: Runtime trap (amber) ==================== -->
+  <g transform="translate(470, 240)">
+    <rect width="320" height="80" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="320" height="80" rx="12" fill="none" stroke="#e8912d" stroke-width="2"/>
+    <text x="160" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#e8912d">Runtime trap</text>
+    <text x="160" y="56" text-anchor="middle" font-size="13" fill="#c9d1d9">ILLEGAL_INSTRUCTION,</text>
+    <text x="160" y="72" text-anchor="middle" font-size="13" fill="#c9d1d9">gpu_assert! failure, panic</text>
+  </g>
+
+  <line x1="630" y1="320" x2="630" y2="362" stroke="#e8912d" stroke-width="2" opacity="0.7"/>
+  <polygon points="624,358 630,370 636,358" fill="#e8912d" opacity="0.7"/>
+
+  <g transform="translate(470, 376)">
+    <rect width="320" height="100" rx="10" fill="rgba(232, 145, 45, 0.06)" stroke="#e8912d" stroke-width="1.5"/>
+    <text x="160" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#e8912d">Tools</text>
+    <rect x="16" y="42" width="138" height="30" rx="6" fill="rgba(232, 145, 45, 0.12)"/>
+    <text x="85" y="62" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#e8912d">gpu_printf!</text>
+    <rect x="166" y="42" width="138" height="30" rx="6" fill="rgba(232, 145, 45, 0.12)"/>
+    <text x="235" y="62" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#e8912d">cargo oxide debug</text>
+    <text x="160" y="88" text-anchor="middle" font-size="12" fill="#b1bac4">Print values, step in cuda-gdb</text>
+  </g>
+
+  <!-- ==================== BRANCH 3: Silent corruption (purple) ==================== -->
+  <g transform="translate(900, 240)">
+    <rect width="320" height="80" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="320" height="80" rx="12" fill="none" stroke="#d2a8ff" stroke-width="2"/>
+    <text x="160" y="32" text-anchor="middle" font-size="16" font-weight="700" fill="#d2a8ff">Silent corruption</text>
+    <text x="160" y="56" text-anchor="middle" font-size="13" fill="#c9d1d9">Wrong results, no error,</text>
+    <text x="160" y="72" text-anchor="middle" font-size="13" fill="#c9d1d9">race conditions</text>
+  </g>
+
+  <line x1="1060" y1="320" x2="1060" y2="362" stroke="#d2a8ff" stroke-width="2" opacity="0.7"/>
+  <polygon points="1054,358 1060,370 1066,358" fill="#d2a8ff" opacity="0.7"/>
+
+  <g transform="translate(900, 376)">
+    <rect width="320" height="100" rx="10" fill="rgba(210, 168, 255, 0.06)" stroke="#d2a8ff" stroke-width="1.5"/>
+    <text x="160" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#d2a8ff">Tools</text>
+    <rect x="16" y="42" width="138" height="30" rx="6" fill="rgba(210, 168, 255, 0.12)"/>
+    <text x="85" y="62" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#d2a8ff">gpu_printf!</text>
+    <rect x="166" y="42" width="138" height="30" rx="6" fill="rgba(210, 168, 255, 0.12)"/>
+    <text x="235" y="62" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#d2a8ff">ncu (Nsight)</text>
+    <text x="160" y="88" text-anchor="middle" font-size="12" fill="#b1bac4">Add assertions, profile memory</text>
+  </g>
+
+  <!-- ==================== Dashed flow lines to Common fixes ==================== -->
+  <line x1="200" y1="476" x2="200" y2="520" stroke="#f97583" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+  <line x1="630" y1="476" x2="630" y2="520" stroke="#e8912d" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+  <line x1="1060" y1="476" x2="1060" y2="520" stroke="#d2a8ff" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+
+  <!-- ==================== BOTTOM: Common fixes ==================== -->
+  <g transform="translate(40, 520)">
+    <rect width="1180" height="248" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="248" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="15" font-weight="700" fill="#c9d1d9">Common fixes</text>
+
+    <!-- Fix card 1: Race condition (coral) -->
+    <g transform="translate(30, 66)">
+      <rect width="260" height="70" rx="8" fill="rgba(249, 117, 131, 0.06)" stroke="#f97583" stroke-width="1"/>
+      <rect x="1" y="6" width="3" height="58" rx="1.5" fill="#f97583" opacity="0.8"/>
+      <text x="136" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#f97583">Race condition</text>
+      <text x="136" y="46" text-anchor="middle" font-size="12" fill="#c9d1d9">Use DisjointSlice</text>
+      <text x="136" y="62" text-anchor="middle" font-size="12" fill="#b1bac4">instead of raw *mut T</text>
+    </g>
+
+    <!-- Fix card 2: Stale shared memory (amber) -->
+    <g transform="translate(310, 66)">
+      <rect width="260" height="70" rx="8" fill="rgba(232, 145, 45, 0.06)" stroke="#e8912d" stroke-width="1"/>
+      <rect x="1" y="6" width="3" height="58" rx="1.5" fill="#e8912d" opacity="0.8"/>
+      <text x="136" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#e8912d">Stale shared memory</text>
+      <text x="136" y="46" text-anchor="middle" font-size="12" fill="#c9d1d9">Add sync_threads()</text>
+      <text x="136" y="62" text-anchor="middle" font-size="12" fill="#b1bac4">between writes and reads</text>
+    </g>
+
+    <!-- Fix card 3: Wrong arch (blue) -->
+    <g transform="translate(590, 66)">
+      <rect width="260" height="70" rx="8" fill="rgba(121, 192, 255, 0.06)" stroke="#79c0ff" stroke-width="1"/>
+      <rect x="1" y="6" width="3" height="58" rx="1.5" fill="#79c0ff" opacity="0.8"/>
+      <text x="136" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#79c0ff">Wrong arch</text>
+      <text x="136" y="46" text-anchor="middle" font-size="12" fill="#c9d1d9">Rebuild with --arch sm_XX</text>
+      <text x="136" y="62" text-anchor="middle" font-size="12" fill="#b1bac4">matching your GPU</text>
+    </g>
+
+    <!-- Fix card 4: panic! in kernel (purple) -->
+    <g transform="translate(870, 66)">
+      <rect width="260" height="70" rx="8" fill="rgba(210, 168, 255, 0.06)" stroke="#d2a8ff" stroke-width="1"/>
+      <rect x="1" y="6" width="3" height="58" rx="1.5" fill="#d2a8ff" opacity="0.8"/>
+      <text x="136" y="24" text-anchor="middle" font-size="13" font-weight="700" fill="#d2a8ff">panic! in kernel</text>
+      <text x="136" y="46" text-anchor="middle" font-size="12" fill="#c9d1d9">Use gpu_assert! or</text>
+      <text x="136" y="62" text-anchor="middle" font-size="12" fill="#b1bac4">debug::trap() instead</text>
+    </g>
+
+    <!-- Wide tip 1: Missing sync (amber) -->
+    <g transform="translate(30, 156)">
+      <rect width="550" height="64" rx="8" fill="rgba(232, 145, 45, 0.06)" stroke="#e8912d" stroke-width="1"/>
+      <rect x="1" y="6" width="3" height="52" rx="1.5" fill="#e8912d" opacity="0.8"/>
+      <text x="280" y="26" text-anchor="middle" font-size="13" font-weight="600" fill="#e8912d">Missing sync after launch?</text>
+      <text x="280" y="48" text-anchor="middle" font-size="12" fill="#c9d1d9">Call <tspan font-family="'RobotoMono', monospace" fill="#e8912d">.sync()</tspan> or <tspan font-family="'RobotoMono', monospace" fill="#e8912d">stream.synchronize()</tspan> before reading results</text>
+    </g>
+
+    <!-- Wide tip 2: Out of resources (purple) -->
+    <g transform="translate(600, 156)">
+      <rect width="550" height="64" rx="8" fill="rgba(210, 168, 255, 0.06)" stroke="#d2a8ff" stroke-width="1"/>
+      <rect x="1" y="6" width="3" height="52" rx="1.5" fill="#d2a8ff" opacity="0.8"/>
+      <text x="280" y="26" text-anchor="middle" font-size="13" font-weight="600" fill="#d2a8ff">Out of resources?</text>
+      <text x="280" y="48" text-anchor="middle" font-size="12" fill="#c9d1d9">Reduce <tspan font-family="'RobotoMono', monospace" fill="#d2a8ff">shared_mem_bytes</tspan> or block size, add <tspan font-family="'RobotoMono', monospace" fill="#d2a8ff">#[launch_bounds]</tspan></text>
+    </g>
+  </g>
+</svg>

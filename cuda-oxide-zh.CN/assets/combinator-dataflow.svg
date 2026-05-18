@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 1148" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#79c0ff"/>
+      <stop offset="100%" stop-color="#d2a8ff"/>
+    </linearGradient>
+    <linearGradient id="pipelineFlow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#79c0ff"/>
+      <stop offset="33%" stop-color="#f97583"/>
+      <stop offset="66%" stop-color="#e8912d"/>
+      <stop offset="100%" stop-color="#d2a8ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1260" height="1148" fill="#0d1117"/>
+  <rect width="1260" height="1148" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">Combinator Pipeline &#x2014; MLP Forward Pass</text>
+  <line x1="300" y1="58" x2="960" y2="58" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">zip! bundles independent setup, and_then chains dependent stages</text>
+
+  <!-- ==================== MAIN PIPELINE PANEL ==================== -->
+  <g transform="translate(40, 118)">
+    <rect width="1180" height="1010" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="1010" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#c9d1d9">One DeviceOperation &#x2014; One Stream &#x2014; One .sync() or .await</text>
+
+    <!-- Flow pipeline indicator (left side vertical line) -->
+    <line x1="55" y1="80" x2="55" y2="960" stroke="url(#pipelineFlow)" stroke-width="3" opacity="0.3" stroke-linecap="round"/>
+
+    <!-- ===== ZIP! SECTION (Blue) ===== -->
+    <g transform="translate(80, 60)">
+      <!-- zip! bracket -->
+      <rect width="650" height="200" rx="10" fill="rgba(121, 192, 255, 0.06)" stroke="#79c0ff" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="8" y="22" font-family="'RobotoMono', monospace" font-size="14" font-weight="700" fill="#79c0ff">zip!</text>
+      <text x="52" y="22" font-size="12" fill="#b1bac4">&#x2014; independent operations, bundled</text>
+
+      <!-- h2d(batch) -->
+      <g transform="translate(20, 40)">
+        <rect width="180" height="60" rx="8" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="1.5"/>
+        <text x="90" y="24" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#79c0ff">h2d(batch_data)</text>
+        <text x="90" y="44" text-anchor="middle" font-size="11" fill="#b1bac4">Upload input to device</text>
+      </g>
+
+      <!-- zeros(DIM*DIM) -->
+      <g transform="translate(233, 40)">
+        <rect width="180" height="60" rx="8" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="1.5"/>
+        <text x="90" y="24" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#79c0ff">zeros(DIM * DIM)</text>
+        <text x="90" y="44" text-anchor="middle" font-size="11" fill="#b1bac4">Hidden scratch buffer</text>
+      </g>
+
+      <!-- zeros(DIM) -->
+      <g transform="translate(446, 40)">
+        <rect width="180" height="60" rx="8" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="1.5"/>
+        <text x="90" y="24" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#79c0ff">zeros(DIM)</text>
+        <text x="90" y="44" text-anchor="middle" font-size="11" fill="#b1bac4">Output buffer</text>
+      </g>
+
+      <!-- Elbow connectors (drawn BEFORE the tuple badge so badge paints on top) -->
+      <!-- Left: h2d center (110,100) down, curve right, horizontal to center -->
+      <path d="M 110,100 V 120 Q 110,132 122,132 H 325" fill="none" stroke="#79c0ff" stroke-width="2" opacity="0.6"/>
+      <!-- Center: zeros(DIM*DIM) center (323,100) straight down -->
+      <line x1="323" y1="100" x2="323" y2="132" stroke="#79c0ff" stroke-width="2" opacity="0.6"/>
+      <!-- Right: zeros(DIM) center (536,100) down, curve left, horizontal to center -->
+      <path d="M 536,100 V 120 Q 536,132 524,132 H 325" fill="none" stroke="#79c0ff" stroke-width="2" opacity="0.6"/>
+      <!-- Convergence line down to tuple -->
+      <line x1="325" y1="132" x2="325" y2="155" stroke="#79c0ff" stroke-width="2" opacity="0.6"/>
+      <polygon points="319,152 325,162 331,152" fill="#79c0ff" opacity="0.6"/>
+
+      <!-- Tuple output badge -->
+      <rect x="205" y="160" width="240" height="28" rx="6" fill="rgba(121, 192, 255, 0.15)" stroke="#79c0ff" stroke-width="1"/>
+      <text x="325" y="179" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="10" font-weight="600" fill="#79c0ff">(input, hidden, output)</text>
+    </g>
+
+    <!-- Arrow zip! to GEMM -->
+    <line x1="405" y1="264" x2="405" y2="300" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="399,296 405,308 411,296" fill="#c9d1d9" opacity="0.7"/>
+    <text x="430" y="292" font-family="'RobotoMono', monospace" font-size="10" fill="#79c0ff">.and_then</text>
+
+    <!-- ===== STAGE 1: GEMM (Coral) ===== -->
+    <g transform="translate(150, 316)">
+      <rect width="540" height="110" rx="10" fill="rgba(249, 117, 131, 0.08)" stroke="#f97583" stroke-width="1.5"/>
+      <rect x="3" y="8" width="3" height="94" rx="1" fill="#f97583" opacity="0.6"/>
+      <text x="20" y="30" font-size="14" font-weight="700" fill="#f97583">Stage 1: GEMM</text>
+      <text x="126" y="30" font-size="12" fill="#b1bac4">&#x2014; hidden = input &#xD7; W0</text>
+      <text x="20" y="54" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">AsyncKernelLaunch::new(sgemm_naive)</text>
+      <text x="20" y="76" font-size="11" fill="#9ca3af">Kernel returns () &#x2014; carry forward buffers with value()</text>
+      <rect x="280" y="86" width="244" height="20" rx="4" fill="rgba(249, 117, 131, 0.12)"/>
+      <text x="402" y="100" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="9" fill="#f97583">value((hidden, output, w1, module))</text>
+    </g>
+
+    <!-- Arrow GEMM to MatVec -->
+    <line x1="405" y1="430" x2="405" y2="466" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="399,462 405,474 411,462" fill="#c9d1d9" opacity="0.7"/>
+    <text x="430" y="458" font-family="'RobotoMono', monospace" font-size="10" fill="#e8912d">.and_then</text>
+
+    <!-- ===== STAGE 2: MatVec (Amber) ===== -->
+    <g transform="translate(150, 480)">
+      <rect width="540" height="110" rx="10" fill="rgba(232, 145, 45, 0.08)" stroke="#e8912d" stroke-width="1.5"/>
+      <rect x="3" y="8" width="3" height="94" rx="1" fill="#e8912d" opacity="0.6"/>
+      <text x="20" y="30" font-size="14" font-weight="700" fill="#e8912d">Stage 2: MatVec</text>
+      <text x="146" y="30" font-size="12" fill="#b1bac4">&#x2014; output = hidden &#xD7; W1</text>
+      <text x="20" y="54" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">AsyncKernelLaunch::new(matvec_naive)</text>
+      <text x="20" y="76" font-size="11" fill="#9ca3af">Carry forward only what next stage needs</text>
+      <rect x="400" y="86" width="124" height="20" rx="4" fill="rgba(232, 145, 45, 0.12)"/>
+      <text x="462" y="100" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="9" fill="#e8912d">value(output)</text>
+    </g>
+
+    <!-- Arrow MatVec to ReLU -->
+    <line x1="405" y1="594" x2="405" y2="630" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="399,626 405,638 411,626" fill="#c9d1d9" opacity="0.7"/>
+    <text x="430" y="622" font-family="'RobotoMono', monospace" font-size="10" fill="#d2a8ff">.and_then</text>
+
+    <!-- ===== STAGE 3: ReLU (Purple) ===== -->
+    <g transform="translate(150, 644)">
+      <rect width="540" height="110" rx="10" fill="rgba(210, 168, 255, 0.08)" stroke="#d2a8ff" stroke-width="1.5"/>
+      <rect x="3" y="8" width="3" height="94" rx="1" fill="#d2a8ff" opacity="0.6"/>
+      <text x="20" y="30" font-size="14" font-weight="700" fill="#d2a8ff">Stage 3: ReLU</text>
+      <text x="116" y="30" font-size="12" fill="#b1bac4">&#x2014; result = max(0, output)</text>
+      <text x="20" y="54" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">AsyncKernelLaunch::new(relu)</text>
+      <text x="20" y="76" font-size="11" fill="#9ca3af">In-place operation on output buffer</text>
+      <rect x="400" y="86" width="124" height="20" rx="4" fill="rgba(210, 168, 255, 0.12)"/>
+      <text x="462" y="100" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="9" fill="#d2a8ff">value(output)</text>
+    </g>
+
+    <!-- Arrow ReLU to D2H -->
+    <line x1="405" y1="758" x2="405" y2="794" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="399,790 405,802 411,790" fill="#c9d1d9" opacity="0.7"/>
+    <text x="430" y="786" font-family="'RobotoMono', monospace" font-size="10" fill="#79c0ff">.and_then</text>
+
+    <!-- ===== STAGE 4: D2H (Blue) ===== -->
+    <g transform="translate(150, 808)">
+      <rect width="540" height="90" rx="10" fill="rgba(121, 192, 255, 0.08)" stroke="#79c0ff" stroke-width="1.5"/>
+      <rect x="3" y="8" width="3" height="74" rx="1" fill="#79c0ff" opacity="0.6"/>
+      <text x="20" y="30" font-size="14" font-weight="700" fill="#79c0ff">Stage 4: Download</text>
+      <text x="148" y="30" font-size="12" fill="#b1bac4">&#x2014; copy result to host</text>
+      <text x="20" y="54" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">d2h(output)</text>
+      <text x="20" y="74" font-size="11" fill="#9ca3af">with_context &#x2192; memcpy_dtoh_async &#x2192; value(host_vec)</text>
+    </g>
+
+    <!-- Final output arrow -->
+    <line x1="405" y1="902" x2="405" y2="930" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="399,926 405,938 411,926" fill="#c9d1d9" opacity="0.7"/>
+
+    <!-- ==================== RIGHT-SIDE ANNOTATIONS ==================== -->
+
+    <!-- Key Insight (aligned with zip!) -->
+    <g transform="translate(760, 60)">
+      <rect width="390" height="180" rx="10" fill="rgba(121, 192, 255, 0.04)" stroke="#79c0ff" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="195" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#79c0ff">Key Insight</text>
+      <text x="16" y="56" font-size="12" fill="#c9d1d9">The entire chain is</text>
+      <text x="16" y="76" font-size="12" font-weight="700" fill="#ffffff">one DeviceOperation.</text>
+      <text x="16" y="104" font-size="12" fill="#c9d1d9">No GPU work happens until</text>
+      <text x="16" y="124" font-family="'RobotoMono', monospace" font-size="12" fill="#79c0ff">.sync()</text>
+      <text x="64" y="124" font-size="12" fill="#c9d1d9">or</text>
+      <text x="82" y="124" font-family="'RobotoMono', monospace" font-size="12" fill="#d2a8ff">.await</text>
+      <text x="16" y="152" font-size="12" fill="#c9d1d9">Then the scheduling policy</text>
+      <text x="16" y="170" font-size="12" fill="#c9d1d9">picks one stream for all stages.</text>
+    </g>
+
+    <!-- Shared Weights (aligned with GEMM) -->
+    <g transform="translate(760, 316)">
+      <rect width="390" height="140" rx="10" fill="rgba(232, 145, 45, 0.04)" stroke="#e8912d" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="195" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#e8912d">Shared Weights</text>
+      <text x="16" y="56" font-size="12" fill="#c9d1d9">W0 and W1 are</text>
+      <text x="16" y="76" font-family="'RobotoMono', monospace" font-size="12" fill="#e8912d">Arc&lt;DeviceBox&lt;[f32]&gt;&gt;</text>
+      <text x="16" y="104" font-size="12" fill="#c9d1d9">Cloned into each batch pipeline.</text>
+      <text x="16" y="124" font-size="12" fill="#c9d1d9">Cheap ref-count, zero copies.</text>
+    </g>
+
+    <!-- Ownership Flow (aligned with ReLU) -->
+    <g transform="translate(760, 560)">
+      <rect width="390" height="140" rx="10" fill="rgba(210, 168, 255, 0.04)" stroke="#d2a8ff" stroke-width="1" stroke-dasharray="4,3"/>
+      <text x="195" y="28" text-anchor="middle" font-size="13" font-weight="700" fill="#d2a8ff">Ownership Flow</text>
+      <text x="16" y="56" font-size="12" fill="#c9d1d9">Each closure captures by</text>
+      <text x="16" y="76" font-family="'RobotoMono', monospace" font-size="12" fill="#d2a8ff">move</text>
+      <text x="52" y="76" font-size="12" fill="#c9d1d9">.</text>
+      <text x="16" y="104" font-size="12" fill="#c9d1d9">Buffers flow from stage to stage</text>
+      <text x="16" y="124" font-size="12" fill="#c9d1d9">via value() tuples &#x2014; the "baton."</text>
+    </g>
+
+    <!-- Final result badge (inside panel) -->
+    <g transform="translate(295, 950)">
+      <rect width="220" height="28" rx="6" fill="rgba(121, 192, 255, 0.15)" stroke="#79c0ff" stroke-width="1.5"/>
+      <text x="110" y="19" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#79c0ff" filter="url(#glow)">Vec&lt;f32&gt;</text>
+    </g>
+  </g>
+</svg>

@@ -6,16 +6,16 @@
 
 ## 线程、线程块和网格
 
-每次内核启动都会创建一个由**线程块**组成的**网格**。三级层次结构是 GPU 编程的基础：
+每次kernel启动都会创建一个由**线程块**组成的**网格**。三级层次结构是 GPU 编程的基础：
 
 | 层级 | 定义 | 大小 | 关键特性 |
 |------|------|------|----------|
-| 网格 (Grid) | 一次内核调用启动的所有线程块 | 每个维度最多 2³¹ - 1 个块 | 线程块独立执行 |
+| 网格 (Grid) | 一次kernel调用启动的所有线程块 | 每个维度最多 2³¹ - 1 个块 | 线程块独立执行 |
 | 线程块 (Block) | 可以协作的一组线程 | 最多 1024 个线程 | 线程共享高速片上内存 |
 | 线程束 (Warp) | 线程块内 32 个连续的线程 | 固定 32 个 | 按锁步执行指令 (SIMT) |
 
 
-内核启动需要指定两件事：网格中有多少个块（**网格维度**），以及每个块中有多少个线程（**线程块维度**）。然后硬件自动将每 32 个连续的线程编为一个线程束 —— 你永远不会显式地创建线程束。
+kernel启动需要指定两件事：网格中有多少个块（**网格维度**），以及每个块中有多少个线程（**线程块维度**）。然后硬件自动将每 32 个连续的线程编为一个线程束 —— 你永远不会显式地创建线程束。
 
 ![CUDA 三级线程层次结构](../assets/simt-thread-hierarchy.svg)
 
@@ -25,7 +25,7 @@
 
 ## cuda-oxide 中的线程索引
 
-在内核内部，每个线程需要知道它应该处理**哪个**元素。CUDA 提供了内置变量（`threadIdx`、`blockIdx`、`blockDim`、`gridDim`）；cuda-oxide 将它们包装在 `cuda_device::thread` 模块中：
+在kernel内部，每个线程需要知道它应该处理**哪个**元素。CUDA 提供了内置变量（`threadIdx`、`blockIdx`、`blockDim`、`gridDim`）；cuda-oxide 将它们包装在 `cuda_device::thread` 模块中：
 
 ```rust
 use cuda_device::{kernel, thread, DisjointSlice};
@@ -39,7 +39,7 @@ pub fn vecadd(a: &[f32], b: &[f32], mut c: DisjointSlice<f32>) {
 }
 ```
 
-`thread::index_1d()` 计算 `blockIdx.x * blockDim.x + threadIdx.x` —— 全局扁平索引，将每个线程精确映射到一个数组元素。这是处理一维数据并行内核的常见情况。
+`thread::index_1d()` 计算 `blockIdx.x * blockDim.x + threadIdx.x` —— 全局扁平索引，将每个线程精确映射到一个数组元素。这是处理一维数据并行kernel的常见情况。
 
 对于需要单独组件的场景，cuda-oxide 暴露了原始访问器：
 
@@ -68,7 +68,7 @@ pub fn vecadd(a: &[f32], b: &[f32], mut c: DisjointSlice<f32>) {
 
 ### 为什么这很重要
 
-你不需要考虑线程束就能编写*正确*的内核 —— cuda-oxide 会处理这些细节。但理解 SIMT 有助于你编写*快速*的内核：
+你不需要考虑线程束就能编写*正确*的kernel —— cuda-oxide 会处理这些细节。但理解 SIMT 有助于你编写*快速*的kernel：
 
 - **优先统一控制流。** 当线程束中的所有线程评估相同的分支时，没有分歧惩罚。
 - **数据相关的分支是可以接受的**，只要相邻线程（同一线程束内的）倾向于走相同路径。
@@ -78,9 +78,9 @@ pub fn vecadd(a: &[f32], b: &[f32], mut c: DisjointSlice<f32>) {
 
 ## 硬件映射
 
-当你启动内核时，GPU 的硬件调度器将每个块分配给一个**流式多处理器 (SM)**。多个块可以在同一个 SM 上并发运行 —— 具体数量取决于块的资源使用量（寄存器、共享内存、线程）。
+当你启动kernel时，GPU 的硬件调度器将每个块分配给一个**流式多处理器 (SM)**。多个块可以在同一个 SM 上并发运行 —— 具体数量取决于块的资源使用量（寄存器、共享内存、线程）。
 
-关键洞察：**你控制网格和块的维度；硬件控制其他一切。** 你永远不会指定哪个 SM 运行哪个块，或者块以什么顺序执行。这种分离使得同一个内核可以从只有少量 SM 的笔记本 GPU 扩展到拥有 100+ SM 的数据中心 GPU。
+关键洞察：**你控制网格和块的维度；硬件控制其他一切。** 你永远不会指定哪个 SM 运行哪个块，或者块以什么顺序执行。这种分离使得同一个kernel可以从只有少量 SM 的笔记本 GPU 扩展到拥有 100+ SM 的数据中心 GPU。
 
 ![硬件调度示意图](../assets/simt-hardware-mapping.svg)
 
@@ -111,7 +111,7 @@ use cuda_core::LaunchConfig;
 let cfg = LaunchConfig::for_num_elems(N as u32);
 ```
 
-`for_num_elems` 使用 256 的块大小，通过向上取整除法计算网格大小 —— 这是大多数逐元素内核的正确默认值。如需更多控制，直接构造 `LaunchConfig`：
+`for_num_elems` 使用 256 的块大小，通过向上取整除法计算网格大小 —— 这是大多数逐元素kernel的正确默认值。如需更多控制，直接构造 `LaunchConfig`：
 
 ```rust
 let cfg = LaunchConfig {
@@ -126,7 +126,7 @@ let cfg = LaunchConfig {
 ```rust
 module
     .vecadd(&stream, LaunchConfig::for_num_elems(N as u32), &a_dev, &b_dev, &mut c_dev)
-    .expect("内核启动失败");
+    .expect("kernel启动失败");
 ```
 
 或使用异步 API：
@@ -163,3 +163,6 @@ pub fn vecadd(a: &[f32], b: &[f32], mut c: DisjointSlice<f32>) {
 ```
 
 这是与 CUDA C++ 的刻意区别，在 CUDA C++ 中边界检查是程序员的责任。cuda-oxide 的方法以单个分支的代价（除了最后一个块外，该分支在线程束内是统一的）消除了整类越界内存错误。
+
+| [上一页](../入门/编写你的第一个kernel.md) | [下一页](./kernel和设备函数.md) |
+| :--- | ---: |

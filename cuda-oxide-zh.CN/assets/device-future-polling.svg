@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 960" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="softGlow"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#79c0ff"/>
+      <stop offset="50%" stop-color="#e8912d"/>
+      <stop offset="100%" stop-color="#d2a8ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1260" height="960" fill="#0d1117"/>
+  <rect width="1260" height="960" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">DeviceFuture &#x2014; Zero-Busy-Wait GPU Completion</text>
+  <line x1="280" y1="58" x2="980" y2="58" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">cuLaunchHostFunc bridges CUDA streams to Rust&#x2019;s async model</text>
+
+  <!-- ==================== LEFT: State Machine ==================== -->
+  <g transform="translate(40, 118)">
+    <rect width="660" height="800" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="660" height="800" rx="12" fill="none" stroke="#79c0ff" stroke-width="2"/>
+    <rect x="2" y="2" width="656" height="44" rx="10" fill="#1c2128"/>
+    <text x="330" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#79c0ff">State Machine</text>
+
+    <!-- State 1: IDLE (Blue) -->
+    <g transform="translate(180, 74)">
+      <rect width="300" height="70" rx="10" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="2"/>
+      <text x="150" y="28" text-anchor="middle" font-size="16" font-weight="700" fill="#79c0ff">IDLE</text>
+      <text x="150" y="50" text-anchor="middle" font-size="12" fill="#c9d1d9">DeviceOperation created, no stream yet</text>
+    </g>
+
+    <!-- Arrow: first poll() -->
+    <line x1="330" y1="158" x2="330" y2="200" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="324,196 330,208 336,196" fill="#c9d1d9" opacity="0.7"/>
+    <rect x="350" y="168" width="120" height="24" rx="4" fill="rgba(121, 192, 255, 0.1)"/>
+    <text x="410" y="185" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" font-weight="600" fill="#79c0ff">first poll()</text>
+
+    <!-- State 2: EXECUTING (Amber) -->
+    <g transform="translate(80, 220)">
+      <rect width="500" height="210" rx="10" fill="rgba(232, 145, 45, 0.08)" stroke="#e8912d" stroke-width="2"/>
+      <text x="250" y="28" text-anchor="middle" font-size="16" font-weight="700" fill="#e8912d">EXECUTING</text>
+
+      <!-- Step 1: execute() -->
+      <g transform="translate(20, 46)">
+        <rect width="220" height="38" rx="6" fill="rgba(249, 117, 131, 0.12)" stroke="#f97583" stroke-width="1"/>
+        <text x="110" y="24" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#f97583">execute(ctx) &#x2192; GPU work</text>
+      </g>
+
+      <!-- Step 2: cuLaunchHostFunc -->
+      <g transform="translate(260, 46)">
+        <rect width="220" height="38" rx="6" fill="rgba(232, 145, 45, 0.12)" stroke="#e8912d" stroke-width="1"/>
+        <text x="110" y="24" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#e8912d">cuLaunchHostFunc</text>
+      </g>
+
+      <!-- Stream visualization -->
+      <text x="20" y="116" font-size="11" font-weight="600" fill="#b1bac4">Stream N:</text>
+      <line x1="90" y1="110" x2="468" y2="110" stroke="#30363d" stroke-width="2"/>
+      <rect x="95" y="100" width="160" height="22" rx="4" fill="#f97583" opacity="0.6"/>
+      <text x="175" y="116" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">kernel work</text>
+      <rect x="260" y="100" width="100" height="22" rx="4" fill="#e8912d" opacity="0.6"/>
+      <text x="310" y="116" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">host callback</text>
+
+      <!-- Return value -->
+      <rect x="120" y="140" width="260" height="32" rx="6" fill="#0d1117" stroke="#30363d" stroke-width="1"/>
+      <text x="250" y="161" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" fill="#e8912d">return Poll::Pending</text>
+
+      <text x="250" y="196" text-anchor="middle" font-size="12" font-weight="600" fill="#9ca3af">Host thread is free &#x2014; runtime runs other tasks</text>
+    </g>
+
+    <!-- Dashed arrow: GPU working... -->
+    <line x1="330" y1="444" x2="330" y2="476" stroke="#e8912d" stroke-width="2" stroke-dasharray="4,3" opacity="0.7"/>
+
+    <!-- GPU COMPLETION flash -->
+    <g transform="translate(110, 488)">
+      <rect width="440" height="84" rx="10" fill="rgba(249, 117, 131, 0.06)" stroke="#f97583" stroke-width="1.5" stroke-dasharray="6,3"/>
+      <text x="220" y="26" text-anchor="middle" font-size="13" font-weight="700" fill="#f97583">GPU Finishes &#x2192; Driver Calls Callback</text>
+      <text x="220" y="50" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">AtomicBool::store(true) + AtomicWaker::wake()</text>
+      <text x="220" y="72" text-anchor="middle" font-size="11" fill="#9ca3af">Runs on a CUDA driver thread, not your thread</text>
+    </g>
+
+    <!-- Arrow: runtime re-polls -->
+    <line x1="330" y1="586" x2="330" y2="628" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="324,624 330,636 336,624" fill="#c9d1d9" opacity="0.7"/>
+    <rect x="350" y="596" width="160" height="24" rx="4" fill="rgba(210, 168, 255, 0.1)"/>
+    <text x="430" y="613" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" font-weight="600" fill="#d2a8ff">second poll()</text>
+
+    <!-- State 3: COMPLETE (Purple) -->
+    <g transform="translate(130, 648)">
+      <rect width="400" height="70" rx="10" fill="rgba(210, 168, 255, 0.12)" stroke="#d2a8ff" stroke-width="2"/>
+      <text x="200" y="28" text-anchor="middle" font-size="16" font-weight="700" fill="#d2a8ff">COMPLETE</text>
+      <text x="200" y="50" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" fill="#d2a8ff" filter="url(#glow)">Poll::Ready(Ok(result))</text>
+    </g>
+
+    <!-- Critical property callout -->
+    <g transform="translate(30, 748)">
+      <rect width="600" height="30" rx="6" fill="rgba(88, 209, 219, 0.08)" stroke="#58d1db" stroke-width="1"/>
+      <text x="300" y="20" text-anchor="middle" font-size="12" font-weight="600" fill="#58d1db">No host thread spins or sleeps while the GPU works</text>
+    </g>
+  </g>
+
+  <!-- ==================== RIGHT: .sync() vs .await Comparison ==================== -->
+  <g transform="translate(730, 118)">
+    <rect width="490" height="800" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="490" height="800" rx="12" fill="none" stroke="#e8912d" stroke-width="2"/>
+    <rect x="2" y="2" width="486" height="44" rx="10" fill="#1c2128"/>
+    <text x="245" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#e8912d">.sync() vs .await</text>
+
+    <!-- .sync() section -->
+    <g transform="translate(20, 74)">
+      <text x="225" y="20" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="15" font-weight="700" fill="#79c0ff">.sync() &#x2014; blocks the thread</text>
+
+      <!-- Host thread timeline -->
+      <text x="0" y="58" font-size="11" font-weight="600" fill="#b1bac4">Host thread</text>
+      <rect x="0" y="68" width="450" height="24" rx="4" fill="#30363d"/>
+      <rect x="0" y="68" width="100" height="24" rx="4" fill="rgba(121, 192, 255, 0.3)" stroke="#79c0ff" stroke-width="1"/>
+      <text x="50" y="84" text-anchor="middle" font-size="9" font-weight="600" fill="#79c0ff">setup</text>
+      <rect x="100" y="68" width="250" height="24" rx="4" fill="rgba(249, 117, 131, 0.2)" stroke="#f97583" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="225" y="84" text-anchor="middle" font-size="9" font-weight="600" fill="#f97583">BLOCKED &#x2014; waiting for GPU</text>
+      <rect x="350" y="68" width="100" height="24" rx="4" fill="rgba(121, 192, 255, 0.3)" stroke="#79c0ff" stroke-width="1"/>
+      <text x="400" y="84" text-anchor="middle" font-size="9" font-weight="600" fill="#79c0ff">result</text>
+
+      <!-- GPU stream timeline -->
+      <text x="0" y="124" font-size="11" font-weight="600" fill="#b1bac4">GPU Stream</text>
+      <rect x="0" y="134" width="450" height="24" rx="4" fill="#30363d"/>
+      <rect x="100" y="134" width="250" height="24" rx="4" fill="#f97583" opacity="0.5"/>
+      <text x="225" y="150" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">kernel execution</text>
+
+      <text x="225" y="190" text-anchor="middle" font-size="12" font-weight="600" fill="#f97583">Thread does nothing useful while GPU works</text>
+    </g>
+
+    <!-- Divider -->
+    <line x1="20" y1="296" x2="470" y2="296" stroke="#30363d" stroke-width="1"/>
+
+    <!-- .await section -->
+    <g transform="translate(20, 326)">
+      <text x="225" y="20" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="15" font-weight="700" fill="#d2a8ff">.await &#x2014; yields the task</text>
+
+      <!-- Host thread timeline -->
+      <text x="0" y="58" font-size="11" font-weight="600" fill="#b1bac4">Host thread</text>
+      <rect x="0" y="68" width="450" height="24" rx="4" fill="#30363d"/>
+      <rect x="0" y="68" width="80" height="24" rx="4" fill="rgba(210, 168, 255, 0.3)" stroke="#d2a8ff" stroke-width="1"/>
+      <text x="40" y="84" text-anchor="middle" font-size="9" font-weight="600" fill="#d2a8ff">poll 1</text>
+      <rect x="80" y="68" width="80" height="24" rx="4" fill="rgba(88, 209, 219, 0.2)" stroke="#58d1db" stroke-width="1"/>
+      <text x="120" y="84" text-anchor="middle" font-size="9" font-weight="600" fill="#58d1db">task B</text>
+      <rect x="160" y="68" width="80" height="24" rx="4" fill="rgba(88, 209, 219, 0.2)" stroke="#58d1db" stroke-width="1"/>
+      <text x="200" y="84" text-anchor="middle" font-size="9" font-weight="600" fill="#58d1db">task C</text>
+      <rect x="240" y="68" width="80" height="24" rx="4" fill="rgba(88, 209, 219, 0.2)" stroke="#58d1db" stroke-width="1"/>
+      <text x="280" y="84" text-anchor="middle" font-size="9" font-weight="600" fill="#58d1db">task D</text>
+      <rect x="350" y="68" width="100" height="24" rx="4" fill="rgba(210, 168, 255, 0.3)" stroke="#d2a8ff" stroke-width="1"/>
+      <text x="400" y="84" text-anchor="middle" font-size="9" font-weight="600" fill="#d2a8ff">poll 2 &#x2192; result</text>
+
+      <!-- GPU stream timeline -->
+      <text x="0" y="124" font-size="11" font-weight="600" fill="#b1bac4">GPU Stream</text>
+      <rect x="0" y="134" width="450" height="24" rx="4" fill="#30363d"/>
+      <rect x="80" y="134" width="250" height="24" rx="4" fill="#f97583" opacity="0.5"/>
+      <text x="205" y="150" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">kernel execution</text>
+      <!-- Callback marker -->
+      <circle cx="330" cy="146" r="6" fill="#e8912d" stroke="#fff" stroke-width="1.5"/>
+      <text x="345" y="150" font-size="8" font-weight="600" fill="#e8912d">callback</text>
+
+      <!-- Callback arrow to thread -->
+      <line x1="340" y1="134" x2="370" y2="92" stroke="#e8912d" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.7"/>
+
+      <text x="225" y="190" text-anchor="middle" font-size="12" font-weight="600" fill="#58d1db">Thread runs other tasks while GPU works</text>
+    </g>
+
+    <!-- Summary comparison -->
+    <g transform="translate(20, 560)">
+      <rect width="450" height="172" rx="10" fill="rgba(232, 145, 45, 0.04)" stroke="#30363d" stroke-width="1"/>
+
+      <text x="225" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#c9d1d9">Why .await Scales</text>
+
+      <text x="16" y="58" font-size="12" fill="#c9d1d9">With</text>
+      <text x="48" y="58" font-family="'RobotoMono', monospace" font-size="12" fill="#79c0ff">.sync()</text>
+      <text x="100" y="58" font-size="12" fill="#c9d1d9">: 10 pipelines = 10 blocked threads</text>
+
+      <text x="16" y="86" font-size="12" fill="#c9d1d9">With</text>
+      <text x="48" y="86" font-family="'RobotoMono', monospace" font-size="12" fill="#d2a8ff">.await</text>
+      <text x="96" y="86" font-size="12" fill="#c9d1d9">: 10 pipelines = 1 thread, 10 tasks</text>
+
+      <line x1="16" y1="104" x2="434" y2="104" stroke="#30363d" stroke-width="1"/>
+
+      <text x="16" y="126" font-size="11" fill="#b1bac4">The GPU notifies Rust via cuLaunchHostFunc.</text>
+      <text x="16" y="146" font-size="11" fill="#b1bac4">No polling loop, no busy-wait, no wasted CPU.</text>
+      <text x="16" y="166" font-size="11" fill="#b1bac4">The async runtime wakes only when work is done.</text>
+    </g>
+  </g>
+</svg>

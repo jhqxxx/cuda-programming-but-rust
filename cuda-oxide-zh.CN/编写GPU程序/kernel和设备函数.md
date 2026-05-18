@@ -6,7 +6,7 @@
 
 ## `#[kernel]` —— GPU 入口点
 
-用 `#[kernel]` 注解函数，告诉 cuda-oxide 将其编译为 GPU 入口点。该函数必须返回 `()` —— 内核通过写入输出缓冲区来传递结果，而不是通过返回值。
+用 `#[kernel]` 注解函数，告诉 cuda-oxide 将其编译为 GPU 入口点。该函数必须返回 `()` —— kernel通过写入输出缓冲区来传递结果，而不是通过返回值。
 
 ```rust
 use cuda_device::{kernel, thread, DisjointSlice};
@@ -26,9 +26,9 @@ pub fn vecadd(a: &[f32], b: &[f32], mut c: DisjointSlice<f32>) {
 
 2. **添加 `#[no_mangle]`**，以在生成的 PTX 中保留符号名称。
 
-3. **生成一个标记结构体**，实现 `CudaKernel`（泛型内核则为 `GenericCudaKernel`），以便主机启动代码能在编译时查找正确的 PTX 入口点。
+3. **生成一个标记结构体**，实现 `CudaKernel`（泛型kernel则为 `GenericCudaKernel`），以便主机启动代码能在编译时查找正确的 PTX 入口点。
 
-在生成的 PTX 中，内核变为 `.entry` 指令 —— GPU 版的 `main`：
+在生成的 PTX 中，kernel变为 `.entry` 指令 —— GPU 版的 `main`：
 
 ```ptx
 .entry vecadd(.param .u64 a, .param .u64 a_len, ...) { ... }
@@ -36,22 +36,22 @@ pub fn vecadd(a: &[f32], b: &[f32], mut c: DisjointSlice<f32>) {
 
 ### 参数约束
 
-内核参数通过**参数标量化**跨越主机/设备 ABI 边界（详见[内存与数据移动](https://nvlabs.github.io/cuda-oxide/gpu-programming/memory-and-data-movement.html)章节）。关键规则：
+kernel参数通过**参数标量化**跨越主机/设备 ABI 边界（详见[内存与数据移动](../编写GPU程序/内存和数据移动.md)章节）。关键规则：
 
 - **切片**（`&[T]`、`DisjointSlice<T>`）变为指针 + 长度对。
 - **标量**（`u32`、`f32` 等）直接传递。
-- **按值传递的结构体和闭包**作为一个 byval `.param` 传递。字段级扁平化仍然适用于内部设备到设备的调用，但内核边界本身接收整个聚合体作为单个值，以匹配主机启动器推送的单个数据包槽位。
+- **按值传递的结构体和闭包**作为一个 byval `.param` 传递。字段级扁平化仍然适用于内部设备到设备的调用，但kernel边界本身接收整个聚合体作为单个值，以匹配主机启动器推送的单个数据包槽位。
 - **不支持堆分配类型**（`Vec`、`String`、`Box`）—— `alloc` crate 允许通过编译器，但目前未配置设备端的 `#[global_allocator]`。即使有，设备端的 `malloc` 也极其缓慢。
 
 ---
 
 ## 设备辅助函数
 
-并非所有 GPU 代码都属于内核本身。你可以将逻辑提取到辅助函数中，编译器也会将它们编译到 GPU 上。
+并非所有 GPU 代码都属于kernel本身。你可以将逻辑提取到辅助函数中，编译器也会将它们编译到 GPU 上。
 
 ### 自动发现的辅助函数
 
-最简单的方法：写一个普通的 Rust 函数，然后从你的内核中调用它。编译器的**收集器**从每个 `#[kernel]` 入口点遍历调用图，自动编译每个可达函数到 GPU —— 无需注解：
+最简单的方法：写一个普通的 Rust 函数，然后从你的kernel中调用它。编译器的**收集器**从每个 `#[kernel]` 入口点遍历调用图，自动编译每个可达函数到 GPU —— 无需注解：
 
 ```rust
 fn clamp(x: f32, lo: f32, hi: f32) -> f32 {
@@ -75,7 +75,7 @@ pub fn apply_clamp(input: &[f32], mut out: DisjointSlice<f32>) {
 | 场景 | 为何需要 `#[device]` |
 |------|------------------------|
 | 独立的设备库 | crate 中没有 `#[kernel]`，因此收集器没有入口点可供遍历 |
-| 跨 crate 设备函数 | 函数位于与内核不同的 crate 中 |
+| 跨 crate 设备函数 | 函数位于与kernel不同的 crate 中 |
 | 设备 FFI | 函数通过 `#[device] extern "C"` 暴露，用于通过 LTOIR 与 CUDA C++ 链接 |
 
 
@@ -178,12 +178,12 @@ pub fn optimized_kernel(mut out: DisjointSlice<f32>) {
 
 1. 扫描所有编译单元中保留的 `cuda_oxide_kernel_<hash>_` 命名空间中的函数（由 `#[kernel]` 生成）。
 
-2. 对每个内核，**遍历调用图**并收集所有传递可达的函数。
+2. 对每个kernel，**遍历调用图**并收集所有传递可达的函数。
 
 3. **过滤**每个被调用者，对照允许的 crate 列表：
 | Crate | 是否允许 | 原因 |
 |-------|----------|------|
-| 你的本地 crate | 是 | 你的内核和辅助代码 |
+| 你的本地 crate | 是 | 你的kernel和辅助代码 |
 | `cuda_device` | 是 | GPU 内联函数（线程、线程束、共享内存） |
 | `core` | 是 | `no_std` Rust 核心库 |
 | `std` | 否 | 需要 GPU 上不可用的操作系统设施 |
@@ -209,3 +209,6 @@ pub fn optimized_kernel(mut out: DisjointSlice<f32>) {
 - `unwrap()` 和 `expect()` 可用，但在 `None`/`Err` 上会使 GPU 陷入 trap。
 - `assert!` 和 `debug_assert!` 可用，但失败时会使 GPU 陷入 trap。
 - `panic!("message")` **不支持**（格式化机制不可用）—— 请改用 `gpu_assert!` 或 `debug::trap()`。
+
+| [上一页](./cuda执行模型.md) | [下一页](./内存和数据移动.md) |
+| :--- | ---: |

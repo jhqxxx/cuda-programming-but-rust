@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 1020" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+    <linearGradient id="titleAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f97583"/>
+      <stop offset="33%" stop-color="#e8912d"/>
+      <stop offset="66%" stop-color="#79c0ff"/>
+      <stop offset="100%" stop-color="#d2a8ff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1260" height="1020" fill="#0d1117"/>
+  <rect width="1260" height="1020" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">Concurrent Batch Execution</text>
+  <line x1="340" y1="58" x2="920" y2="58" stroke="url(#titleAccent)" stroke-width="2" opacity="0.8"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">Four MLP pipelines on four streams &#x2014; independent batches overlap</text>
+
+  <!-- ==================== TOP: Shared Setup ==================== -->
+  <g transform="translate(40, 118)">
+    <rect width="1180" height="140" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="140" rx="12" fill="none" stroke="#e8912d" stroke-width="2"/>
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#e8912d">Shared Setup &#x2014; upload once, share across all batches</text>
+
+    <!-- Weights boxes -->
+    <g transform="translate(60, 62)">
+      <rect width="200" height="56" rx="8" fill="rgba(232, 145, 45, 0.12)" stroke="#e8912d" stroke-width="1.5"/>
+      <text x="100" y="22" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#e8912d">Arc&lt;DeviceBox&gt;</text>
+      <text x="100" y="42" text-anchor="middle" font-size="12" fill="#c9d1d9">W0 weights (DIM &#xD7; DIM)</text>
+    </g>
+    <g transform="translate(300, 62)">
+      <rect width="200" height="56" rx="8" fill="rgba(232, 145, 45, 0.12)" stroke="#e8912d" stroke-width="1.5"/>
+      <text x="100" y="22" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" font-weight="700" fill="#e8912d">Arc&lt;DeviceBox&gt;</text>
+      <text x="100" y="42" text-anchor="middle" font-size="12" fill="#c9d1d9">W1 weights (DIM)</text>
+    </g>
+
+    <!-- .clone() arrows to batches -->
+    <g transform="translate(536, 62)">
+      <text x="0" y="16" font-family="'RobotoMono', monospace" font-size="12" fill="#e8912d">.clone()</text>
+      <text x="0" y="34" font-size="11" fill="#9ca3af">&#x2192; cheap ref-count bump</text>
+      <text x="0" y="50" font-size="11" fill="#9ca3af">&#x2192; zero data copies</text>
+    </g>
+
+    <!-- tokio::spawn labels -->
+    <g transform="translate(730, 62)">
+      <rect width="420" height="56" rx="8" fill="rgba(210, 168, 255, 0.08)" stroke="#d2a8ff" stroke-width="1"/>
+      <text x="210" y="22" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" fill="#d2a8ff">tokio::spawn(pipeline.into_future())</text>
+      <text x="210" y="42" text-anchor="middle" font-size="11" fill="#9ca3af">Each batch becomes an independent Tokio task</text>
+    </g>
+  </g>
+
+  <!-- ==================== MIDDLE: GPU Timeline ==================== -->
+  <g transform="translate(40, 296)">
+    <rect width="1180" height="420" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="420" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#c9d1d9">GPU Timeline &#x2014; round-robin distributes across 4 streams</text>
+
+    <!-- Stream 0 (Coral), Batch 0 -->
+    <text x="42" y="80" font-size="13" font-weight="600" fill="#f97583">Stream 0</text>
+    <text x="42" y="96" font-size="10" fill="#9ca3af">Batch 0</text>
+    <rect x="150" y="72" width="80" height="28" rx="4" fill="#f97583" opacity="0.5"/>
+    <text x="190" y="91" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">H2D</text>
+    <rect x="235" y="72" width="200" height="28" rx="4" fill="#f97583" opacity="0.7"/>
+    <text x="335" y="91" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">GEMM</text>
+    <rect x="440" y="72" width="120" height="28" rx="4" fill="#f97583" opacity="0.6"/>
+    <text x="500" y="91" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">MatVec</text>
+    <rect x="565" y="72" width="70" height="28" rx="4" fill="#f97583" opacity="0.5"/>
+    <text x="600" y="91" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">ReLU</text>
+    <rect x="640" y="72" width="80" height="28" rx="4" fill="#f97583" opacity="0.4"/>
+    <text x="680" y="91" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">D2H</text>
+
+    <!-- Separator between Stream 0 and 1 -->
+    <line x1="42" y1="118" x2="1140" y2="118" stroke="#30363d" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+
+    <!-- Stream 1 (Amber), Batch 1 -->
+    <text x="42" y="150" font-size="13" font-weight="600" fill="#e8912d">Stream 1</text>
+    <text x="42" y="166" font-size="10" fill="#9ca3af">Batch 1</text>
+    <rect x="200" y="142" width="80" height="28" rx="4" fill="#e8912d" opacity="0.5"/>
+    <text x="240" y="161" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">H2D</text>
+    <rect x="285" y="142" width="200" height="28" rx="4" fill="#e8912d" opacity="0.7"/>
+    <text x="385" y="161" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">GEMM</text>
+    <rect x="490" y="142" width="120" height="28" rx="4" fill="#e8912d" opacity="0.6"/>
+    <text x="550" y="161" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">MatVec</text>
+    <rect x="615" y="142" width="70" height="28" rx="4" fill="#e8912d" opacity="0.5"/>
+    <text x="650" y="161" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">ReLU</text>
+    <rect x="690" y="142" width="80" height="28" rx="4" fill="#e8912d" opacity="0.4"/>
+    <text x="730" y="161" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">D2H</text>
+
+    <!-- Separator between Stream 1 and 2 -->
+    <line x1="42" y1="188" x2="1140" y2="188" stroke="#30363d" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+
+    <!-- Stream 2 (Blue), Batch 2 -->
+    <text x="42" y="220" font-size="13" font-weight="600" fill="#79c0ff">Stream 2</text>
+    <text x="42" y="236" font-size="10" fill="#9ca3af">Batch 2</text>
+    <rect x="250" y="212" width="80" height="28" rx="4" fill="#79c0ff" opacity="0.5"/>
+    <text x="290" y="231" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">H2D</text>
+    <rect x="335" y="212" width="200" height="28" rx="4" fill="#79c0ff" opacity="0.7"/>
+    <text x="435" y="231" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">GEMM</text>
+    <rect x="540" y="212" width="120" height="28" rx="4" fill="#79c0ff" opacity="0.6"/>
+    <text x="600" y="231" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">MatVec</text>
+    <rect x="665" y="212" width="70" height="28" rx="4" fill="#79c0ff" opacity="0.5"/>
+    <text x="700" y="231" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">ReLU</text>
+    <rect x="740" y="212" width="80" height="28" rx="4" fill="#79c0ff" opacity="0.4"/>
+    <text x="780" y="231" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">D2H</text>
+
+    <!-- Separator between Stream 2 and 3 -->
+    <line x1="42" y1="258" x2="1140" y2="258" stroke="#30363d" stroke-width="1" stroke-dasharray="4,4" opacity="0.5"/>
+
+    <!-- Stream 3 (Purple), Batch 3 -->
+    <text x="42" y="290" font-size="13" font-weight="600" fill="#d2a8ff">Stream 3</text>
+    <text x="42" y="306" font-size="10" fill="#9ca3af">Batch 3</text>
+    <rect x="300" y="282" width="80" height="28" rx="4" fill="#d2a8ff" opacity="0.5"/>
+    <text x="340" y="301" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">H2D</text>
+    <rect x="385" y="282" width="200" height="28" rx="4" fill="#d2a8ff" opacity="0.7"/>
+    <text x="485" y="301" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">GEMM</text>
+    <rect x="590" y="282" width="120" height="28" rx="4" fill="#d2a8ff" opacity="0.6"/>
+    <text x="650" y="301" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">MatVec</text>
+    <rect x="715" y="282" width="70" height="28" rx="4" fill="#d2a8ff" opacity="0.5"/>
+    <text x="750" y="301" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">ReLU</text>
+    <rect x="790" y="282" width="80" height="28" rx="4" fill="#d2a8ff" opacity="0.4"/>
+    <text x="830" y="301" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">D2H</text>
+
+    <!-- Overlap bracket -->
+    <rect x="235" y="340" width="540" height="24" rx="4" fill="rgba(86, 211, 100, 0.06)" stroke="#56d364" stroke-width="1" stroke-dasharray="4,3"/>
+    <text x="505" y="357" text-anchor="middle" font-size="11" font-weight="600" fill="#56d364">Overlap zone &#x2014; all 4 batches running simultaneously</text>
+
+    <!-- Time axis -->
+    <line x1="140" y1="388" x2="1140" y2="388" stroke="#30363d" stroke-width="1.5"/>
+    <text x="640" y="408" text-anchor="middle" font-size="12" font-weight="600" fill="#9ca3af">&#x25C4;&#x2500;&#x2500;&#x2500; time &#x2500;&#x2500;&#x2500;&#x25BA;</text>
+  </g>
+
+  <!-- ==================== BOTTOM: Sequential vs Concurrent Comparison ==================== -->
+  <g transform="translate(40, 756)">
+    <rect width="1180" height="224" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="224" rx="12" fill="none" stroke="#30363d" stroke-width="2"/>
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#c9d1d9">Sequential vs Concurrent</text>
+
+    <!-- Sequential -->
+    <g transform="translate(30, 62)">
+      <text x="0" y="16" font-size="13" font-weight="600" fill="#f97583">Sequential</text>
+      <text x="84" y="16" font-size="11" fill="#9ca3af">(one batch at a time)</text>
+      <rect x="0" y="28" width="1100" height="22" rx="4" fill="#30363d"/>
+      <rect x="0" y="28" width="250" height="22" rx="4" fill="#f97583" opacity="0.5"/>
+      <text x="125" y="44" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Batch 0</text>
+      <rect x="255" y="28" width="250" height="22" rx="4" fill="#e8912d" opacity="0.5"/>
+      <text x="380" y="44" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Batch 1</text>
+      <rect x="510" y="28" width="250" height="22" rx="4" fill="#79c0ff" opacity="0.5"/>
+      <text x="635" y="44" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Batch 2</text>
+      <rect x="765" y="28" width="250" height="22" rx="4" fill="#d2a8ff" opacity="0.5"/>
+      <text x="890" y="44" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">Batch 3</text>
+      <line x1="0" y1="58" x2="1015" y2="58" stroke="#f97583" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="1030" y="62" font-size="10" font-weight="600" fill="#f97583">4&#xD7; time</text>
+    </g>
+
+    <!-- Concurrent -->
+    <g transform="translate(30, 140)">
+      <text x="0" y="16" font-size="13" font-weight="600" fill="#56d364">Concurrent</text>
+      <text x="84" y="16" font-size="11" fill="#9ca3af">(round-robin, overlapping)</text>
+      <rect x="0" y="28" width="1100" height="22" rx="4" fill="#30363d"/>
+      <rect x="0" y="28" width="350" height="22" rx="4" fill="#f97583" opacity="0.3"/>
+      <rect x="50" y="28" width="350" height="22" rx="4" fill="#e8912d" opacity="0.3"/>
+      <rect x="100" y="28" width="350" height="22" rx="4" fill="#79c0ff" opacity="0.3"/>
+      <rect x="150" y="28" width="350" height="22" rx="4" fill="#d2a8ff" opacity="0.3"/>
+      <text x="250" y="44" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">all 4 batches overlapping</text>
+      <line x1="0" y1="58" x2="500" y2="58" stroke="#56d364" stroke-width="1" stroke-dasharray="3,2"/>
+      <text x="515" y="62" font-size="10" font-weight="600" fill="#56d364">&#x2248;1.3&#xD7; time</text>
+      <text x="600" y="62" font-size="10" fill="#9ca3af">(if GPU has spare SMs)</text>
+    </g>
+  </g>
+</svg>

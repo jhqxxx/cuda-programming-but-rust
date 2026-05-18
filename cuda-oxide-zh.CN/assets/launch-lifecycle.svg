@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 740" font-family="'NVIDIA', 'Inter', 'SF Pro Display', Arial, sans-serif">
+  <defs>
+    <style type="text/css">
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Rg.woff2') format('woff2'); }
+      @font-face { font-family: 'NVIDIA'; font-style: normal; font-weight: 700; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/nvidia-sans/GLOBAL/NVIDIASans_W_Bd.woff2') format('woff2'); }
+      @font-face { font-family: 'RobotoMono'; font-style: normal; font-weight: 400; src: url('https://images.nvidia.com/etc/designs/nvidiaGDC/clientlibs_base/fonts/Roboto_Mono/static/RobotoMono-Regular.ttf') format('truetype'); }
+    </style>
+    <filter id="glow"><feGaussianBlur stdDeviation="3" result="coloredBlur"/><feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="shadow"><feDropShadow dx="2" dy="4" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1c2128" stroke-width="0.5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1260" height="740" fill="#0d1117"/>
+  <rect width="1260" height="740" fill="url(#grid)" opacity="0.5"/>
+
+  <!-- Title -->
+  <text x="630" y="44" text-anchor="middle" font-size="28" font-weight="500" fill="#ffffff" letter-spacing="-0.5">Kernel Launch Lifecycle</text>
+  <line x1="370" y1="58" x2="890" y2="58" stroke="#e8912d" stroke-width="2" opacity="0.6"/>
+  <text x="630" y="84" text-anchor="middle" font-size="16" fill="#b1bac4">From context initialization to kernel completion</text>
+
+  <!-- ==================== HOST SIDE ==================== -->
+  <g transform="translate(40, 118)">
+    <rect width="1180" height="320" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="320" rx="12" fill="none" stroke="#79c0ff" stroke-width="2"/>
+
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#79c0ff">Host (CPU)</text>
+
+    <!-- Step 1: Context (blue) -->
+    <g transform="translate(30, 70)">
+      <rect width="170" height="80" rx="10" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="1.5"/>
+      <text x="85" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#79c0ff">1. Init context</text>
+      <text x="85" y="52" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">CudaContext</text>
+      <text x="85" y="70" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">::new(0)</text>
+    </g>
+
+    <!-- Arrow 1→2 -->
+    <line x1="212" y1="110" x2="240" y2="110" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="238,104 250,110 238,116" fill="#c9d1d9" opacity="0.7"/>
+
+    <!-- Step 2: Module (blue) -->
+    <g transform="translate(258, 70)">
+      <rect width="170" height="80" rx="10" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="1.5"/>
+      <text x="85" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#79c0ff">2. Load module</text>
+      <text x="85" y="52" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">load_module</text>
+      <text x="85" y="70" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">("vecadd.ptx")</text>
+    </g>
+
+    <!-- Arrow 2→3 -->
+    <line x1="440" y1="110" x2="468" y2="110" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="466,104 478,110 466,116" fill="#c9d1d9" opacity="0.7"/>
+
+    <!-- Step 3: Function (blue) -->
+    <g transform="translate(486, 70)">
+      <rect width="170" height="80" rx="10" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="1.5"/>
+      <text x="85" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#79c0ff">3. Get function</text>
+      <text x="85" y="52" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">CudaKernel</text>
+      <text x="85" y="70" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">::PTX_NAME</text>
+    </g>
+
+    <!-- Arrow 3→4 -->
+    <line x1="668" y1="110" x2="696" y2="110" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="694,104 706,110 694,116" fill="#c9d1d9" opacity="0.7"/>
+
+    <!-- Step 4: Configure (amber) -->
+    <g transform="translate(714, 70)">
+      <rect width="170" height="80" rx="10" fill="rgba(232, 145, 45, 0.12)" stroke="#e8912d" stroke-width="1.5"/>
+      <text x="85" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#e8912d">4. Configure</text>
+      <text x="85" y="52" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">LaunchConfig</text>
+      <text x="85" y="70" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">::for_num_elems</text>
+    </g>
+
+    <!-- Arrow 4→5 -->
+    <line x1="896" y1="110" x2="924" y2="110" stroke="#c9d1d9" stroke-width="2" opacity="0.7"/>
+    <polygon points="922,104 934,110 922,116" fill="#c9d1d9" opacity="0.7"/>
+
+    <!-- Step 5: Launch (coral) -->
+    <g transform="translate(940, 70)">
+      <rect width="210" height="80" rx="10" fill="rgba(249, 117, 131, 0.15)" stroke="#f97583" stroke-width="2"/>
+      <text x="105" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#f97583">5. Launch!</text>
+      <text x="105" y="52" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#f97583" filter="url(#glow)">cuda_launch! { ... }</text>
+      <text x="105" y="70" text-anchor="middle" font-size="11" fill="#b1bac4">enqueue on stream</text>
+    </g>
+
+    <!-- Vertical arrow Launch→Sync -->
+    <line x1="1045" y1="158" x2="1045" y2="186" stroke="#e8912d" stroke-width="2" opacity="0.7"/>
+    <polygon points="1039,184 1045,196 1051,184" fill="#e8912d" opacity="0.7"/>
+
+    <!-- Step 6: Sync (amber) -->
+    <g transform="translate(940, 200)">
+      <rect width="210" height="80" rx="10" fill="rgba(232, 145, 45, 0.12)" stroke="#e8912d" stroke-width="1.5"/>
+      <text x="105" y="30" text-anchor="middle" font-size="13" font-weight="700" fill="#e8912d">6. Synchronize</text>
+      <text x="105" y="52" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#c9d1d9">to_host_vec()</text>
+      <text x="105" y="70" text-anchor="middle" font-size="11" fill="#b1bac4">wait for results</text>
+    </g>
+
+    <!-- cuda_launch! bracket (coral) -->
+    <rect x="30" y="198" width="870" height="76" rx="8" fill="rgba(249, 117, 131, 0.05)" stroke="#f97583" stroke-width="1" stroke-dasharray="6,3"/>
+    <text x="465" y="226" text-anchor="middle" font-size="13" font-weight="600" fill="#f97583">cuda_launch! handles steps 3&#x2013;5 in one macro call</text>
+    <text x="465" y="250" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="12" fill="#b1bac4">kernel: vecadd, stream: stream, module: module, config: cfg, args: [...]</text>
+  </g>
+
+  <!-- ==================== Arrow from Host to Device ==================== -->
+  <line x1="630" y1="446" x2="630" y2="462" stroke="#c9d1d9" stroke-width="2.5" opacity="0.8"/>
+  <polygon points="623,460 630,474 637,460" fill="#c9d1d9" opacity="0.8"/>
+  <text x="660" y="462" font-size="12" font-weight="600" fill="#c9d1d9">dispatch grid</text>
+
+  <!-- ==================== DEVICE SIDE ==================== -->
+  <g transform="translate(40, 478)">
+    <rect width="1180" height="222" rx="12" fill="#161b22" filter="url(#shadow)"/>
+    <rect width="1180" height="222" rx="12" fill="none" stroke="#e8912d" stroke-width="2"/>
+
+    <rect x="2" y="2" width="1176" height="44" rx="10" fill="#1c2128"/>
+    <text x="590" y="32" text-anchor="middle" font-size="17" font-weight="700" fill="#e8912d">Device (GPU)</text>
+
+    <!-- SM 0 (coral) -->
+    <g transform="translate(40, 66)">
+      <rect width="240" height="120" rx="10" fill="rgba(249, 117, 131, 0.12)" stroke="#f97583" stroke-width="1.5"/>
+      <text x="120" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#f97583">SM 0</text>
+      <rect x="16" y="42" width="100" height="30" rx="6" fill="#f97583" opacity="0.6"/><text x="66" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Block 0</text>
+      <rect x="124" y="42" width="100" height="30" rx="6" fill="#f97583" opacity="0.4"/><text x="174" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Block 4</text>
+      <text x="120" y="102" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#b1bac4">warps executing...</text>
+    </g>
+
+    <!-- SM 1 (amber — was green) -->
+    <g transform="translate(320, 66)">
+      <rect width="240" height="120" rx="10" fill="rgba(232, 145, 45, 0.12)" stroke="#e8912d" stroke-width="1.5"/>
+      <text x="120" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#e8912d">SM 1</text>
+      <rect x="16" y="42" width="100" height="30" rx="6" fill="#e8912d" opacity="0.6"/><text x="66" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Block 1</text>
+      <rect x="124" y="42" width="100" height="30" rx="6" fill="#e8912d" opacity="0.4"/><text x="174" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Block 5</text>
+      <text x="120" y="102" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#b1bac4">warps executing...</text>
+    </g>
+
+    <!-- SM 2 (blue) -->
+    <g transform="translate(600, 66)">
+      <rect width="240" height="120" rx="10" fill="rgba(121, 192, 255, 0.12)" stroke="#79c0ff" stroke-width="1.5"/>
+      <text x="120" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#79c0ff">SM 2</text>
+      <rect x="16" y="42" width="100" height="30" rx="6" fill="#79c0ff" opacity="0.6"/><text x="66" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Block 2</text>
+      <rect x="124" y="42" width="100" height="30" rx="6" fill="#79c0ff" opacity="0.4"/><text x="174" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Block 6</text>
+      <text x="120" y="102" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#b1bac4">warps executing...</text>
+    </g>
+
+    <!-- SM 3 (purple) -->
+    <g transform="translate(880, 66)">
+      <rect width="240" height="120" rx="10" fill="rgba(210, 168, 255, 0.12)" stroke="#d2a8ff" stroke-width="1.5"/>
+      <text x="120" y="28" text-anchor="middle" font-size="14" font-weight="700" fill="#d2a8ff">SM 3</text>
+      <rect x="16" y="42" width="100" height="30" rx="6" fill="#d2a8ff" opacity="0.6"/><text x="66" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Block 3</text>
+      <rect x="124" y="42" width="100" height="30" rx="6" fill="#d2a8ff" opacity="0.4"/><text x="174" y="62" text-anchor="middle" font-size="11" font-weight="700" fill="#fff">Block 7</text>
+      <text x="120" y="102" text-anchor="middle" font-family="'RobotoMono', monospace" font-size="11" fill="#b1bac4">warps executing...</text>
+    </g>
+  </g>
+</svg>
