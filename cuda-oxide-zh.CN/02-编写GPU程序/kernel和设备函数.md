@@ -181,6 +181,7 @@ pub fn optimized_kernel(mut out: DisjointSlice<f32>) {
 2. 对每个kernel，**遍历调用图**并收集所有传递可达的函数。
 
 3. **过滤**每个被调用者，对照允许的 crate 列表：
+
 | Crate | 是否允许 | 原因 |
 |-------|----------|------|
 | 你的本地 crate | 是 | 你的kernel和辅助代码 |
