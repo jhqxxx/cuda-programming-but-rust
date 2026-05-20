@@ -74,7 +74,7 @@ pub fn apply_clamp(input: &[f32], mut out: DisjointSlice<f32>) {
 在自动发现不足够的三种特定场景中，需要 `#[device]` 属性：
 
 | 场景 | 为何需要 `#[device]` |
-|------|------------------------|
+|------|-----------------|
 | 独立的设备库 | crate 中没有 `#[kernel]`，因此收集器没有入口点可供遍历 |
 | 跨 crate 设备函数 | 函数位于与kernel不同的 crate 中 |
 | 设备 FFI | 函数通过 `#[device] extern "C"` 暴露，用于通过 LTOIR 与 CUDA C++ 链接 |
