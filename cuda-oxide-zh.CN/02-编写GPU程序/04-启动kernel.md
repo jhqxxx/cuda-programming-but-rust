@@ -253,9 +253,9 @@ let (result_a, result_b) = combined.sync()?;
 
 ---
 
-## 集群启动
+## 簇启动
 
-线程块集群（Hopper 及更新架构）允许块通过**分布式共享内存**（DSMEM）在共享内存之外进行协作。要使用集群启动，在kernel上添加 `#[cluster_launch]` 并在启动中包含 `cluster_dim`：
+线程块簇（Hopper 及更新架构）允许块通过**分布式共享内存**（DSMEM）在共享内存之外进行协作。要使用簇启动，在kernel上添加 `#[cluster_launch]` 并在启动中包含 `cluster_dim`：
 
 ```rust
 use cuda_device::{kernel, cluster, cluster_launch, DisjointSlice};
@@ -268,7 +268,7 @@ pub fn cluster_kernel(mut out: DisjointSlice<u32>) {
 }
 ```
 
-在主机端，启动使用 `launch_kernel_ex`（扩展启动 API）并指定集群维度。`cuda_launch!` 通过 `cluster_dim` 字段支持此功能：
+在主机端，启动使用 `launch_kernel_ex`（扩展启动 API）并指定簇维度。`cuda_launch!` 通过 `cluster_dim` 字段支持此功能：
 
 ```rust
 cuda_launch! {
@@ -279,11 +279,11 @@ cuda_launch! {
     cluster_dim: (4, 1, 1),
     args: [slice_mut(out_dev)]
 }
-.expect("集群启动失败");
+.expect("簇启动失败");
 ```
 
 > **提示**
-> 集群启动需要 **Hopper (sm_90)** 或更新架构。最大集群大小通常为 16 个块。使用 `cargo oxide build --arch sm_90` 以 Hopper 为目标。
+> 簇启动需要 **Hopper (sm_90)** 或更新架构。最大簇大小通常为 16 个块。使用 `cargo oxide build --arch sm_90` 以 Hopper 为目标。
 
 ---
 

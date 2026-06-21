@@ -1,6 +1,6 @@
-# CUDA编程指南 V13.2
+# CUDA编程指南 V13.3
 
-CUDA Programming Guide v13.2的中文翻译版
+CUDA Programming Guide v13.3的中文翻译版
 
 未完待续
 
