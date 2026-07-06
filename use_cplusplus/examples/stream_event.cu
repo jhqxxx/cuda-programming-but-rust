@@ -20,9 +20,16 @@ int main(int argc, char **argv)
     int threads = 256;
     int blocks = cuda::ceil_div(vectorLength, threads);
     cudaStream_t stream;
-    cudaStreamCreate(&stream);
+    CUDA_CHECK(cudaStreamCreate(&stream));
+    cudaEvent_t start;
+    cudaEvent_t stop;
+    CUDA_CHECK(cudaEventCreate(&start));
+    CUDA_CHECK(cudaEventCreate(&stop));
+    CUDA_CHECK(cudaEventRecord(start, stream));
     init<<<blocks, threads, 0, stream>>>(devA, vectorLength);
-    CUDA_CHECK(cudaDeviceSynchronize());
+    // CUDA_CHECK(cudaDeviceSynchronize());
+    CUDA_CHECK(cudaEventRecord(stop, stream));
+    CUDA_CHECK(cudaEventSynchronize(stop));
     CUDA_CHECK(cudaMemcpyAsync(A, devA, vectorLength * sizeof(float), cudaMemcpyDefault, stream));
     CUDA_CHECK(cudaStreamSynchronize(stream));
     cudaError_t status = cudaStreamQuery(stream);
@@ -37,7 +44,12 @@ int main(int argc, char **argv)
     default:
         break;
     }
-    cudaStreamDestroy(stream);
+    float elapsedTime;
+    CUDA_CHECK(cudaEventElapsedTime(&elapsedTime, start, stop));
+    printf("Kernel execution time: %f ms \n ", elapsedTime);
+    CUDA_CHECK(cudaEventDestroy(start));
+    CUDA_CHECK(cudaEventDestroy(stop));
+    CUDA_CHECK(cudaStreamDestroy(stream));
     for (int i = 0; i < 10; i++)
     {
         printf("i: %d, value: %f", i, A[i]);

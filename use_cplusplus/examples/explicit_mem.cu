@@ -1,6 +1,6 @@
 // examples/explicit.cu
-#include "../common/cuda_utils.h"
-#include "../common/vector_ops.cu"
+#include "cuda_utils.h"
+#include "vector_ops.cu"
 
 int main(int argc, char **argv)
 {
