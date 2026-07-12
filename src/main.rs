@@ -17,6 +17,7 @@ fn clamp(x: f32, lo: f32, hi: f32) -> f32 {
     }
 }
 
+#[allow(unused)]
 fn max(x: f32, y: f32) -> f32 {
     if x >= y { x } else { y }
 }

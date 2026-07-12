@@ -1,0 +1,3 @@
+numba
+# cupy-cuda13x # for cuda13.x
+# cupy-cuda12x # for cuda12.x
