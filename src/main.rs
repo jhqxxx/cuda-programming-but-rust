@@ -1,5 +1,6 @@
 use cuda_core::{CudaContext, DeviceBuffer, LaunchConfig};
 mod elementwise;
+mod utils;
 use crate::elementwise::elementwise_module;
 
 fn main() {
