@@ -1,5 +1,6 @@
 use cuda_core::LaunchConfig;
 
+#[allow(unused)]
 pub fn get_launch_config_1d(num_elems: u32, block_size: u32) -> LaunchConfig {
     let grid_x = num_elems.div_ceil(block_size);
     LaunchConfig {

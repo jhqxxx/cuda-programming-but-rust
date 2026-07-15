@@ -1,3 +1,4 @@
+#![feature(f16)]
 use cuda_core::{CudaContext, DeviceBuffer, LaunchConfig};
 mod elementwise;
 mod utils;
