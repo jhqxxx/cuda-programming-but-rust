@@ -15,15 +15,17 @@ fn main() {
     let mut c_dev = DeviceBuffer::<f32>::zeroed(&stream, N).unwrap();
     let module = elementwise_module::load(&ctx).expect("failed to load ctx");
 
-    module
-        .elementwise_add_f32_kernel(
-            &stream,
-            LaunchConfig::for_num_elems(N as u32),
-            &a_dev,
-            &b_dev,
-            &mut c_dev,
-        )
-        .unwrap();
+    unsafe {
+        module
+            .elementwise_add_f32_kernel(
+                &stream,
+                LaunchConfig::for_num_elems(N as u32),
+                &a_dev,
+                &b_dev,
+                &mut c_dev,
+            )
+            .unwrap();
+    }
 
     let c_host = c_dev.to_host_vec(&stream).unwrap();
     let errors = (0..N)
