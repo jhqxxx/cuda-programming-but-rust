@@ -2,4 +2,4 @@ target/*
 .oxide-artifacts/*
 *.ll
 *.ptx
-use_cplusplus/build/*
+use_cpp/build/*

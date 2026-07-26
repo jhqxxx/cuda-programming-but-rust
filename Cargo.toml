@@ -9,3 +9,4 @@ edition = "2024"
 cuda-device = { git = "https://github.com/NVlabs/cuda-oxide.git" }
 cuda-host = { git = "https://github.com/NVlabs/cuda-oxide.git"}
 cuda-core = { git = "https://github.com/NVlabs/cuda-oxide.git" }
+anyhow = "1.0.104"
