@@ -253,7 +253,7 @@ mod test {
         let data_dev = DeviceBuffer::from_host(&stream, &data_host)?;
         let mut out_dev = DeviceBuffer::<f32>::zeroed(&stream, N)?;
 
-        unsafe { module.shared_single((stream).as_ref(), cfg, &data_dev, &mut out_dev) }
+        unsafe { module.shared_single(&stream, cfg, &data_dev, &mut out_dev) }
             .expect("Kernel launch failed");
 
         let out_result = out_dev.to_host_vec(&stream)?;
