@@ -7,3 +7,4 @@ pub mod constant_memory;
 pub mod shared_mem;
 pub mod barrier;
 pub mod device_global;
+pub mod atomic;

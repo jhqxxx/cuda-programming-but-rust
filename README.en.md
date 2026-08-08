@@ -27,6 +27,9 @@ A learning project for **cuda-oxide** ([NVlabs/cuda-oxide](https://github.com/NV
 | **generic** | [`src/generic/`](./src/generic/mod.rs) | Generic kernels: `scale<T>`, `add<T>`, closure capture & higher-order functions |
 | **constant_memory** | [`src/constant_memory/`](./src/constant_memory/mod.rs) | CUDA constant memory: scalar/array constants, host-side setters |
 | **shared_mem** | [`src/shared_mem/`](./src/shared_mem/mod.rs) | Shared memory: `SharedArray` static, dynamic shared memory, alignment (16/128/256 bytes), mixed-alignment partitioning |
+| **barrier** | [`src/barrier/`](./src/barrier/mod.rs) | Thread barriers: mbarrier synchronization, shared-memory data exchange under a barrier |
+| **device_global** | [`src/device_global/`](./src/device_global/mod.rs) | Device globals: cross-kernel shared state, static constant tables, static initializer edges (NaN bit patterns) |
+| **atomic** | [`src/atomic/`](./src/atomic/mod.rs) | Atomic operations: 19 tests covering multiple ops/types/scopes/memory orderings |
 | **printf** | [`src/printf/`](./src/printf/mod.rs) | GPU `gpu_printf!`: integers, floats, booleans, formatted output |
 | **utils** | [`src/utils/`](./src/utils/mod.rs) | Helper: `get_launch_config_1d` shorthand for launch configs |
 
@@ -108,7 +111,7 @@ cargo oxide test -- printf
 
 ## 🧪 Test Results
 
-**19 tests, all passing ✅**
+**43 tests, all passing ✅**
 
 | Module | Tests | Coverage |
 |--------|-------|----------|
@@ -116,6 +119,9 @@ cargo oxide test -- printf
 | `generic` | 6 | scale(f32/f16), add(f32/f16), closure(f32/f16) |
 | `constant_memory` | 2 | linear transform, polynomial |
 | `shared_mem` | 6 | single/dual static, dynamic basic/partition/128-align/mixed-align |
+| `barrier` | 2 | mbarrier sync barrier, shared-memory data exchange under a barrier |
+| `device_global` | 3 | device globals, static constant tables, static initializer edges (NaN etc.) |
+| `atomic` | 19 | multiple atomic ops/types, `.gpu` vs `.cta` scopes, multiple memory orderings |
 | `printf` | 1 | integers/floats/formatting/booleans/return value |
 
 ---
@@ -135,6 +141,9 @@ cuda-programming-but-rust/
 │   ├── generic/               # Generic kernels
 │   ├── constant_memory/       # Constant memory kernels
 │   ├── shared_mem/            # Shared memory kernels
+│   ├── barrier/               # Thread barrier kernels (mbarrier)
+│   ├── device_global/         # Device global kernels
+│   ├── atomic/                # Atomic operation kernels
 │   ├── printf/                # GPU printf kernels
 │   └── utils/                 # Utility functions
 ├── use_cpp/             # Reference: C++ CUDA implementations
@@ -157,7 +166,10 @@ cuda-programming-but-rust/
 3. **Generics & Closures** → [`generic`](./src/generic/mod.rs) — Rust generics on GPU
 4. **Constant Memory** → [`constant_memory`](./src/constant_memory/mod.rs) — Read-only parameter caching
 5. **Shared Memory** → [`shared_mem`](./src/shared_mem/mod.rs) — Intra-block collaboration
-6. **Debug Output** → [`printf`](./src/printf/mod.rs) — GPU-side debugging
+6. **Thread Barriers** → [`barrier`](./src/barrier/mod.rs) — mbarrier & block synchronization
+7. **Device Globals** → [`device_global`](./src/device_global/mod.rs) — Cross-kernel shared state
+8. **Atomics** → [`atomic`](./src/atomic/mod.rs) — Atomicity & memory ordering
+9. **Debug Output** → [`printf`](./src/printf/mod.rs) — GPU-side debugging
 
 ---
 

@@ -35,6 +35,9 @@
 | **generic** | [`src/generic/`](./src/generic/mod.rs) | 泛型 kernel：`scale<T>`、`add<T>`、闭包捕获与高阶函数 |
 | **constant_memory** | [`src/constant_memory/`](./src/constant_memory/mod.rs) | CUDA 常量内存：标量常量、数组常量、主机端 setter |
 | **shared_mem** | [`src/shared_mem/`](./src/shared_mem/mod.rs) | 共享内存：`SharedArray` 静态声明、动态共享内存、对齐控制（16/128/256 字节）、混合对齐分区 |
+| **barrier** | [`src/barrier/`](./src/barrier/mod.rs) | 线程屏障：mbarrier 同步屏障、屏障保护下的共享内存数据交换 |
+| **device_global** | [`src/device_global/`](./src/device_global/mod.rs) | 设备全局变量：跨 kernel 共享状态、静态常量表、静态初始化器边界（NaN 位模式） |
+| **atomic** | [`src/atomic/`](./src/atomic/mod.rs) | 原子操作：19 个测试，覆盖多种操作/类型/作用域/内存序 |
 | **printf** | [`src/printf/`](./src/printf/mod.rs) | GPU 端 `gpu_printf!`：整数/浮点/布尔/格式化输出 |
 | **utils** | [`src/utils/`](./src/utils/mod.rs) | 工具函数：`get_launch_config_1d` 便捷启动配置 |
 
@@ -119,10 +122,10 @@ cargo oxide test -- printf
 
 ## 🧪 测试与运行结果
 
-当前共有 **19 个测试**，全部通过 ✅
+当前共有 **43 个测试**，全部通过 ✅
 
 ```
-test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+test result: ok. 43 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 ```
 
 ### 测试覆盖
@@ -133,6 +136,9 @@ test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 | `generic` | 6 | scale(f32/f16)、add(f32/f16)、closure(f32/f16) |
 | `constant_memory` | 2 | 线性变换、多项式 |
 | `shared_mem` | 6 | 静态单/双 TILE、动态基础/分区/128对齐/混合对齐 |
+| `barrier` | 2 | mbarrier 同步屏障、屏障保护下的共享内存数据交换 |
+| `device_global` | 3 | 设备全局变量、静态常量表、静态初始化器边界（NaN 位模式等） |
+| `atomic` | 19 | 多种原子操作/类型、`.gpu` 与 `.cta` 作用域、多种内存序 |
 | `printf` | 1 | 整数/浮点/格式化/布尔/返回值 |
 
 ---
@@ -151,6 +157,9 @@ cuda-programming-but-rust/
 │   ├── generic/            # 泛型 kernel
 │   ├── constant_memory/    # 常量内存 kernel
 │   ├── shared_mem/         # 共享内存 kernel
+│   ├── barrier/            # 线程屏障 kernel（mbarrier）
+│   ├── device_global/      # 设备全局变量 kernel
+│   ├── atomic/             # 原子操作 kernel
 │   ├── printf/             # GPU printf kernel
 │   └── utils/              # 工具函数
 ├── use_cpp/          # 对照：C++ CUDA 实现
@@ -173,7 +182,10 @@ cuda-programming-but-rust/
 3. **泛型和闭包** → [`generic`](./src/generic/mod.rs) — Rust 泛型的 GPU 应用
 4. **常量内存** → [`constant_memory`](./src/constant_memory/mod.rs) — 只读参数缓存
 5. **共享内存** → [`shared_mem`](./src/shared_mem/mod.rs) — 块内协作优化
-6. **调试输出** → [`printf`](./src/printf/mod.rs) — GPU 端调试技巧
+6. **线程屏障** → [`barrier`](./src/barrier/mod.rs) — mbarrier 与块内同步
+7. **设备全局变量** → [`device_global`](./src/device_global/mod.rs) — 跨 kernel 共享状态
+8. **原子操作** → [`atomic`](./src/atomic/mod.rs) — 原子性与内存序
+9. **调试输出** → [`printf`](./src/printf/mod.rs) — GPU 端调试技巧
 
 ---
 
