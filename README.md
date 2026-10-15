@@ -94,5 +94,5 @@ cd use_cpp && mkdir -p build && cd build && cmake .. && make
 ## 参考
 
 - cuda-rust: <https://github.com/NVIDIA/cuda-rust>
-- CUDA 编程指南：<https://docs.nvidia.com/cuda/cuda-c-programming-guide/>
+- CUDA 编程指南：<https://docs.nvidia.com/cuda/cuda-programming-guide/contents.html/>
 
