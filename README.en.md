@@ -1,204 +1,101 @@
 # CUDA Programming But Rust 🦀⚡
 
 > **中文版（主要）** → [README.md](./README.md)
->
-> **English (primary mirror)** ← You are here
 
-A learning project for **cuda-oxide** ([NVlabs/cuda-oxide](https://github.com/NVlabs/cuda-oxide)) — writing CUDA GPU kernels in pure Rust, no `.cu` files needed! **Work in progress 🚧**
+<p align="center">
+  <b>Write GPU kernels in Rust — no <code>.cu</code> files.</b>
+</p>
+
+A CUDA learning repository. The focus is **writing GPU kernels in Rust**, plus Chinese
+translations of three official books. It also keeps a set of earlier CUDA C++ and Python
+examples — these are essentially frozen and rarely updated, kept for reference only.
 
 ---
 
-## 📖 Documentation
+## Two Rust paths
+
+There are two usable Rust GPU programming paths today; this repo has a practice area for each:
+
+| | [cuTile Rust](./cutile-example/) | [cuda-oxide](./cuda-oxide-example/) |
+| --- | --- | --- |
+| Approach | High-level tile-oriented programming model | Custom rustc codegen backend, compiles kernels straight to PTX |
+| Toolchain | **stable** (root `1.99.0`) | **nightly-2026-10-11** (needs `rustc-dev`) |
+| How to run | `cargo run --example <name>` | `cargo oxide run` |
+| Examples live in | `cutile-example/*.rs`, registered as `[[example]]` in the root `Cargo.toml` | `cuda-oxide-example/<name>/`, each a standalone project |
+
+Their toolchain requirements are mutually exclusive (stable vs nightly), so they are
+**physically isolated**: `cuda-oxide-example/` ships its own `rust-toolchain.toml` and is
+excluded from the root workspace. See each area's README for details and pitfalls.
+
+## Reference examples (C++ / Python)
+
+These are earlier examples and are essentially frozen — they no longer evolve with the
+Rust side and are kept for reference:
+
+- **CUDA C++** — `use_cpp/examples/`, 9 examples built with CMake: device attributes,
+  atomics, constant memory, explicit memory, unified memory, shared memory, streams and
+  events, matrix transpose (naive and shared-memory optimized)
+- **Python** — `use_python/about_package/`, using Numba, PyCUDA and PyTorch bindings
+
+## Layout
+
+```
+.
+├── cutile-example/             # cuTile Rust examples (stable)
+├── cuda-oxide-example/         # cuda-oxide examples (nightly)
+│   └── 01-vector-add/          # vector add: c[i] = a[i] + b[i]
+├── use_cpp/                    # CUDA C++ reference examples
+├── use_python/                 # Python reference examples
+├── docs/                       # Chinese documentation
+│   ├── cuda-oxide-book-zh.CN/        # cuda-oxide book (42 pages)
+│   ├── cutile-book-zh.CN/            # cuTile book (29 pages)
+│   ├── CUDA编程指南-V13.3-zh.CN/      # CUDA Programming Guide (15 pages)
+│   ├── atomic.md                     # atomics and memory ordering
+│   └── barrier.md                    # mbarrier explained
+└── assets/img/
+```
+
+## Quick start
+
+```bash
+# cuda-oxide example (needs nightly; the codegen backend is built on first use)
+cd cuda-oxide-example/01-vector-add
+cargo oxide doctor   # check toolchain, nvcc, GPU, backend cache
+cargo oxide run      # compile and run on the GPU
+
+# CUDA C++ example
+cd use_cpp && mkdir -p build && cd build && cmake .. && make
+./transpose_with_shared_mem
+```
+
+## Documentation
+
+Chinese translations of three official books live under `docs/`:
 
 | Document | Description |
-|----------|-------------|
-| [📘 cuda-oxide Book v0.1.0 (Chinese Translation)](./cuda-oxide-zh.CN/README.md) | Chinese translation of the official cuda-oxide book |
-| [📙 CUDA Programming Guide v13.3 (Chinese Translation)](./CUDA编程指南-V13.3-zh.CN/README.md) | Chinese translation of NVIDIA's CUDA Programming Guide |
+| --- | --- |
+| [cuda-oxide book](./docs/cuda-oxide-book-zh.CN/README.md) | Official cuda-oxide book |
+| [cuTile book](./docs/cutile-book-zh.CN/README.md) | Official cuTile Rust book |
+| [CUDA Programming Guide v13.3](./docs/CUDA编程指南-V13.3-zh.CN/README.md) | NVIDIA CUDA C++ Programming Guide |
 
----
+## Environment (as tested)
 
-## ✨ Features
+| Item | Version |
+| --- | --- |
+| GPU | NVIDIA GeForce RTX 3080 (compute capability 8.6) |
+| Driver | 595.99.02 |
+| CUDA Toolkit | 13.3 (`/usr/local/cuda`) |
+| Rust (main workspace) | 1.99.0 stable |
+| Rust (cuda-oxide) | nightly-2026-10-11 |
+| cargo-oxide | 0.2.1, built from `NVIDIA/cuda-rust` at `bc46b1ff` |
 
-### 🦀 Rust CUDA Kernels (`src/`)
+## Status
 
-| Module | File | Contents |
-|--------|------|----------|
-| **elementwise** | [`src/elementwise/`](./src/elementwise/mod.rs) | Element-wise add: f32, f32x4 vectorized, f16 half-precision, `#[device]` helper function |
-| **generic** | [`src/generic/`](./src/generic/mod.rs) | Generic kernels: `scale<T>`, `add<T>`, closure capture & higher-order functions |
-| **constant_memory** | [`src/constant_memory/`](./src/constant_memory/mod.rs) | CUDA constant memory: scalar/array constants, host-side setters |
-| **shared_mem** | [`src/shared_mem/`](./src/shared_mem/mod.rs) | Shared memory: `SharedArray` static, dynamic shared memory, alignment (16/128/256 bytes), mixed-alignment partitioning |
-| **barrier** | [`src/barrier/`](./src/barrier/mod.rs) | Thread barriers: mbarrier synchronization, shared-memory data exchange under a barrier |
-| **device_global** | [`src/device_global/`](./src/device_global/mod.rs) | Device globals: cross-kernel shared state, static constant tables, static initializer edges (NaN bit patterns) |
-| **atomic** | [`src/atomic/`](./src/atomic/mod.rs) | Atomic operations: 19 tests covering multiple ops/types/scopes/memory orderings |
-| **printf** | [`src/printf/`](./src/printf/mod.rs) | GPU `gpu_printf!`: integers, floats, booleans, formatted output |
-| **utils** | [`src/utils/`](./src/utils/mod.rs) | Helper: `get_launch_config_1d` shorthand for launch configs |
+🚧 Work in progress. The cuda-oxide side has a working `01-vector-add`; the cuTile side has
+its conventions and template in place.
 
-### 🔬 C++ CUDA Reference (`use_cpp/`)
+## References
 
-Traditional CUDA C++ examples for side-by-side comparison:
-
-| Example | File | Description |
-|---------|------|-------------|
-| Device Attributes | [`get_device_attr.cu`](./use_cpp/examples/get_device_attr.cu) | Query GPU device properties |
-| Atomic Ops | [`atomic_test.cu`](./use_cpp/examples/atomic_test.cu) | CUDA atomic operations |
-| Constant Memory | [`const_mem.cu`](./use_cpp/examples/const_mem.cu) | Constant memory usage |
-| Explicit Memory | [`explicit_mem.cu`](./use_cpp/examples/explicit_mem.cu) | `cudaMalloc`/`cudaMemcpy` etc. |
-| Shared Memory | [`shared_mem.cu`](./use_cpp/examples/shared_mem.cu) | Shared memory tile loading |
-| Unified Memory | [`unified_mem.cu`](./use_cpp/examples/unified_mem.cu) | `cudaMallocManaged` |
-| Stream + Event | [`stream_event.cu`](./use_cpp/examples/stream_event.cu) | CUDA streams and events |
-| Transpose v1 | [`transpose_v1.cu`](./use_cpp/examples/transpose_v1.cu) | Naive matrix transpose |
-| Transpose (shared mem) | [`transpose_with_shared_mem.cu`](./use_cpp/examples/transpose_with_shared_mem.cu) | Shared-memory optimized transpose |
-
-Build with CMake:
-```bash
-cd use_cpp && cmake -B build && make -C build
-```
-
-### 🐍 Python CUDA Reference (`use_python/`)
-
-| File | Description |
-|------|-------------|
-| [`about_package/vecadd.cu`](./use_python/about_package/vecadd.cu) | CUDA C++ template kernel |
-| [`about_package/use_numba.py`](./use_python/about_package/use_numba.py) | Numba CUDA example |
-| [`about_package/use_pycuda.py`](./use_python/about_package/use_pycuda.py) | PyCUDA example |
-| [`about_package/use_pytorch.py`](./use_python/about_package/use_pytorch.py) | PyTorch CUDA example |
-| [`kernels/elementwise.py`](./use_python/kernels/elementwise.py) | Python element-wise kernel |
-
----
-
-## 🚀 Quick Start
-
-### Prerequisites
-
-| Item | Requirement | Notes |
-|------|-------------|-------|
-| OS | Linux | Ubuntu 24.04 tested; other distros may work |
-| NVIDIA GPU | Ampere+ (sm_80+) | Driver 545+ recommended |
-| CUDA Toolkit | 12.x+ | `nvcc` and `cuda.h` must be available |
-| LLVM | 21+ | Must include the NVPTX backend |
-| Clang | 21+ | `clang-21` — needed by bindgen for host `cuda-bindings` |
-| Rust | Nightly (pinned) | Pinned in `rust-toolchain.toml` |
-
-> ⚠️ cuda-oxide currently targets Linux only. Windows is not supported.
-
-### Installation Notes
-
-See the [official cuda-oxide installation guide](https://nvlabs.github.io/cuda-oxide/getting-started/installation.html) for full instructions. Key points:
-
-- **Dev Container** or **Nix flake** are the fastest way to get a reproducible environment
-- **Manual setup** requires: CUDA Toolkit → LLVM 21+ (with NVPTX backend) → Clang 21+ → Rust nightly (`rust-src` + `rustc-dev` components) → `cargo-oxide`
-- Run `cargo oxide doctor` for one-shot environment diagnostics
-- If using the Dev Container, you can skip manual CUDA Toolkit, LLVM, Clang, and Rust setup
-
-### Run Tests in This Project
-
-```bash
-git clone https://github.com/jhqxxx/cuda-programming-but-rust.git
-cd cuda-programming-but-rust
-
-# Run all tests
-cargo oxide test
-
-# Run tests for a specific module
-cargo oxide test -- elementwise
-cargo oxide test -- shared_mem
-cargo oxide test -- constant_memory
-cargo oxide test -- generic
-cargo oxide test -- printf
-```
-
----
-
-## 🧪 Test Results
-
-**43 tests, all passing ✅**
-
-| Module | Tests | Coverage |
-|--------|-------|----------|
-| `elementwise` | 4 | f32 add, f32x4 vectorized, f16, device helper |
-| `generic` | 6 | scale(f32/f16), add(f32/f16), closure(f32/f16) |
-| `constant_memory` | 2 | linear transform, polynomial |
-| `shared_mem` | 6 | single/dual static, dynamic basic/partition/128-align/mixed-align |
-| `barrier` | 2 | mbarrier sync barrier, shared-memory data exchange under a barrier |
-| `device_global` | 3 | device globals, static constant tables, static initializer edges (NaN etc.) |
-| `atomic` | 19 | multiple atomic ops/types, `.gpu` vs `.cta` scopes, multiple memory orderings |
-| `printf` | 1 | integers/floats/formatting/booleans/return value |
-
----
-
-## 📦 Project Structure
-
-```
-cuda-programming-but-rust/
-├── Cargo.toml                 # Dependencies (cuda-device, cuda-host, cuda-core)
-├── rust-toolchain.toml        # Nightly toolchain config
-├── README.zh-CN.md            # Chinese README (primary)
-├── README.md                  # English README (mirror)
-├── src/                       # Rust CUDA source code
-│   ├── lib.rs                 # Library entry
-│   ├── main.rs                # Binary entry
-│   ├── elementwise/           # Element-wise kernels
-│   ├── generic/               # Generic kernels
-│   ├── constant_memory/       # Constant memory kernels
-│   ├── shared_mem/            # Shared memory kernels
-│   ├── barrier/               # Thread barrier kernels (mbarrier)
-│   ├── device_global/         # Device global kernels
-│   ├── atomic/                # Atomic operation kernels
-│   ├── printf/                # GPU printf kernels
-│   └── utils/                 # Utility functions
-├── use_cpp/             # Reference: C++ CUDA implementations
-│   ├── CMakeLists.txt
-│   ├── common/                # Shared headers and CUDA utilities
-│   └── examples/              # C++ CUDA examples
-├── use_python/                # Reference: Python CUDA implementations
-│   ├── about_package/         # Numba/PyCUDA/PyTorch examples
-│   └── kernels/               # Python kernels
-├── cuda-oxide-zh.CN/          # cuda-oxide Book Chinese translation
-└── CUDA编程指南-V13.3-zh.CN/  # CUDA Programming Guide Chinese translation
-```
-
----
-
-## 🧠 Learning Path
-
-1. **Getting Started** → [cuda-oxide Book Ch.1](./cuda-oxide-zh.CN/01-入门/01-安装.md)
-2. **Element-wise** → [`elementwise`](./src/elementwise/mod.rs) — Simplest kernels
-3. **Generics & Closures** → [`generic`](./src/generic/mod.rs) — Rust generics on GPU
-4. **Constant Memory** → [`constant_memory`](./src/constant_memory/mod.rs) — Read-only parameter caching
-5. **Shared Memory** → [`shared_mem`](./src/shared_mem/mod.rs) — Intra-block collaboration
-6. **Thread Barriers** → [`barrier`](./src/barrier/mod.rs) — mbarrier & block synchronization
-7. **Device Globals** → [`device_global`](./src/device_global/mod.rs) — Cross-kernel shared state
-8. **Atomics** → [`atomic`](./src/atomic/mod.rs) — Atomicity & memory ordering
-9. **Debug Output** → [`printf`](./src/printf/mod.rs) — GPU-side debugging
-
----
-
-## 🔧 Tech Stack
-
-- **[cuda-oxide](https://github.com/NVlabs/cuda-oxide)** — NVIDIA's open-source Rust CUDA compiler backend
-- **Rust nightly** — Custom codegen backend via `rustc_codegen_cuda`
-- **CUDA 12.x** — Low-level CUDA driver API (wrapped by `cuda-core` crate)
-- **CMake** — Build system for C++ CUDA examples
-- **Python** — PyCUDA / Numba / PyTorch CUDA reference implementations
-
----
-
-## 📚 References
-
-- [cuda-oxide Official Docs](https://nvlabs.github.io/cuda-oxide/index.html)
-- [NVlabs/cuda-oxide GitHub](https://github.com/NVlabs/cuda-oxide)
-- [NVIDIA CUDA Programming Guide](https://docs.nvidia.com/cuda/cuda-c-programming-guide/)
-
----
-
-## 📄 License
-
-[Apache-2.0](./LICENSE)
-
-## ⚠️ Notes
-
-- This project is a **work in progress** — content will be updated continuously
-- cuda-oxide is in early stages; APIs may change
-- Documentation translations are AI-assisted; corrections are welcome
-
+- cuda-rust: <https://github.com/NVIDIA/cuda-rust>
+- CUDA Programming Guide: <https://docs.nvidia.com/cuda/cuda-c-programming-guide/>
 

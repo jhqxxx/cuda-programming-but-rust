@@ -3,3 +3,4 @@ target/*
 *.ll
 *.ptx
 use_cpp/build/*
+.vscode/*

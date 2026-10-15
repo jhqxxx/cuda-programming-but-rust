@@ -1,0 +1,20 @@
+# 本例子自带工具链钉定，这样整个目录可以单独拷走使用。
+#
+# 为什么必须是 nightly：cuda-oxide 的 codegen 后端（rustc-codegen-cuda）直接链接
+# rustc 内部结构，需要只有 nightly 才提供的 `rustc-dev` 组件。
+#
+# 版本来源：git 依赖钉定的 commit bc46b1ff 上，cuda-oxide/rust-toolchain.toml 写的就是
+# nightly-2026-10-11。改 git rev 时这里必须一起改，否则 cargo oxide 会直接报错拒绝
+# （refuse_unloadable_backend：工具链与 commit 不匹配的后端无法加载）。
+#
+# 上一层的 ../rust-toolchain.toml 内容相同，作为兜底。
+[toolchain]
+channel = "nightly-2026-10-11"
+components = [
+    "rust-src",
+    "rustc-dev",
+    "rust-analyzer",
+    "clippy",
+    "rustfmt",
+    "llvm-tools",
+]

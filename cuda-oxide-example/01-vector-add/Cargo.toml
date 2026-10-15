@@ -1,0 +1,24 @@
+# 注意：包名不能以数字开头（Cargo 会报 "the name cannot start with a digit"），
+# 所以目录名是 01-vector-add，而包名写成 vector_add。
+# `cargo oxide run` 用的是**目录名**，所以运行命令是 `cargo oxide run 01-vector-add`。
+[package]
+name = "vector_add"
+version = "0.1.0"
+edition = "2024"
+
+# 空的 [workspace] 把它声明为自己的工作区根，这样它就脱离了上层的
+# cuda-oxide-example/ 工作区，也脱离了本仓库根目录的 stable 工作区。
+[workspace]
+
+[dependencies]
+# 三个 cuda-oxide crate 必须来自同一来源（同一 git 仓库 + 同一 rev），
+# 否则 cargo oxide 会报错拒绝构建。
+#
+# rev 钉定 = 保证可复现，且和本地 checkout 完全同一个 commit
+# （NVlabs/cuda-oxide 与 NVIDIA/cuda-rust 是同一仓库，此处直接用后者）。
+# 该 commit 需要 nightly-2026-10-11，见 ../../rust-toolchain.toml。
+#
+# cuda-device / cuda-host 位于仓库的 cuda-oxide/crates/ 下；cuda-core 在仓库根目录。
+cuda-device = { git = "https://github.com/NVIDIA/cuda-rust.git", rev = "bc46b1ffb751885073066b087594045f07f0f81b" }
+cuda-host = { git = "https://github.com/NVIDIA/cuda-rust.git", rev = "bc46b1ffb751885073066b087594045f07f0f81b" }
+cuda-core = { git = "https://github.com/NVIDIA/cuda-rust.git", rev = "bc46b1ffb751885073066b087594045f07f0f81b" }

@@ -4,9 +4,29 @@ version = "0.1.0"
 edition = "2024"
 
 [workspace]
+# cuda-oxide 依赖 nightly（需要 rustc-dev 才能编译自定义 codegen 后端），而本工作区
+# 钉的是 stable。rustup 会从当前目录向上找 rust-toolchain.toml，一个工作区只能被一个
+# 工具链构建，所以必须把 cuda-oxide-example/ 排除出去 —— 它是自带 nightly 工具链的
+# 独立区域。这与上游 cuda-rust 仓库的做法一致（见其根 Cargo.toml 的 exclude 注释）。
+exclude = ["cuda-oxide-example"]
 
 [dependencies]
-cuda-device = { git = "https://github.com/NVlabs/cuda-oxide.git" }
-cuda-host = { git = "https://github.com/NVlabs/cuda-oxide.git"}
-cuda-core = { git = "https://github.com/NVlabs/cuda-oxide.git" }
 anyhow = "1.0.104"
+cutile = "0.4.0"
+
+# ---------------------------------------------------------------------------
+# cuTile Rust 学习示例（cutile-example/ 目录）
+#
+# 该目录不是 Cargo 默认的 `examples/`，所以不会被自动发现：每新增一个示例文件，
+# 就在这里加一条 [[example]] 注册它（name 建议与文件名去掉 .rs 后一致）。
+#
+# 运行：
+#   cargo check --example 01-vector-add   # 只做类型检查，不需要 GPU
+#   cargo run   --example 01-vector-add   # 在 GPU 上执行
+#
+# 详见 cutile-example/README.md。
+#
+# [[example]]
+# name = "01-vector-add"
+# path = "cutile-example/01-vector-add.rs"
+# ---------------------------------------------------------------------------

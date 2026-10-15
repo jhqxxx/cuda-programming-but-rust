@@ -1,0 +1,22 @@
+# cuda-oxide 的独立工具链钉定。
+#
+# rustup 会从当前目录向上查找 rust-toolchain.toml，所以在这个目录（及其所有子目录）
+# 里执行 cargo / rustc / cargo oxide 时，用的是下面这个 nightly，而**不是**仓库根目录
+# 的 1.99.0 stable。
+#
+# 为什么必须是 nightly：cuda-oxide 的 codegen 后端（rustc-codegen-cuda）直接链接 rustc
+# 的内部结构，因此需要 `rustc-dev` 这个只能在 nightly 上安装的组件。
+#
+# 版本来源：git 依赖钉定的 commit bc46b1ff 上，cuda-oxide/rust-toolchain.toml 写的就是
+# nightly-2026-10-11。改 git rev 时这里必须一起改，否则 cargo oxide 会直接报错拒绝
+# （refuse_unloadable_backend：工具链与 commit 不匹配的后端无法加载）。
+[toolchain]
+channel = "nightly-2026-10-11"
+components = [
+    "rust-src",
+    "rustc-dev",
+    "rust-analyzer",
+    "clippy",
+    "rustfmt",
+    "llvm-tools",
+]

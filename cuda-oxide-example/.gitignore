@@ -1,0 +1,19 @@
+# 每个例子项目各自的构建目录
+**/target/
+
+# cuda-oxide 后端与 LLVM 的中间产物
+**/*.bc
+**/*.cubin
+**/*.cubin.identity
+**/*.cubin.target
+**/*.cubin.tmp
+**/*.ll
+**/*.ltoir
+**/*.opt.ll
+**/*.options
+**/*.ptx
+**/*.ptx.identity
+**/*.target
+
+# 编辑器 / 系统
+.DS_Store
