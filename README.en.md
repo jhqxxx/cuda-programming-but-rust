@@ -97,5 +97,5 @@ its conventions and template in place.
 ## References
 
 - cuda-rust: <https://github.com/NVIDIA/cuda-rust>
-- CUDA Programming Guide: <https://docs.nvidia.com/cuda/cuda-programming-guide/contents.html/>
+- CUDA Programming Guide: <https://docs.nvidia.com/cuda/cuda-programming-guide>
 
