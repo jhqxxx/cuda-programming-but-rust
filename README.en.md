@@ -95,6 +95,7 @@ model in the same way:
 │   │   └── tile/               # cuTile Python (cuda-tile)
 │   └── legacy/                 # 4 earlier files, read-only
 ├── docs/                       # Chinese documentation
+│   ├── cross-language/                # cross-language comparison (original, not a translation)
 │   ├── cuda-oxide-book-zh.CN/         # cuda-oxide book (42 pages)
 │   ├── cutile-rs-book-zh.CN/          # cuTile Rust book (29 pages)
 │   ├── cutile-python-book-zh.CN/      # cuTile Python book (13 pages)
@@ -132,7 +133,8 @@ Chinese translations of four official books live under `docs/`:
 | [cuTile Python book](./docs/cutile-python-book-zh.CN/README.md) | Official cuTile Python (`cuda.tile`) documentation |
 | [CUDA Programming Guide v13.3](./docs/CUDA编程指南-V13.3-zh.CN/README.md) | NVIDIA CUDA C++ Programming Guide |
 
-`docs/atomic.md` and `docs/barrier.md` are two topic notes written for this repo.
+[`docs/cross-language/`](./docs/cross-language/README.md) (three-language comparison),
+`docs/atomic.md` and `docs/barrier.md` are **original notes**, not translations.
 
 ## Environment (as tested)
 

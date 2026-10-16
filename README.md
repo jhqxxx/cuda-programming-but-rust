@@ -88,6 +88,7 @@ Rust 之外还有两条并行维护的线，示例同样按模型分目录：
 │   │   └── tile/               # cuTile Python（cuda-tile）
 │   └── legacy/                 # 早期 4 个文件，只读备查
 ├── docs/                       # 中文文档
+│   ├── cross-language/                # 三语言对照（自己写的）：同一主题在 Rust/C++/Python 里怎么写
 │   ├── cuda-oxide-book-zh.CN/         # cuda-oxide 手册（42 篇）
 │   ├── cutile-rs-book-zh.CN/          # cuTile Rust 手册（29 篇）
 │   ├── cutile-python-book-zh.CN/      # cuTile Python 手册（13 篇）
@@ -125,7 +126,8 @@ cd cpp && mkdir -p build && cd build && cmake .. && make
 | [cuTile Python 手册](./docs/cutile-python-book-zh.CN/README.md) | cuTile Python（`cuda.tile`）官方文档 |
 | [CUDA 编程指南 v13.3](./docs/CUDA编程指南-V13.3-zh.CN/README.md) | NVIDIA CUDA C++ 编程指南 |
 
-另外 `docs/atomic.md`、`docs/barrier.md` 是本仓库自己整理的两篇专题笔记。
+另外 [`docs/cross-language/`](./docs/cross-language/README.md)（三语言对照，自己写的）和
+`docs/atomic.md`、`docs/barrier.md`（两篇专题笔记）**不是翻译**，是本仓库自己整理的。
 
 ## 环境（本机实测）
 

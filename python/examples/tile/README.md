@@ -10,22 +10,15 @@ PyPI 包名 `cuda-tile`，模块 `cuda.tile`。Triton 作为备选路线另行�
 ### 1. 和 Rust 侧是同一个模型、同一套编译器 —— 本仓库唯一真正的「同模型跨语言」
 
 `cutile-rs-example/` 用的是 **cuTile Rust**，这里用 **cuTile Python**：两者是同一个编程模型的
-两个语言绑定，都降到 **TileIR**，再由同一个 `tileiras` 编成 cubin。所以它们是 1:1 可对照的：
+两个语言绑定，都降到 **TileIR**，再由同一个 `tileiras` 编成 cubin。所以它们是 1:1 可对照的
+—— 但**命名各叫各的**，不要跨语言照抄（比如 `program_id(0)` 在 Python 里叫 `ct.bid(0)`）。
 
-| cuTile Python | cuTile Rust |
+完整的对照表和实测踩过的坑统一放在 [`docs/cross-language/tile/`](../../../docs/cross-language/tile/)：
+
+| 主题 | 文件 |
 | --- | --- |
-| `@ct.kernel` | `#[cutile::entry]` |
-| `ct.bid(0)`（≈ `blockIdx`） | `program_id(0)` |
-| `ct.load(x, index=(pid,), shape=(T,))` | `x.load_like(z)` |
-| `ct.store(c, index=(pid,), tile=t)` | `z.store(t)` |
-| `ct.Constant[int]` | `const B: i32` |
-| `ct.launch(stream, grid, k, args)` | `.grid(..).sync_on(&stream)` |
-| `ct.zeros / ones / full / arange` | `api::zeros / ones / ...` |
-| `ct.mma` | `mma` |
-| `ct.PaddingMode.ZERO`（`padding_mode=`） | `padding::Zero` |
+| 块索引、grid 尺寸、设备端打印、启动 | [`01-block-index.md`](../../../docs/cross-language/tile/01-block-index.md) |
 
-这一点是决定性的：本仓库的结构是「**语言 × 模型**」，这里能用同一模型做跨语言对照，
-比换一套不相干的 DSL 有价值得多。
 
 ### 2. 文档就在本仓库里
 

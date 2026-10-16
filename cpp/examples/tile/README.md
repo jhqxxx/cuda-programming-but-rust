@@ -167,29 +167,18 @@ g++ -std=c++20 -fsyntax-only \
 | **C++** | **本目录 —— CUDA Tile C++（`cuda::tiles`）** | ✅ 可跑 |
 
 **这是本仓库唯一真正的「同模型跨语言」对照** —— 三个绑定共享同一个编译器后端
-（CUDA Tile IR → `tileiras`），所以语义一致、API 一一对应：
+（CUDA Tile IR → `tileiras`），所以语义一致、API 一一对应。
 
-| cuTile Python | CUDA Tile C++ | cuTile Rust |
-| --- | --- | --- |
-| `@ct.kernel` | `__tile_global__` | `#[cutile::entry]` |
-| `ct.bid(0)` | `ct::bid().x` | `program_id(0)` |
-| `ct.num_blocks(0)` | `ct::num_blocks().x` | `num_programs(0)` |
-| `ct.load(x, index=(pid,), shape=(T,))` | `view.load(pid)` | `x.load_like(z)` |
-| `ct.store(c, index=(pid,), tile=t)` | `view.store(t, pid)` | `z.store(t)` |
-| `ct.Constant[int]` | `ct::integral_constant` / `N_ic` | `const B: i32` |
-| `ct.PaddingMode.ZERO` | `.load_masked()` | `padding::Zero` |
-| `ct.launch(stream, grid, k, args)` | `kernel<<<grid, 1>>>(...)` | `.grid(..).sync_on(&stream)` |
-| `ct.print(f"…")` | **标准 `printf("…%u…", …)`** | `cuda_tile_print!("{}", …)` |
+但**命名一一对应地说，其实各叫各的** —— 比如取块索引 Rust 是
+`program_id(0)`、C++ 是 `ct::bid().x`、Python 是 `ct.bid(0)`。完整的对照表和实测踩过的
+坑统一放在 [`docs/cross-language/tile/`](../../../docs/cross-language/tile/)：
 
-> ⚠️ 上面每行的**命名都不通用** —— 同一套 TileIR 后端，但三个前端各叫各的。
-> 最容易踩的两个：
->
-> - **`program_id` / `num_programs` 在 Python 里不存在**，那是 Rust 的拼法；
->   Python 是 `ct.bid()` / `ct.num_blocks()`。
-> - **打印**：Python 用 `ct.print`（支持 f-string）；`ct.printf` 也能用但**只吃 tile**，
->   标量传不进去。C++ 头文件里**根本没有** print 原语
->   （TileIR 那边叫 `cuda_tile.print_tko`，没暴露出来），只能用标准 `printf`。
->   Rust 是 `cuda_tile_print!` 宏，格式串是 `{}` 而不是 `%d`。
+| 主题 | 文件 |
+| --- | --- |
+| 块索引、grid 尺寸、设备端打印、启动 | [`01-block-index.md`](../../../docs/cross-language/tile/01-block-index.md) |
+
+（那张表原先是写在这里的，已经挪走 —— 免得 C++ 和 Python 两份 README 各维护一遍。
+索引见 [`docs/cross-language/README.md`](../../../docs/cross-language/README.md)。）
 
 （Triton 是**另一套模型 + 另一套编译器**，不在这个对照里。）
 
