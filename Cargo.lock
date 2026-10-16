@@ -217,6 +217,8 @@ name = "cuda-programming-but-rust"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "cuda-async",
+ "cuda-core",
  "cutile",
 ]
 

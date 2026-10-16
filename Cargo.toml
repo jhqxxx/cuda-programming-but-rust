@@ -22,7 +22,8 @@ anyhow = "1.0.104"
 # cutile-rs 在上游钉的是 1.98.0 stable（rust-version = "1.89"），本工作区是 1.99.0
 # stable，兼容。
 cutile = { git = "https://github.com/NVIDIA/cuda-rust.git", rev = "bc46b1ffb751885073066b087594045f07f0f81b" }
-
+cuda-async = { git = "https://github.com/NVIDIA/cuda-rust.git", rev = "bc46b1ffb751885073066b087594045f07f0f81b" }
+cuda-core = { git = "https://github.com/NVIDIA/cuda-rust.git", rev = "bc46b1ffb751885073066b087594045f07f0f81b" }
 # ---------------------------------------------------------------------------
 # cuTile Rust 学习示例（cutile-rs-example/ 目录）
 #
@@ -42,3 +43,7 @@ path = "cutile-rs-example/00-add.rs"
 [[example]]
 name = "01-hello-world"
 path = "cutile-rs-example/01-hello-world.rs"
+
+[[example]]
+name = "02-vec-add"
+path = "cutile-rs-example/02-vec-add.rs"
