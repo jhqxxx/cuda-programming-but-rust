@@ -159,7 +159,10 @@ uv run python legacy/use_pytorch.py      # → Test succeeded
 | 模型 | Rust | C++ | Python |
 | --- | --- | --- | --- |
 | SIMT | `cuda-oxide-example/01-vector-add/` | `cpp/examples/simt/` | `examples/simt/` |
-| tile | `cutile-rs-example/00-add.rs` | —（C++ 无实用入口） | `examples/tile/`（cuTile Python） |
+| tile | `cutile-rs-example/00-add.rs` | `cpp/examples/tile/00-add.cu` | `examples/tile/`（cuTile Python） |
+
+三语言的 tile 实现共享同一个编译器后端（CUDA Tile IR → `tileiras`），
+所以是同模型的 1:1 对照，不是「相近的东西」。
 
 跨模型对照会误导 —— tile 和 SIMT 是两种不同的抽象，不是同一写法的两种语法。
 

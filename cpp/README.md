@@ -10,15 +10,15 @@ cpp/
 ├── CMakeLists.txt
 ├── common/        # 共享：cuda_utils.h、vector_ops.cu
 ├── examples/
-│   ├── simt/      # 线程级 CUDA C++  ← 新代码写这里
-│   └── tile/      # 块级；C++ 目前无用户级入口，见该目录 README
+│   ├── simt/      # 线程级 CUDA C++  ← SIMT 新代码写这里
+│   └── tile/      # 块级 CUDA Tile C++（需 --enable-tile + C++20）
 └── legacy/        # 早期随手写的 9 个示例，保留原样备查
 ```
 
 | 目录 | 模型 | 编程单位 | 状态 |
 | --- | --- | --- | --- |
 | `examples/simt/` | SIMT | 一个线程 | ⬜ 待写 |
-| `examples/tile/` | tile | 一个块（tile） | ⚠️ 无实用入口（CUDA 只提供 MLIR 层的 CUDA Tile IR） |
+| `examples/tile/` | tile | 一个块（tile） | ✅ 可跑（CUDA Tile C++，工具包 13.3 起提供） |
 | `legacy/` | SIMT | 一个线程 | ✅ 可跑，只读备查 |
 
 ## 构建与运行
@@ -30,6 +30,8 @@ cmake ..
 make -j
 
 ./simt_00-add            # examples/simt/00-add.cu → 目标名 simt_00-add
+./tile_00-add            # examples/tile/00-add.cu → 目标名 tile_00-add
+                         #   tile 目标已自动带上 --enable-tile 和 -std=c++20
 ./legacy_transpose_v1    # legacy/ 的目标统一带 legacy_ 前缀
 ```
 
@@ -42,10 +44,10 @@ make -j
 
 同一主题在三语言、两模型下各有实现。**只和同模型的实现对照**：
 
-| 主题 | SIMT（Rust） | SIMT（C++） | SIMT（Python） | tile（Rust） | tile（Python） |
-| --- | --- | --- | --- | --- | --- |
-| 向量加法 `z = x + y` | `cuda-oxide-example/01-vector-add/` | `examples/simt/` ⬜ | `python/examples/simt/` ⬜ | `cutile-rs-example/00-add.rs` ✅ | `python/examples/tile/` ⬜ |
-| 网格与线程索引 | — | ⬜ | ⬜ | `cutile-rs-example/01-hello-world.rs` ✅ | ⬜ |
+| 主题 | SIMT（Rust） | SIMT（C++） | SIMT（Python） | tile（Rust） | tile（C++） | tile（Python） |
+| --- | --- | --- | --- | --- | --- | --- |
+| 向量加法 `z = x + y` | `cuda-oxide-example/01-vector-add/` | `examples/simt/` ⬜ | `python/examples/simt/` ⬜ | `cutile-rs-example/00-add.rs` ✅ | `examples/tile/00-add.cu` ✅ | `python/examples/tile/` ⬜ |
+| 网格与线程索引 | — | ⬜ | ⬜ | `cutile-rs-example/01-hello-world.rs` ✅ | — | ⬜ |
 
 > ⚠️ **编号还没统一**：Rust 的 SIMT 线把向量加法编成 `01`，tile 线编成 `00`。
 > 新示例按「一个主题一个编号」写，之后再把 Rust 侧对齐。
@@ -68,6 +70,7 @@ make -j
 | 项 | 本机实测 |
 | --- | --- |
 | CUDA Toolkit | 13.3（`/usr/local/cuda`） |
+| CUDA Tile C++ | ✅ 可用（`nvcc --enable-tile`，需 `-std=c++20`；工具包 13.3 起提供） |
 | GPU | NVIDIA GeForce RTX 3080（sm_86） |
 | CMake | ≥ 3.18 |
 | `CMAKE_CUDA_ARCHITECTURES` | 86 |

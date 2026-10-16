@@ -13,12 +13,17 @@ include_directories(${CMAKE_SOURCE_DIR}/common)
 #
 # examples/ 下按**编程模型**分两个子目录：
 #   examples/simt/  —— 线程级编程（threadIdx / blockIdx），CUDA 编程的基础功
-#   examples/tile/  —— 块级编程；C++ 目前没有用户级入口，见该目录 README
+#   examples/tile/  —— 块级编程（CUDA Tile C++，需要 --enable-tile + C++20）
 #
 # 目标名 = <模型>_<文件名>：
 #   cpp/examples/simt/00-add.cu  →  ./build/simt_00-add
+#   cpp/examples/tile/00-add.cu  →  ./build/tile_00-add
 #
 # 加模型前缀有两个原因：两个子目录里可能出现同名文件；编号在各自模型内独立计数。
+#
+# tile 目标单独设 C++20 并加 -enable-tile。全局默认是 C++17，而 crt/cuda_tile.h
+# 会用 #error 拒绝 C++17；不加 -enable-tile 则 nvcc 默认按 --simt-only 处理，
+# __tile_global__ 全被忽略，只会报一堆“从 __host__ 调用 __tile__ 函数”。
 # ---------------------------------------------------------------------------
 foreach(MODEL simt tile)
     file(GLOB MODEL_SOURCES "examples/${MODEL}/*.cu")
@@ -32,6 +37,15 @@ foreach(MODEL simt tile)
 
         # 链接 CUDA 库
         target_link_libraries(${MODEL}_${EXE_NAME} ${CUDA_LIBRARIES})
+
+        if(MODEL STREQUAL "tile")
+            set_target_properties(${MODEL}_${EXE_NAME} PROPERTIES
+                CUDA_STANDARD 20
+                CUDA_STANDARD_REQUIRED ON
+                CXX_STANDARD 20
+                CXX_STANDARD_REQUIRED ON)
+            target_compile_options(${MODEL}_${EXE_NAME} PRIVATE -enable-tile)
+        endif()
     endforeach()
 endforeach()
 
