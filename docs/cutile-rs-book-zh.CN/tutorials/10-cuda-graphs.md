@@ -383,13 +383,13 @@ graph.launch().sync_on(&stream)?;
 基于作用域的参考示例（带基准测试）：
 
 ```bash
-cargo run -p cutile-examples --example cuda_graphs
+cargo run -p cutile-rs-examples --example cuda_graphs
 ```
 
 DeviceOp 组合子版本：
 
 ```bash
-cargo run -p cutile-examples --example cuda_graphs_deviceop
+cargo run -p cutile-rs-examples --example cuda_graphs_deviceop
 ```
 
 ---

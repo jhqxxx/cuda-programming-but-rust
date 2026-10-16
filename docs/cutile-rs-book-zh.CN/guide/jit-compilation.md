@@ -244,7 +244,7 @@ cutile::jit_cache::enable(std::sync::Arc::new(store));
 
 并发的多个进程可能各自编译同一个尚不存在的条目。建议先在一个进程里预热共享缓存，再启动并行 worker，以避免重复劳动。
 
-参见 `cutile-examples/examples/jit_disk_cache.rs`；跑两遍即可看到第二个进程命中磁盘。要自行实现后端（对象存储、数据库），参见 `cutile-examples/examples/jit_custom_store.rs`。
+参见 `cutile-rs-examples/examples/jit_disk_cache.rs`；跑两遍即可看到第二个进程命中磁盘。要自行实现后端（对象存储、数据库），参见 `cutile-rs-examples/examples/jit_custom_store.rs`。
 
 ## 计算缓存键
 

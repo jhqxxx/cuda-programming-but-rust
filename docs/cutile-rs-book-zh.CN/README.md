@@ -76,6 +76,6 @@
 
 ## 环境与依赖
 
-原文中的示例针对 `cutile` crate（cuTile Rust）。本仓库根目录下另有 `cutile-example/` 目录，收录了可直接在本机运行的学习示例，说明见 [`cutile-example/README.md`](../../cutile-example/README.md)。
+原文中的示例针对 `cutile` crate（cuTile Rust）。本仓库根目录下另有 `cutile-rs-example/` 目录，收录了可直接在本机运行的学习示例，说明见 [`cutile-rs-example/README.md`](../../cutile-rs-example/README.md)。
 
 相关环境要求（本机实测）：CUDA Toolkit 13.3、Rust 1.99.0、NVIDIA RTX 3080。

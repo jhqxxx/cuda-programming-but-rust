@@ -1,5 +1,5 @@
-use cutile::prelude::*;
 use anyhow::Result;
+use cutile::prelude::*;
 
 use crate::hello_world_module::hello_world_kernel;
 
@@ -8,7 +8,7 @@ use crate::hello_world_module::hello_world_kernel;
 mod hello_world_module {
     use cutile::core::*;
 
-    // #[cutile::entry] 把一个函数标记为kernel入口点 
+    // #[cutile::entry] 把一个函数标记为kernel入口点
     #[cutile::entry]
     fn hello_world_kernel() {
         let _pid0 = program_id(0); // 本程序在网格轴 0 上的索引
@@ -29,19 +29,18 @@ mod hello_world_module {
             n2,
             _total
         );
-
     }
 }
 
 fn main() -> Result<()> {
     // 宿主侧代码负责准备 GPU、指定 kernel 的启动网格，并启动 kernel。
-    let device = Device::new(0)?;  // 连接GPU
-    let stream = device.new_stream()?;  // 创建一条工作队列
-    let launcher = hello_world_kernel();  // 拿到kernel启动器
-    launcher.grid((2, 2, 1)).sync_on(&stream)?;  // 启动 2x2x1 = 4 个 tile program
-    // let launcher = hello_world_kernel();  
+    let device = Device::new(0)?; // 连接GPU
+    let stream = device.new_stream()?; // 创建一条工作队列
+    let launcher = hello_world_kernel(); // 拿到kernel启动器
+    launcher.grid((2, 2, 1)).sync_on(&stream)?; // 启动 2x2x1 = 4 个 tile program
+    // let launcher = hello_world_kernel();
     // launcher.grid((3, 3, 1)).sync_on(&stream)?;  // 启动 3x3x1 = 9 个 tile program
-    // let launcher = hello_world_kernel();  
+    // let launcher = hello_world_kernel();
     // launcher.grid((2, 2, 2)).sync_on(&stream)?;  // 启动 2x2x2 = 8 个 tile program
     Ok(())
 }

@@ -1,0 +1,30 @@
+[project]
+name = "cuda-programming-but-rust-python"
+version = "0.1.0"
+description = "Python 侧 CUDA 练习：SIMT（PyTorch 扩展）与 tile（cuTile Python）"
+requires-python = ">=3.10"
+
+# examples/ 下的新例子只用这两条线：SIMT 走 PyTorch 扩展，tile 走 cuTile Python。
+# `uv sync` 装这些就够了。（torch 的 wheel 很大，但它是 SIMT 线的主力，放基础依赖。）
+dependencies = [
+    # tile 模型：cuTile Python，与 Rust 侧 cutile-rs-example 同一模型、同一套 TileIR 编译器。
+    # 系统 CUDA 13.1+ 自带 tileiras，所以**不需要** cuda-tile[tileiras] 那个重 extra。
+    "cuda-tile>=1.6",
+    "numpy>=2",
+    "torch>=2.14",
+    # 另一条 tile 路线：Triton 自带编译器，与 cuTile 不是同一模型，作为备选保留。
+    # （torch 在 Linux 上本来也依赖它，所以这行几乎不增加成本。）
+    "triton>=3.8",
+]
+
+[project.optional-dependencies]
+# legacy/ 里三条 SIMT 路线的对照实现（只作查阅对比，不再扩展），按需装。
+# 三条一起：  uv sync --extra legacy
+numba = ["numba>=0.68"]
+pycuda = ["pycuda>=2026.1"]
+cupy = ["cupy-cuda13x>=14.2"]                                    # legacy/use_numba.py 拿它做设备数组
+legacy = ["numba>=0.68", "pycuda>=2026.1", "cupy-cuda13x>=14.2"]
+
+[tool.uv]
+# 本目录是示例脚本集合，不是一个可分发的包，不需要 build backend。
+package = false

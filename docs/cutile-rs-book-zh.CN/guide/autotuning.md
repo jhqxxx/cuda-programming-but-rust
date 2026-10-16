@@ -6,7 +6,7 @@
 cutile = { version = "...", features = ["experimental-tune"] }
 ```
 
-你可以用闭包来调优单个 kernel，也可以实现 `Objective` 来测量整个请求。`autotune` 示例用的是闭包：`cargo run -p cutile-examples --example autotune --features experimental-tune`。
+你可以用闭包来调优单个 kernel，也可以实现 `Objective` 来测量整个请求。`autotune` 示例用的是闭包：`cargo run -p cutile-rs-examples --example autotune --features experimental-tune`。
 
 ## 声明空间并运行搜索
 

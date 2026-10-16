@@ -170,7 +170,7 @@ let (_z, w) = ScaleKernel {
 .await?;
 ```
 
-完整、可运行的版本见 [`interop.rs`](https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-examples/examples/interop.rs)。
+完整、可运行的版本见 [`interop.rs`](https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-rs-examples/examples/interop.rs)。
 
 ---
 
@@ -246,7 +246,7 @@ let result = my_kernel(out, x).sync_on(&stream)?;
 
 借用来的包装器在被 drop 时会跳过销毁：`Stream` 不会调用 `cuStreamDestroy`，`Module` 不会卸载，`Device` 也不会释放主上下文。句柄生命周期的完全控制权仍留在源框架手中。
 
-`Module::borrow_raw` 和 `Function::borrow_raw` 对预编译模块和已解析函数遵循同样的模式。端到端演练见 `cutile-examples/examples/` 下的 `cudarc_interop` 示例。
+`Module::borrow_raw` 和 `Function::borrow_raw` 对预编译模块和已解析函数遵循同样的模式。端到端演练见 `cutile-rs-examples/examples/` 下的 `cudarc_interop` 示例。
 
 ---
 

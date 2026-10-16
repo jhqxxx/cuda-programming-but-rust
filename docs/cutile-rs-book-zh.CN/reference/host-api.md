@@ -329,7 +329,7 @@ unsafe {
 
 等待之前的工作不得与尚未完成的生产者工作发生竞争。两个 kernel 都不得依赖实际的重叠来推进，并且所有资源都必须在两个 kernel 都用完它们之后仍然存活。裸指针不会保留拥有它们的 tensor。PDL 是一项 unsafe 的 opt-in，因为这些义务超出了安全 tensor API 的常规流顺序保证。
 
-完整可执行的生产者/消费者示例见 `cutile-examples/examples/pdl.rs`（含流顺序与 PDL 的计时对比），或者测试 `cutile/tests/gpu/tile_ir_13_4.rs::dependent_launch_waits_for_producer_data`。
+完整可执行的生产者/消费者示例见 `cutile-rs-examples/examples/pdl.rs`（含流顺序与 PDL 的计时对比），或者测试 `cutile/tests/gpu/tile_ir_13_4.rs::dependent_launch_waits_for_producer_data`。
 
 ## Future 类比
 

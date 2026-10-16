@@ -168,7 +168,7 @@ println!("median {:.3} ms over {} reps", r.median_ms(), r.reps());
 `cutile::tune` 会测量候选配置，并保存试验记录与胜出配置。它需要启用 `experimental-tune` Cargo feature；API 见[自动调优](autotuning.md)。下面这个例子为 RMS 归一化 kernel 搜索块大小：
 
 ```sh
-cargo run -p cutile-examples --example autotune --features experimental-tune
+cargo run -p cutile-rs-examples --example autotune --features experimental-tune
 ```
 
 ---

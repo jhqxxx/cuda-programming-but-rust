@@ -292,7 +292,7 @@ CUDA Tile IR 13.3 总体支持 `sm_80` 及更新的目标，但这并不意味�
 
 没有原生支持的目标通常需要在 GEMM 之前解包或转换 FP4。这部分工作可能抵消带宽上的收益。请针对目标 GPU 把这条回退路径与成熟实现做基准对比。
 
-仓库中可运行的示例是 `cutile-examples/examples/nvfp4.rs`。在原生支持 NVFP4 的目标上，它会用全 1 输入的情形来校验 kernel 的输出。
+仓库中可运行的示例是 `cutile-rs-examples/examples/nvfp4.rs`。在原生支持 NVFP4 的目标上，它会用全 1 输入的情形来校验 kernel 的输出。
 
 ---
 
@@ -331,6 +331,6 @@ lhs_scale: Tile<f8e8m0fnu, [BM, BK_SCALES]>
 rhs_scale: Tile<f8e8m0fnu, [BK_SCALES, BN]>
 ```
 
-仓库中可运行的示例是 `cutile-examples/examples/mxfp8.rs`。在原生支持 MXFP8 的目标上，它会用全 1 输入的情形来校验 kernel 的输出。
+仓库中可运行的示例是 `cutile-rs-examples/examples/mxfp8.rs`。在原生支持 MXFP8 的目标上，它会用全 1 输入的情形来校验 kernel 的输出。
 
 这一模式背后的操作级参考，见[矩阵乘法](../reference/dsl-api.md#matrix-multiply)。

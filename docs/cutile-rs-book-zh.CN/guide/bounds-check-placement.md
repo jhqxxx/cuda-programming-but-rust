@@ -52,7 +52,7 @@ for index in out.iter_indices() {
 
 例如，来自 `for j in 0..num_tiles(&p, a)` 的索引，或者映射分区 `iter_indices()` 的索引，都携带了来自该 tensor 的边界。用它去索引另一个 tensor，就会产生一个针对 tile 数量的启动检查，例如 `ceil(dim(x, 1)/BK) <= ceil(dim(y, 0)/BK)`。
 
-`cutile-examples/examples/persistent_gemm.rs` 里的持久化 GEMM 就使用了这些派生检查。它的映射分量索引 `x` 和 `y`，它的 K 循环遍历 `num_tiles`。所有形状检查都在启动时运行，因此它可以在不加任何标注、不加额外 const 泛型的情况下，以 `deny_in_kernel_checks = true` 构建。
+`cutile-rs-examples/examples/persistent_gemm.rs` 里的持久化 GEMM 就使用了这些派生检查。它的映射分量索引 `x` 和 `y`，它的 K 循环遍历 `num_tiles`。所有形状检查都在启动时运行，因此它可以在不加任何标注、不加额外 const 泛型的情况下，以 `deny_in_kernel_checks = true` 构建。
 
 声明的 `preconditions` 更进一步：启动器本身已经用真实形状校验了每一个声明的事实，因此编译器可以直接假定它，并在编译期消除对应的检查。一个声明了 `dim(x, 1) % 64 == 0` 的 kernel，对于匹配的绑定在任何地方都不会生成东西；而 `dim(a, i) == dim(b, j)` 与派生形式一样，精确地关联两个 tensor 的轴。当你希望把契约显式体现在签名中，或者需要一条遍历无法派生的事实时才声明 precondition；注意声明式的相等比派生式的比较更严格（对范围用 `==`，对 tile 数量用 `<=`），因此它会拒绝一些派生形式本可接受的启动。
 

@@ -1,6 +1,6 @@
 //! cuTile Rust 学习示例：向量加法 z = x + y
 //!
-//! 运行：`cargo run --example add`
+//! 运行：`cargo run --example 00-add`
 //!
 //! 本文件的注释按位置记录了学习过程中的疑问与解答，涉及：
 //!   - `const B: i32` 调用时为什么不写

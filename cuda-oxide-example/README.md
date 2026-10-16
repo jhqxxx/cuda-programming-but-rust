@@ -18,8 +18,8 @@
 ```
 cuda-programming-but-rust/
 ├── Cargo.toml              # [workspace] exclude = ["cuda-oxide-example"]
-├── rust-toolchain.toml     # 1.99.0 stable → 主 crate + cutile-example
-├── cutile-example/         # 用 stable：[[example]] 注册，cargo run --example
+├── rust-toolchain.toml     # 1.99.0 stable → 主 crate + cutile-rs-example
+├── cutile-rs-example/         # 用 stable：[[example]] 注册，cargo run --example
 └── cuda-oxide-example/     # 用 nightly：nightly-2026-10-11
     ├── rust-toolchain.toml # 兜底：即使某个例子漏写也能拿到 nightly
     └── 01-vector-add/      # 每个例子 = 独立、自包含的 cuda-oxide 项目
@@ -28,9 +28,9 @@ cuda-programming-but-rust/
         └── src/main.rs
 ```
 
-### 与 `cutile-example/` 的关键差异
+### 与 `cutile-rs-example/` 的关键差异
 
-`cutile-example/` 用的是根 `Cargo.toml` 里的 `[[example]]` 注册机制，`cuda-oxide-example/`
+`cutile-rs-example/` 用的是根 `Cargo.toml` 里的 `[[example]]` 注册机制，`cuda-oxide-example/`
 **不能**照抄这套：`#[kernel]` / `#[cuda_module]` 必须由 `cargo oxide` 驱动的自定义
 codegen 后端编译，普通 `cargo build --example` 编译不了。
 
@@ -183,7 +183,7 @@ fn main() {
 | --- | --- |
 | CUDA Toolkit | 13.3（`/usr/local/cuda`，`nvcc` 在 PATH 中） |
 | GPU | NVIDIA GeForce RTX 3080 |
-| 驱动 | 595.99.02 |
+| 驱动 | 615.71.09（R615 = CUDA 13.4） |
 | Rust | `nightly-2026-10-11`（由本目录 `rust-toolchain.toml` 钉定） |
 | cargo-oxide | 0.2.1，从本地 checkout `bc46b1ff` 编译（`~/.cargo/bin/cargo-oxide`） |
 

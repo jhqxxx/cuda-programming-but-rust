@@ -15,7 +15,7 @@ anyhow = "1.0.104"
 
 # cuTile Rust 直接从上游仓库取，不走 crates.io。理由：
 #   1. 版本号相同（都是 0.4.0），但 git 上取到的是 0.4.0 发布之后、尚未发版的 main
-#      提交，与本地 checkout 和 docs/cutile-book-zh.CN/ 的文档内容一致；
+#      提交，与本地 checkout 和 docs/cutile-rs-book-zh.CN/ 的文档内容一致；
 #   2. rev 与 cuda-oxide-example 用的是同一个 commit —— 全仓库只有一份源码来源。
 #
 # 改 rev 时记得同步 cuda-oxide-example/01-vector-add/Cargo.toml。
@@ -24,21 +24,21 @@ anyhow = "1.0.104"
 cutile = { git = "https://github.com/NVIDIA/cuda-rust.git", rev = "bc46b1ffb751885073066b087594045f07f0f81b" }
 
 # ---------------------------------------------------------------------------
-# cuTile Rust 学习示例（cutile-example/ 目录）
+# cuTile Rust 学习示例（cutile-rs-example/ 目录）
 #
 # 该目录不是 Cargo 默认的 `examples/`，所以不会被自动发现：每新增一个示例文件，
 # 就在这里加一条 [[example]] 注册它（name 建议与文件名去掉 .rs 后一致）。
 #
 # 运行：
-#   cargo check --example 01-vector-add   # 只做类型检查，不需要 GPU
-#   cargo run   --example 01-vector-add   # 在 GPU 上执行
+#   cargo check --example 00-add   # 只做类型检查，不需要 GPU
+#   cargo run   --example 00-add   # 在 GPU 上执行
 #
-# 详见 cutile-example/README.md。
+# 详见 cutile-rs-example/README.md。
 
 [[example]]
 name = "00-add"
-path = "cutile-example/00-add.rs"
+path = "cutile-rs-example/00-add.rs"
 
 [[example]]
 name = "01-hello-world"
-path = "cutile-example/01-hello-world.rs"
+path = "cutile-rs-example/01-hello-world.rs"

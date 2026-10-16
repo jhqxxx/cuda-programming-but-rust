@@ -5,33 +5,45 @@
 
 > 目录名不叫 `examples/`，所以 Cargo **不会自动发现**这里的文件 —— 每个示例都必须在
 > 根目录 `Cargo.toml` 里注册一条 `[[example]]`。这是刻意的取舍：换来的是示例目录名
-> 可以和仓库里 `use_cpp/`、`use_python/` 的风格保持一致。
+> 可以和仓库里 `cpp/`、`python/` 的风格保持一致。
+
+> **这是 tile 模型那条线。** cuTile 的函数体描述的是「一个 tile（≈ 一个 thread block）
+> 该干什么」，和 SIMT 模型（一个线程干什么）是两种不同的抽象。仓库里 SIMT 的 Rust 线
+> 在 [`cuda-oxide-example/`](../cuda-oxide-example/)，**两边的示例不互为对照**。
+
+## 当前示例
+
+| 文件 | 主题 | 根 `Cargo.toml` 里的注册名 |
+| --- | --- | --- |
+| `00-add.rs` | 向量加法 `z = x + y` | `00-add` |
+| `01-hello-world.rs` | `program_id` / `num_programs` | `01-hello-world` |
+| `02-vec-add.rs` | 🚧 空文件，还没写、也没注册 | — |
 
 ## 目录约定
 
 | 约定 | 说明 |
 | --- | --- |
-| 文件名 | 两位数序号 + 短横线 + 主题，如 `01-vector-add.rs`、`02-saxpy.rs`、`03-tiled-gemm.rs` |
+| 文件名 | 两位数序号 + 短横线 + 主题，如 `00-add.rs`、`02-saxpy.rs`、`03-tiled-gemm.rs` |
 | 入口 | 顶层写 `fn main()`，直接可运行 |
 | 注册 | 根 `Cargo.toml` 里加一条 `[[example]]`（`name` 与文件名去掉 `.rs` 后一致） |
 | 自检 | 在 `main` 里用 `assert!` 校验结果，避免只打印不验证 |
 
 ## 新增一个示例
 
-1. 新建文件，例如 `cutile-example/01-vector-add.rs`。
+1. 新建文件，例如 `cutile-rs-example/02-vec-add.rs`。
 2. 在根目录 `Cargo.toml` **末尾**追加：
 
    ```toml
    [[example]]
-   name = "01-vector-add"
-   path = "cutile-example/01-vector-add.rs"
+   name = "02-vec-add"
+   path = "cutile-rs-example/02-vec-add.rs"
    ```
 
 3. 编译 / 运行：
 
    ```bash
-   cargo check --example 01-vector-add   # 只做类型检查与 JIT 编译，不占用 GPU
-   cargo run   --example 01-vector-add   # 真正在 GPU 上执行
+   cargo check --example 02-vec-add   # 只做类型检查与 JIT 编译，不占用 GPU
+   cargo run   --example 02-vec-add   # 真正在 GPU 上执行
    ```
 
    `path` 是相对于根 `Cargo.toml` 的路径，可以指向任意目录或文件名，不必和 `name` 同名。
@@ -103,7 +115,7 @@ fn main() -> Result<()> {
 | --- | --- |
 | CUDA Toolkit | 13.3（`/usr/local/cuda`，`nvcc` 在 PATH 中） |
 | GPU | NVIDIA GeForce RTX 3080 |
-| 驱动 | 595.99.02 |
+| 驱动 | 615.71.09（R615 = CUDA 13.4） |
 | Rust | 1.99.0 |
 | cutile | 0.4.0，取自 `NVIDIA/cuda-rust` 的 `bc46b1ff`（git，非 crates.io） |
 
@@ -117,4 +129,4 @@ fn main() -> Result<()> {
   `~/.cargo/git/checkouts/cuda-rust-*/bc46b1f/cutile-rs/`：
   - `cutile/tests/gpu/*.rs` —— 能在 GPU 上跑通的完整用例
   - `cutile/tests/*.rs` —— 多为不依赖 GPU 的编译期用例
-  - `cutile-examples/examples/` —— 官方示例集（含 async 系列）
+  - `cutile-rs-examples/examples/` —— 官方示例集（含 async 系列）

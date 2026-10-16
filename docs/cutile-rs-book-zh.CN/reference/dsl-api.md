@@ -163,7 +163,7 @@ mod my_kernels {
 }
 ```
 
-可运行的版本见 `cutile-examples/examples/inter_module.rs`。
+可运行的版本见 `cutile-rs-examples/examples/inter_module.rs`。
 
 ### `cutile::core` 的内部机制
 
