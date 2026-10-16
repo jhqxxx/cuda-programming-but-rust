@@ -10,6 +10,9 @@ dependencies = [
     # tile 模型：cuTile Python，与 Rust 侧 cutile-rs-example 同一模型、同一套 TileIR 编译器。
     # 系统 CUDA 13.1+ 自带 tileiras，所以**不需要** cuda-tile[tileiras] 那个重 extra。
     "cuda-tile>=1.6",
+    # cupy 放基础依赖：tile 和 SIMT 两条线都用它做设备数组和主机/设备拷贝，
+    # legacy/use_numba.py 也拿它当设备数组 —— 三处共用的基础件，不该藏在 extra 里。
+    "cupy-cuda13x>=14.2",
     "numpy>=2",
     "torch>=2.14",
     # 另一条 tile 路线：Triton 自带编译器，与 cuTile 不是同一模型，作为备选保留。
@@ -18,12 +21,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-# legacy/ 里三条 SIMT 路线的对照实现（只作查阅对比，不再扩展），按需装。
-# 三条一起：  uv sync --extra legacy
+# legacy/ 里两条 SIMT 路线的对照实现（只作查阅对比，不再扩展），按需装。
+# 两个一起：  uv sync --extra legacy
+# 注意：cupy 已在基础依赖里，所以这里不再重复列。
 numba = ["numba>=0.68"]
 pycuda = ["pycuda>=2026.1"]
-cupy = ["cupy-cuda13x>=14.2"]                                    # legacy/use_numba.py 拿它做设备数组
-legacy = ["numba>=0.68", "pycuda>=2026.1", "cupy-cuda13x>=14.2"]
+legacy = ["numba>=0.68", "pycuda>=2026.1"]
 
 [tool.uv]
 # 本目录是示例脚本集合，不是一个可分发的包，不需要 build backend。

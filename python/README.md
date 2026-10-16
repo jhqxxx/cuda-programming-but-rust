@@ -42,16 +42,15 @@ Python 版本由 `.python-version` 指定（3.12）；本机没有时 uv 会自�
 
 ### 依赖分层
 
-基础依赖只放 `examples/` 新例子要用的东西；`legacy/` 里三条 SIMT 路线各自的库变成
-extra，按需装：
+基础依赖放 `examples/` 新例子要用的东西，外加两条线共用的 **cupy**（设备数组 + 主机/设备
+拷贝，`legacy/use_numba.py` 也靠它）；`legacy/` 里各自独有的库才是 extra，按需装：
 
 | 命令 | 装上什么 | 能跑哪些 |
 | --- | --- | --- |
-| `uv sync` | cuda-tile、numpy、torch、triton | **`examples/` 下的新例子**（SIMT = PyTorch 扩展，tile = cuTile Python） |
+| `uv sync` | cuda-tile、cupy、numpy、torch、triton | **`examples/` 下的新例子**（SIMT = PyTorch 扩展，tile = cuTile Python） |
 | `uv sync --extra numba` | + numba | 只想试 Numba 那一路 |
 | `uv sync --extra pycuda` | + pycuda | `legacy/use_pycuda.py` |
-| `uv sync --extra cupy` | + cupy-cuda13x | `legacy/use_numba.py` 拿它做设备数组 |
-| `uv sync --extra legacy` | 上面三个 | `legacy/` 全部三份 ← **一般就用这个** |
+| `uv sync --extra legacy` | 上面两个 | `legacy/` 全部三份 ← **一般就用这个** |
 
 ### 运行
 
@@ -144,7 +143,7 @@ uv run python legacy/use_numba.py     # → Test succeeded
 
 ```bash
 cd python
-uv sync --extra legacy                   # 三个示例的依赖：numba / pycuda / cupy
+uv sync --extra legacy                   # 补上 numba / pycuda（cupy 已在基础依赖里）
 uv run python legacy/use_numba.py        # → Test succeeded
 uv run python legacy/use_pycuda.py       # → Test succeeded
 uv run python legacy/use_pytorch.py      # → Test succeeded
@@ -159,7 +158,7 @@ uv run python legacy/use_pytorch.py      # → Test succeeded
 | 模型 | Rust | C++ | Python |
 | --- | --- | --- | --- |
 | SIMT | `cuda-oxide-example/01-vector-add/` | `cpp/examples/simt/` | `examples/simt/` |
-| tile | `cutile-rs-example/00-add.rs` | `cpp/examples/tile/00-add.cu` | `examples/tile/`（cuTile Python） |
+| tile | `cutile-rs-example/00-add.rs` | `cpp/examples/tile/01-hello-world.cu` | `examples/tile/01-hello-world.py`（cuTile Python） |
 
 三语言的 tile 实现共享同一个编译器后端（CUDA Tile IR → `tileiras`），
 所以是同模型的 1:1 对照，不是「相近的东西」。
@@ -168,5 +167,6 @@ uv run python legacy/use_pytorch.py      # → Test succeeded
 
 ## 状态
 
-⬜ `examples/` 下暂无内容；`legacy/` 三份参考实现现已全部跑通（`use_pycuda.py` 补了
-一行上下文初始化，见上）。
+✅ `examples/tile/01-hello-world.py` 已跑通（`uv run python examples/tile/01-hello-world.py`）；
+⬜ `examples/simt/` 待写。`legacy/` 三份参考实现全部跑通（`use_pycuda.py` 补了一行
+上下文初始化，见上）。

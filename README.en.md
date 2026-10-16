@@ -117,7 +117,7 @@ cargo oxide run      # compile and run on the GPU
 
 # C++ track
 cd cpp && mkdir -p build && cd build && cmake .. && make
-./tile_00-add                        # tile model (CMake adds --enable-tile + C++20)
+./tile_01-hello-world                # tile model (CMake adds --enable-tile + C++20)
 ./legacy_transpose_with_shared_mem   # SIMT, earlier examples
 ```
 
@@ -154,7 +154,7 @@ Chinese translations of four official books live under `docs/`:
 | Rust · tile (cuTile) | ✅ `00-add` and `01-hello-world` run; conventions and template in place |
 | Rust · SIMT (cuda-oxide) | ✅ `01-vector-add` runs; codegen backend cache is warm |
 | C++ · SIMT | ⬜ Layout and CMake ready, examples to be written |
-| C++ · tile | ✅ `00-add` runs (CUDA Tile C++, `--enable-tile` + C++20) |
+| C++ · tile | ✅ `01-hello-world` runs (CUDA Tile C++, `--enable-tile` + C++20) |
 | Python · SIMT | ⬜ uv environment ready; `examples/` to be written, all 3 `legacy/` examples pass |
 | Python · tile | ⬜ cuTile Python verified in the environment; `examples/tile/` to be written |
 

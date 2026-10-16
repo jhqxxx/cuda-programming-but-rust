@@ -104,5 +104,5 @@ cuTile Python 直接吃实现了 CUDA Array Interface / DLPack 的对象 ——
 
 ## 状态
 
-⬜ 暂无内容。依赖（`cuda-tile`）已在 `python/pyproject.toml` 的基础依赖里，
-`uv sync` 即可用。
+✅ `01-hello-world.py` —— 块索引 / grid 尺寸，三个语言版本输出一致。
+依赖（`cuda-tile`、`cupy`）都在 `python/pyproject.toml` 的基础依赖里，`uv sync` 即可用。

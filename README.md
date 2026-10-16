@@ -110,7 +110,7 @@ cargo oxide run      # 编译并在 GPU 上运行
 
 # C++ 线
 cd cpp && mkdir -p build && cd build && cmake .. && make
-./tile_00-add                        # tile 模型（CMake 已带上 --enable-tile + C++20）
+./tile_01-hello-world                # tile 模型（CMake 已带上 --enable-tile + C++20）
 ./legacy_transpose_with_shared_mem   # SIMT 老示例
 ```
 
@@ -147,7 +147,7 @@ cd cpp && mkdir -p build && cd build && cmake .. && make
 | Rust · tile（cuTile） | ✅ `00-add`、`01-hello-world` 可跑通，目录约定与模板已定 |
 | Rust · SIMT（cuda-oxide） | ✅ `01-vector-add` 可跑通，codegen 后端缓存已就绪 |
 | C++ · SIMT | ⬜ 目录与 CMake 已就绪，示例待写 |
-| C++ · tile | ✅ `00-add` 可跑通（CUDA Tile C++，`--enable-tile` + C++20） |
+| C++ · tile | ✅ `01-hello-world` 可跑通（CUDA Tile C++，`--enable-tile` + C++20） |
 | Python · SIMT | ⬜ uv 环境已就绪；`examples/` 待写，`legacy/` 三份已跑通 |
 | Python · tile | ⬜ cuTile Python 已在环境里跑通，`examples/tile/` 待写 |
 

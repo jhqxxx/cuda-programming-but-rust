@@ -30,7 +30,7 @@ cmake ..
 make -j
 
 ./simt_00-add            # examples/simt/00-add.cu → 目标名 simt_00-add
-./tile_00-add            # examples/tile/00-add.cu → 目标名 tile_00-add
+./tile_01-hello-world    # examples/tile/01-hello-world.cu → 目标名 tile_01-hello-world
                          #   tile 目标已自动带上 --enable-tile 和 -std=c++20
 ./legacy_transpose_v1    # legacy/ 的目标统一带 legacy_ 前缀
 ```
@@ -46,8 +46,8 @@ make -j
 
 | 主题 | SIMT（Rust） | SIMT（C++） | SIMT（Python） | tile（Rust） | tile（C++） | tile（Python） |
 | --- | --- | --- | --- | --- | --- | --- |
-| 向量加法 `z = x + y` | `cuda-oxide-example/01-vector-add/` | `examples/simt/` ⬜ | `python/examples/simt/` ⬜ | `cutile-rs-example/00-add.rs` ✅ | `examples/tile/00-add.cu` ✅ | `python/examples/tile/` ⬜ |
-| 网格与线程索引 | — | ⬜ | ⬜ | `cutile-rs-example/01-hello-world.rs` ✅ | — | ⬜ |
+| 向量加法 `z = x + y` | `cuda-oxide-example/01-vector-add/` | `examples/simt/` ⬜ | `python/examples/simt/` ⬜ | `cutile-rs-example/00-add.rs` ✅ | ⬜ | `python/examples/tile/` ⬜ |
+| 网格与线程索引 | — | ⬜ | ⬜ | `cutile-rs-example/01-hello-world.rs` ✅ | `examples/tile/01-hello-world.cu` ✅ | `python/examples/tile/01-hello-world.py` ✅ |
 
 > ⚠️ **编号还没统一**：Rust 的 SIMT 线把向量加法编成 `01`，tile 线编成 `00`。
 > 新示例按「一个主题一个编号」写，之后再把 Rust 侧对齐。
@@ -57,7 +57,7 @@ make -j
 
 ## 约定
 
-- **文件名**：两位编号 + slug，如 `00-add.cu`；CMake 目标名自动加模型前缀
+- **文件名**：两位编号 + slug，如 `01-hello-world.cu`；CMake 目标名自动加模型前缀
 - 每个示例自带 `main`，并且**自检结果**（`vectorApproximatelyEqual` / `assert`），
   别只打印不验证
 - 公共工具放 `common/`，用 `#include "cuda_utils.h"`，不要复制粘贴

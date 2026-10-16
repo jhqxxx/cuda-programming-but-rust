@@ -26,12 +26,21 @@ __tile_global__ void vecAddTile(float* __restrict__ a, float* __restrict__ b,
 vecAddTile<<<num_blocks, 1>>>(d_a, d_b, d_out, N);   // 第二格必须是 1
 ```
 
-完整可跑版本见 [`00-add.cu`](./00-add.cu)。
+## 示例
+
+| 文件 | 主题 | 目标名 |
+| --- | --- | --- |
+| [`01-hello-world.cu`](./01-hello-world.cu) | 块索引与 grid 尺寸（`ct::bid` / `ct::num_blocks`） | `tile_01-hello-world` |
+
+上面那段 `vecAddTile` 是 **tile 模型**的写法示意 —— 它要处理数组，所以有视图、
+`load_masked`、`ct::shape{128_ic}` 那一整套。`01-hello-world.cu` 是**没有数组**的
+最小起步，和 `cutile-rs-example/01-hello-world.rs`、
+`python/examples/tile/01-hello-world.py` 是同一个主题。
 
 ## 编译：两条硬要求
 
 ```bash
-nvcc --enable-tile -std=c++20 -arch=sm_86 -O2 00-add.cu -o tile_00-add
+nvcc --enable-tile -std=c++20 -arch=sm_86 -O2 01-hello-world.cu -o tile_01-hello-world
 ```
 
 两条都不能少：
@@ -108,12 +117,12 @@ for (auto k : ct::irange(std::size_t{0}, num_k)) { ... }   // ← 死循环
 #include "cuda_tile.h"
 ```
 
-`00-add.cu` 里已经这么排了。验法：用任意非 nvcc 编译器试解析即可 ——
+`01-hello-world.cu` 里已经这么排了。验法：用任意非 nvcc 编译器试解析即可 ——
 
 ```bash
 g++ -std=c++20 -fsyntax-only \
     -Icpp/common -I/usr/local/cuda/include -I/usr/local/cuda/include/cccl \
-    -x c++ cpp/examples/tile/00-add.cu
+    -x c++ cpp/examples/tile/01-hello-world.cu
 ```
 
 顺序反了会喷几千行错；顺序对了只剩 `<<<>>>` 那两行（非 CUDA 解析器不认启动语法，
@@ -164,18 +173,30 @@ g++ -std=c++20 -fsyntax-only \
 | --- | --- | --- |
 | `@ct.kernel` | `__tile_global__` | `#[cutile::entry]` |
 | `ct.bid(0)` | `ct::bid().x` | `program_id(0)` |
+| `ct.num_blocks(0)` | `ct::num_blocks().x` | `num_programs(0)` |
 | `ct.load(x, index=(pid,), shape=(T,))` | `view.load(pid)` | `x.load_like(z)` |
 | `ct.store(c, index=(pid,), tile=t)` | `view.store(t, pid)` | `z.store(t)` |
 | `ct.Constant[int]` | `ct::integral_constant` / `N_ic` | `const B: i32` |
 | `ct.PaddingMode.ZERO` | `.load_masked()` | `padding::Zero` |
 | `ct.launch(stream, grid, k, args)` | `kernel<<<grid, 1>>>(...)` | `.grid(..).sync_on(&stream)` |
+| `ct.print(f"…")` | **标准 `printf("…%u…", …)`** | `cuda_tile_print!("{}", …)` |
+
+> ⚠️ 上面每行的**命名都不通用** —— 同一套 TileIR 后端，但三个前端各叫各的。
+> 最容易踩的两个：
+>
+> - **`program_id` / `num_programs` 在 Python 里不存在**，那是 Rust 的拼法；
+>   Python 是 `ct.bid()` / `ct.num_blocks()`。
+> - **打印**：Python 用 `ct.print`（支持 f-string）；`ct.printf` 也能用但**只吃 tile**，
+>   标量传不进去。C++ 头文件里**根本没有** print 原语
+>   （TileIR 那边叫 `cuda_tile.print_tko`，没暴露出来），只能用标准 `printf`。
+>   Rust 是 `cuda_tile_print!` 宏，格式串是 `{}` 而不是 `%d`。
 
 （Triton 是**另一套模型 + 另一套编译器**，不在这个对照里。）
 
 ## 约定
 
-- 文件名 = 两位编号 + slug，如 `00-add.cu`
-- **CMake 目标名带模型前缀**：`tile_00-add`（不加前缀会和 `../simt/` 下的同名文件撞车）
+- 文件名 = 两位编号 + slug，如 `01-hello-world.cu`
+- **CMake 目标名带模型前缀**：`tile_01-hello-world`（不加前缀会和 `../simt/` 下的同名文件撞车）
 - CMake 里 tile 目标单独抬到 C++20 并加 `-enable-tile`，见 [`../../CMakeLists.txt`](../../CMakeLists.txt)
 - 每个示例自带 `main` 并**自检结果**，别只打印不验证
 - 公共工具用 `#include "cuda_utils.h"`（`../../common` 已在 include 路径上）
