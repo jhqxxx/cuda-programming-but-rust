@@ -39,44 +39,49 @@
 ## 示例模板
 
 ```rust
-//! 示例 01：向量加法
+//! 示例：向量加法 z = x + y
 //!
-//! 运行：cargo run --example 01-vector-add
+//! 运行：cargo run --example <名字>
 
+use anyhow::Result;
 use cutile::prelude::*;
 
 #[cutile::module]
-mod kernels {
+mod kernel {
     use cutile::core::*;
 
-    // 注意：`&mut` 输出参数必须放在第一个位置。
-    #[cutile::entry()]
-    fn add<const S: [i32; 1]>(
-        z: &mut Tensor<f32, S>,
+    // kernel 体描述的是「一个 tile（= 一个 thread block）该干什么」。
+    // `{[B]}` 是 tile 形状（B 由 partition 推断），`{[-1]}` 表示动态维。
+    #[cutile::entry]
+    fn add<const B: i32>(
+        z: &mut Tensor<f32, { [B] }>, // 输出参数（&mut）约定放第一个
         x: &Tensor<f32, { [-1] }>,
         y: &Tensor<f32, { [-1] }>,
     ) {
-        let tile_x = load_tile_like(x, z);
-        let tile_y = load_tile_like(y, z);
-        z.store(tile_x + tile_y);
+        let tx = x.load_like(z); // 取「本 block 负责的那块」x
+        let ty = y.load_like(z);
+        z.store(tx + ty); // 写回本 block 负责的那块 z
     }
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let device = Device::new(0)?;
-    let stream = device.new_stream()?;
+fn main() -> Result<()> {
+    // api::* 返回的是惰性 DeviceOp，不 sync() 就没有 GPU 工作。
+    let x = api::ones::<f32>(&[1024]);
+    let y = api::ones::<f32>(&[1024]);
 
-    let x = api::ones::<f32>(&[32]).sync_on(&stream)?;
-    let y = api::ones::<f32>(&[32]).sync_on(&stream)?;
-    let mut z = api::zeros::<f32>(&[32]).sync_on(&stream)?;
+    // 先物化成具体 Tensor，再 partition（纯元数据，不做 GPU 工作），
+    // 这样才能直接查 grid。grid = 张量 / partition = 1024/128 = 8。
+    let z = api::zeros::<f32>(&[1024]).sync()?.partition([128]);
+    assert_eq!(z.grid()?, (8, 1, 1));
 
-    // 把 32 个元素切成 8 个长度为 4 的 tile，交给 8 个线程块。
-    kernels::add((&mut z).partition([4]), &x, &y).sync_on(&stream)?;
+    // 一次调用 = 一次 kernel 启动，在 grid 个 block 上并行跑 grid 份。
+    // 返回元组按「形参声明顺序」位置对应；输入也会被一并返回。
+    let (z, _x, _y) = kernel::add(z, x, y).sync()?;
 
-    let host: Vec<f32> = z.to_host_vec().sync_on(&stream)?;
-    println!("{host:?}");
-    assert!(host.iter().all(|&v| (v - 2.0).abs() < 1e-6));
-
+    // 显存里的数据要先拷回主机才能打印。
+    let z_host: Vec<f32> = z.unpartition().to_host_vec().sync()?;
+    assert!(z_host.iter().all(|&v| (v - 2.0).abs() < 1e-6));
+    println!("z[:8] = {:?}", &z_host[..8]);
     Ok(())
 }
 ```
@@ -100,6 +105,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 | GPU | NVIDIA GeForce RTX 3080 |
 | 驱动 | 595.99.02 |
 | Rust | 1.99.0 |
+| cutile | 0.4.0，取自 `NVIDIA/cuda-rust` 的 `bc46b1ff`（git，非 crates.io） |
 
 `cargo check --example ...` 只需要工具链；`cargo run --example ...` 需要有可用的 GPU 和驱动。
 
@@ -107,5 +113,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 - crate 文档：`cargo doc -p cutile --no-deps --open`
 - 官方 Book：<https://nvlabs.github.io/cutile-rs/>
-- 最有价值的参考资料是 crate 自带的测试：`~/.cargo/registry/src/*/cutile-0.4.0/tests/`
-  （`tests/gpu/*.rs` 是能在 GPU 上跑通的完整例子，`tests/*.rs` 多为不依赖 GPU 的编译期用例）
+- **源码与测试**：`cutile` 来自上游 git 仓库（见根 `Cargo.toml`），cargo 的检出在
+  `~/.cargo/git/checkouts/cuda-rust-*/bc46b1f/cutile-rs/`：
+  - `cutile/tests/gpu/*.rs` —— 能在 GPU 上跑通的完整用例
+  - `cutile/tests/*.rs` —— 多为不依赖 GPU 的编译期用例
+  - `cutile-examples/examples/` —— 官方示例集（含 async 系列）

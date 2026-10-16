@@ -164,8 +164,7 @@ dependencies = [
 [[package]]
 name = "cuda-async"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7c3b4fa318d58c66d64b16768c610a56cd7dcb7824626dabf6022eb4c9eb71b"
+source = "git+https://github.com/NVIDIA/cuda-rust.git?rev=bc46b1ffb751885073066b087594045f07f0f81b#bc46b1ffb751885073066b087594045f07f0f81b"
 dependencies = [
  "anyhow",
  "cuda-bindings",
@@ -181,8 +180,7 @@ dependencies = [
 [[package]]
 name = "cuda-bindings"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6056dad2ab4855a22eb1b16f597e4d3ef7fae6bfde80eed47f2acf90ddcfe78a"
+source = "git+https://github.com/NVIDIA/cuda-rust.git?rev=bc46b1ffb751885073066b087594045f07f0f81b#bc46b1ffb751885073066b087594045f07f0f81b"
 dependencies = [
  "bindgen",
  "libloading",
@@ -195,8 +193,7 @@ dependencies = [
 [[package]]
 name = "cuda-core"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "dedfb4b1351063f77ca85e6f72d22cae5cd591e538b950da452d1e88a66a601d"
+source = "git+https://github.com/NVIDIA/cuda-rust.git?rev=bc46b1ffb751885073066b087594045f07f0f81b#bc46b1ffb751885073066b087594045f07f0f81b"
 dependencies = [
  "anyhow",
  "cuda-bindings",
@@ -208,8 +205,7 @@ dependencies = [
 [[package]]
 name = "cuda-core-derive"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f466efc33480f95d2968fd078ba4215d19d95e2a54274b2ab01cc5ee484dc587"
+source = "git+https://github.com/NVIDIA/cuda-rust.git?rev=bc46b1ffb751885073066b087594045f07f0f81b#bc46b1ffb751885073066b087594045f07f0f81b"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -227,8 +223,7 @@ dependencies = [
 [[package]]
 name = "cutile"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20c2093dde64605d2ddfb71d74c7b77ca49b83ccf1fe6515451a1111ac575380"
+source = "git+https://github.com/NVIDIA/cuda-rust.git?rev=bc46b1ffb751885073066b087594045f07f0f81b#bc46b1ffb751885073066b087594045f07f0f81b"
 dependencies = [
  "anyhow",
  "cuda-async",
@@ -251,8 +246,7 @@ dependencies = [
 [[package]]
 name = "cutile-compiler"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38305f0b3ecbe326532e3264a913c03417219f007fe127a81d5b69ce47f1d0ba"
+source = "git+https://github.com/NVIDIA/cuda-rust.git?rev=bc46b1ffb751885073066b087594045f07f0f81b#bc46b1ffb751885073066b087594045f07f0f81b"
 dependencies = [
  "anyhow",
  "cuda-async",
@@ -273,8 +267,7 @@ dependencies = [
 [[package]]
 name = "cutile-ir"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0cafc908cffd7ac5e98aaefb8643ca9a31e3e2d05d153d772f9b2a7562e9bda9"
+source = "git+https://github.com/NVIDIA/cuda-rust.git?rev=bc46b1ffb751885073066b087594045f07f0f81b#bc46b1ffb751885073066b087594045f07f0f81b"
 dependencies = [
  "half",
  "indexmap",
@@ -285,8 +278,7 @@ dependencies = [
 [[package]]
 name = "cutile-macro"
 version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e7eb7ab5ae6b7b1f9a01ac85bae2f63b6fe2c3e03945c9cc3d63249b437399fa"
+source = "git+https://github.com/NVIDIA/cuda-rust.git?rev=bc46b1ffb751885073066b087594045f07f0f81b#bc46b1ffb751885073066b087594045f07f0f81b"
 dependencies = [
  "convert_case",
  "cutile-compiler",
