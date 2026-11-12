@@ -13,17 +13,23 @@ exclude = ["cuda-oxide-example"]
 [dependencies]
 anyhow = "1.0.104"
 
-# cuTile Rust 直接从上游仓库取，不走 crates.io。理由：
-#   1. 版本号相同（都是 0.4.0），但 git 上取到的是 0.4.0 发布之后、尚未发版的 main
-#      提交，与本地 checkout 和 docs/cutile-rs-book-zh.CN/ 的文档内容一致；
-#   2. rev 与 cuda-oxide-example 用的是同一个 commit —— 全仓库只有一份源码来源。
+# cuTile Rust 三个 crate 都从 crates.io 取，且**版本必须严格一致**：
+# cutile 对 cuda-async / cuda-core 是精确锁版本（`=0.5.0`），单独升一个会直接解析失败。
 #
-# 改 rev 时记得同步 cuda-oxide-example/01-vector-add/Cargo.toml。
-# cutile-rs 在上游钉的是 1.98.0 stable（rust-version = "1.89"），本工作区是 1.99.0
-# stable，兼容。
-cutile = { git = "https://github.com/NVIDIA/cuda-rust.git", rev = "bc46b1ffb751885073066b087594045f07f0f81b" }
-cuda-async = { git = "https://github.com/NVIDIA/cuda-rust.git", rev = "bc46b1ffb751885073066b087594045f07f0f81b" }
-cuda-core = { git = "https://github.com/NVIDIA/cuda-rust.git", rev = "bc46b1ffb751885073066b087594045f07f0f81b" }
+# ⚠️ 0.5.0 有一处破坏性变更（本目录的示例已适配）：
+#   cuda-core 0.4 只有一个 Device 类型，既能 Device::new(0) 又能 .new_stream()。
+#   0.5.0 把它拆成了两个：
+#     Device  —— 纯物理设备身份，不持有 CUDA context，不能建 stream
+#     Context —— 执行上下文，持有 primary context，new_stream/default_stream 在它上面
+#   因此旧写法 Device::new(0)?.new_stream() 要改成 Context::new(0)?.new_stream()。
+#   docs/cutile-rs-book-V0.5.0-zh.CN/ 是上游 cutile-rs/v0.5.0 文档的译本，已同步到
+#   0.5 的 Context 写法。
+#
+# cuda-oxide-example/ 用的是另一套后端（cuda-device / cuda-host，需要 nightly +
+# rustc-dev），仍钉 git rev，那边的 rev 与这里无关，不必同步。
+cutile = "0.5.0"
+cuda-async = "0.5.0"
+cuda-core = "0.5.0"
 # ---------------------------------------------------------------------------
 # cuTile Rust 学习示例（cutile-rs-example/ 目录）
 #

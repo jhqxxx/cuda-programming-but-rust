@@ -244,7 +244,7 @@ cutile::jit_cache::enable(std::sync::Arc::new(store));
 
 并发的多个进程可能各自编译同一个尚不存在的条目。建议先在一个进程里预热共享缓存，再启动并行 worker，以避免重复劳动。
 
-参见 `cutile-rs-examples/examples/jit_disk_cache.rs`；跑两遍即可看到第二个进程命中磁盘。要自行实现后端（对象存储、数据库），参见 `cutile-rs-examples/examples/jit_custom_store.rs`。
+参见 `cutile-examples/examples/jit_disk_cache.rs`；跑两遍即可看到第二个进程命中磁盘。要自行实现后端（对象存储、数据库），参见 `cutile-examples/examples/jit_custom_store.rs`。
 
 ## 计算缓存键
 
@@ -409,7 +409,7 @@ fn debug_kernel<const S: [i32; 2]>(...) { ... }
 2. 否则由解析出的工具包的 `cuda.h` 决定：CUDA 13.2 输出 13.2，CUDA 13.3 及更新版本输出 13.3。
 3. 再否则 —— 即 `CUTILE_TILEIRAS_PATH` 指向一个裸二进制，或者在 `PATH` 上找到 `tileiras` —— 编译器会用一个小型代表性 kernel 按从新到旧的顺序探测每个版本。
 
-最终结果会被夹取到可输出的范围内。比 CUDA 13.2 更旧的工具包，或者探测无法进行（临时目录不可写、二进制无法启动或崩溃、或者它拒绝了所有版本），都会产生一个指明原因的编译错误，而不是静默回退。选定的版本是持久化缓存键的一部分，而 `CompileArtifacts::bytecode()` 写出的正是启动时会使用的那份协商结果。
+最终结果会被夹取到可输出的范围内。比 CUDA 13.2 更旧的工具包，或者探测无法进行（临时目录不可写、二进制无法启动或崩溃、或者它拒绝了所有版本），都会产生一个指明原因的编译错误，而不是静默回退。选定的版本是持久化缓存键的一部分，而 `CompileArtifacts::bytecode()` 写出的正是启动时会使用的那份协商结果。逐操作与逐 GPU 的要求见 [CUDA 与 Tile IR 兼容性](../reference/compatibility.md)。
 
 ## 编译失败
 

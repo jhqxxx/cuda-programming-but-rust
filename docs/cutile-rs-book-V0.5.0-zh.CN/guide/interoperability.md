@@ -28,7 +28,7 @@ nvcc -cubin -arch=sm_80 my_kernel.cu -o my_kernel.cubin
 
 ### 来自 cuda-oxide
 
-[cuda-oxide](https://nvidia.github.io/cuda-rust/cuda-oxide/) 是 CUDA Rust 的 SIMT kernel 编程模型；它与 cuTile Rust 并排放在 [cuda-rust 仓库](https://github.com/NVIDIA/cuda-rust/tree/main/cuda-oxide)里。它文档化的输出路径是 PTX：用 `cargo oxide build` 或 `cargo oxide pipeline` 构建或查看生成的 PTX，然后用 `load_module_from_ptx` 加载该 PTX，并把入口函数包装成 `AsyncKernelLaunch` 或带类型的 `DeviceOp`。
+[cuda-oxide](https://nvidia.github.io/cuda-rust/cuda-oxide/) 是 CUDA Rust 的 SIMT kernel 编程模型；它与 cuTile Rust 并排放在 [cuda-rust 仓库](https://github.com/NVIDIA/cuda-rust/tree/main/cuda-oxide)里。它文档化的输出路径是 PTX：用 `cargo oxide build` 或 `cargo oxide pipeline` 构建或查看生成的 PTX，然后用 `load_module_from_ptx` 加载该 PTX，并把入口函数包装成 `AsyncKernelLaunchBuilder` 或带类型的 `DeviceOp`。
 
 如果你需要 CUBIN，请把 PTX 交给常规 CUDA 工具链，作为一个单独的步骤来编译。
 
@@ -49,13 +49,13 @@ let module = load_module_from_ptx(ptx_src, device_id)?;
 let function = Arc::new(module.load_function("my_kernel_entry")?);
 ```
 
-通过 `AsyncKernelLaunch` 启动 kernel，它是一个包装了 CUDA 驱动 kernel 启动 API 的 `DeviceOp`：
+通过 `AsyncKernelLaunchBuilder` 启动 kernel，它是一个包装了 CUDA 驱动 kernel 启动 API 的 `DeviceOp`：
 
 ```rust
-use cuda_async::launch::AsyncKernelLaunch;
+use cuda_async::launch::AsyncKernelLaunchBuilder;
 use cuda_core::LaunchConfig;
 
-let mut launcher = AsyncKernelLaunch::new(function.clone());
+let mut launcher = AsyncKernelLaunchBuilder::new(function.clone());
 launcher.push_arg(num_elements as u32);
 launcher.push_arg(scale);
 // 安全性：input 和 output 都是有效的设备分配，至少包含
@@ -93,7 +93,7 @@ use cuda_async::device_context::with_default_device_policy;
 use cuda_async::device_future::DeviceFuture;
 use cuda_async::device_operation::{DeviceOp, ExecutionContext};
 use cuda_async::error::DeviceError;
-use cuda_async::launch::AsyncKernelLaunch;
+use cuda_async::launch::AsyncKernelLaunchBuilder;
 use cuda_async::scheduling_policies::SchedulingPolicy;
 use cuda_core::{Function, LaunchConfig};
 use std::future::IntoFuture;
@@ -115,7 +115,7 @@ impl DeviceOp for ScaleKernel {
         self,
         ctx: &ExecutionContext,
     ) -> Result<<Self as DeviceOp>::Output, DeviceError> {
-        let mut launcher = AsyncKernelLaunch::new(self.function);
+        let mut launcher = AsyncKernelLaunchBuilder::new(self.function);
         launcher.push_arg(self.n);
         launcher.push_arg(self.scale);
         // 安全性：input 和 output 都是框架管理的 Tensor 分配。
@@ -170,7 +170,7 @@ let (_z, w) = ScaleKernel {
 .await?;
 ```
 
-完整、可运行的版本见 [`interop.rs`](https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-rs-examples/examples/interop.rs)。
+完整、可运行的版本见 [`interop.rs`](https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-examples/examples/interop.rs)。
 
 ---
 
@@ -217,13 +217,13 @@ with_context(move |ctx: &ExecutionContext| {
 
 ## 借用外部 CUDA 句柄
 
-如果你的应用已经通过别的 Rust 绑定 crate —— cudarc、Candle，或者手写的 `bindgen` 封装 —— 持有了 CUDA 句柄，你可以把它们包装成 cuTile 的 `Device`、`Stream`、`Module` 或 `Function`，而无需转移所有权。
+如果你的应用已经通过别的 Rust 绑定 crate —— cudarc、Candle，或者手写的 `bindgen` 封装 —— 持有了 CUDA 句柄，你可以把它们包装成 cuTile 的 `Context`、`Stream`、`Module` 或 `Function`，而无需转移所有权。
 
 `borrow_raw` 系列构造函数接收的是裸 C 原语（不透明句柄用 `*mut c_void`，`CUdevice` 用 `c_int`），而不是 `cuda_bindings` 的类型别名，因此不同绑定 crate 之间的名义类型差异不会造成阻碍：
 
 ```rust
 use core::ffi::{c_int, c_void};
-use cuda_core::{Device, Stream};
+use cuda_core::{Context, Stream};
 
 // `foreign` 是来自另一个 Rust 绑定 crate（cudarc、Candle、bindgen 封装……）
 // 的句柄集合。它的 `CUcontext` / `CUstream` 类型别名与 cuTile 的名义上不同，
@@ -232,7 +232,7 @@ use cuda_core::{Device, Stream};
 // 安全性：调用者保证这些句柄有效、生命周期长于返回的包装器，
 // 并且不会被并发销毁。
 let device = unsafe {
-    Device::borrow_raw(
+    Context::borrow_raw(
         foreign.cu_ctx as *mut c_void,
         foreign.cu_device as c_int,
         foreign.ordinal,
@@ -244,9 +244,9 @@ let stream = unsafe { Stream::borrow_raw(foreign.cu_stream as *mut c_void, &devi
 let result = my_kernel(out, x).sync_on(&stream)?;
 ```
 
-借用来的包装器在被 drop 时会跳过销毁：`Stream` 不会调用 `cuStreamDestroy`，`Module` 不会卸载，`Device` 也不会释放主上下文。句柄生命周期的完全控制权仍留在源框架手中。
+借用来的包装器在被 drop 时会跳过销毁：`Stream` 不会调用 `cuStreamDestroy`，`Module` 不会卸载，`Context` 也不会释放主上下文。句柄生命周期的完全控制权仍留在源框架手中。
 
-`Module::borrow_raw` 和 `Function::borrow_raw` 对预编译模块和已解析函数遵循同样的模式。端到端演练见 `cutile-rs-examples/examples/` 下的 `cudarc_interop` 示例。
+`Module::borrow_raw` 和 `Function::borrow_raw` 对预编译模块和已解析函数遵循同样的模式。端到端演练见 `cutile-examples/examples/` 下的 `cudarc_interop` 示例。
 
 ---
 
@@ -262,7 +262,7 @@ let result = my_kernel(out, x).sync_on(&stream)?;
 | 手动在 warp 之间布置 `tl.dot` | `mma()` 直接映射到 Tensor Core 指令；线程/warp 的分配由编译器管理 |
 | 为占用率调 `num_warps` 和 `num_stages` | `occupancy` 与 `num_cta_in_cga` 优化提示引导编译器 |
 
-对于无法映射到 tile 模型的模式，请用 Triton 编译该 kernel，然后按上文所述通过 `AsyncKernelLaunch` 集成它。由于 Triton 输出 PTX，可以直接加载：
+对于无法映射到 tile 模型的模式，请用 Triton 编译该 kernel，然后按上文所述通过 `AsyncKernelLaunchBuilder` 集成它。由于 Triton 输出 PTX，可以直接加载：
 
 ```rust
 let module = load_module_from_ptx(triton_generated_ptx, device_id)?;

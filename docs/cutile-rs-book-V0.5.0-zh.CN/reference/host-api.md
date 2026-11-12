@@ -185,31 +185,31 @@ graph.launch().sync_on(&stream)?;
 
 ## 设备与流
 
-每个宿主程序都从一个 `Device` 开始，再加上一条或多条用于调度 GPU 工作的 `Stream`：
+每个宿主程序都从一个 `Context` 开始，再加上一条或多条用于调度 GPU 工作的 `Stream`：
 
 ```rust
-use cuda_core::Device;
+use cuda_core::Context;
 
-let device = Device::new(0)?;              // 设备序号 0
+let device = Context::new(0)?;              // GPU 0 的 primary context
 let stream = device.new_stream()?;         // 由该设备拥有的一条新流
 ```
 
 | 方法 | 返回 | 说明 |
 |---|---|---|
-| `Device::new(ordinal: usize)` | `Result<Arc<Device>, DriverError>` | 创建一个绑定到某个 GPU 序号的设备句柄 |
-| `Device::device_count()` | `Result<i32, DriverError>` | 支持 CUDA 的设备数量 |
+| `Context::new(ordinal: usize)` | `Result<Arc<Context>, DriverError>` | 创建一个绑定到某个 GPU 序号的上文句柄 |
+| `Context::device_count()` | `Result<i32, DriverError>` | 支持 CUDA 的设备数量 |
 | `device.ordinal()` | `usize` | 该句柄代表的 GPU 序号 |
-| `device.name()` | `Result<String, DriverError>` | 设备名称 |
+| `device.name()` | `Result<String, DriverError>` | 上下文名称 |
 | `device.new_stream()` | `Result<Arc<Stream>, DriverError>` | 在该设备上创建一条新流 |
-| `unsafe Device::borrow_raw(cu_ctx, cu_device, ordinal)` | `Arc<Device>` | 借用外部拥有的 CUDA 上下文/设备，用于互操作 |
-| `unsafe Device::borrow_with_owner(cu_ctx, cu_device, ordinal, owner)` | `Arc<Device>` | 同上，但持有一个 `Arc<dyn ForeignOwner>`，使外部所有者比该句柄活得更久 |
+| `unsafe Context::borrow_raw(cu_ctx, cu_device, ordinal)` | `Arc<Context>` | 借用外部拥有的 CUDA 上下文/设备，用于互操作 |
+| `unsafe Context::borrow_with_owner(cu_ctx, cu_device, ordinal, owner)` | `Arc<Context>` | 同上，但持有一个 `Arc<dyn ForeignOwner>`，使外部所有者比该句柄活得更久 |
 | `unsafe Stream::borrow_raw(cu_stream, &device)` | `Arc<Stream>` | 借用外部拥有的 CUDA 流，用于互操作 |
 | `unsafe Stream::borrow_with_owner(cu_stream, &device, owner)` | `Arc<Stream>` | 同上，但持有一个 `Arc<dyn ForeignOwner>` |
 | `unsafe Module::borrow_raw(...)` / `unsafe Function::borrow_raw(...)` | CUDA module/function 包装器 | 借用外部拥有的 CUDA 句柄 |
 
-设备用 `Arc` 包装以便跨线程共享；流同样用 `Arc` 包装，可以传给 `.sync_on(&stream)` 以显式指定流调度。
+上下文用 `Arc` 包装以便跨线程共享；流同样用 `Arc` 包装，可以传给 `.sync_on(&stream)` 以显式指定流调度。
 
-默认的轮转调度策略会为大多数工作负载自动处理流的分配 —— 这些 API 是为你确实需要显式流控制时准备的（调试、确定性排序、配合 `AsyncKernelLaunch`，或者在专用流上让计算与传输重叠）。
+默认的轮转调度策略会为大多数工作负载自动处理流的分配 —— 这些 API 是为你确实需要显式流控制时准备的（调试、确定性排序、配合 `AsyncKernelLaunchBuilder`，或者在专用流上让计算与传输重叠）。
 
 `borrow_raw` 系列构造函数不取得底层 CUDA 句柄的所有权，因此不会在 drop 时销毁它们。它们是 `unsafe fn`：调用者要保证这些句柄在借用被使用期间始终有效。`borrow_with_owner` 变体会让一个 `Arc<dyn ForeignOwner>` 保持存活，这样拥有它的那个运行时的对象就不会被提前 drop。当你与另一个拥有上下文、流、模块或函数的运行时集成时，请使用它们。
 
@@ -254,7 +254,7 @@ CUTILE_TILEIRAS_PATH=/opt/cuda-tile/bin/tileiras cargo test -p cutile
 
 所选二进制支持的字节码版本决定了输出，而不是用来构建 Rust crate 的 CUDA 头文件。默认是双方共同支持的最高版本（13.2、13.3 或 13.4）。`CUTILE_BYTECODE_VERSION` 可以把版本固定为其中之一，但无法强制使用所选汇编器不支持的版本。请在启动之前配置这些变量；已经解析过的启动点会保留它们当初的工具链快照。
 
-**`LaunchConfig`** —— 用于 `AsyncKernelLaunch`（在 `#[cutile::entry]` 路径之外启动的裸 CUDA kernel）的 grid/block/共享内存规格：
+**`LaunchConfig`** —— 用于 `AsyncKernelLaunchBuilder`（在 `#[cutile::entry]` 路径之外启动的裸 CUDA kernel）的 grid/block/共享内存规格：
 
 ```rust
 use cuda_core::LaunchConfig;
@@ -266,12 +266,12 @@ LaunchConfig {
 }
 ```
 
-**`AsyncKernelLaunch`** —— 把一次 CUDA 驱动的 kernel 启动包装成一个 `DeviceOp`。用 `push_arg`（安全，用于 `DType` 标量）或 `push_device_ptr`（`unsafe`，用于裸设备指针）构建参数列表，设置启动配置，然后 `.await` 或 `.sync_on()`：
+**`AsyncKernelLaunchBuilder`** —— 把一次 CUDA 驱动的 kernel 启动包装成一个 `DeviceOp`。用 `push_arg`（安全，用于 `DType` 标量）或 `push_device_ptr`（`unsafe`，用于裸设备指针）构建参数列表，设置启动配置，然后 `.await` 或 `.sync_on()`：
 
 ```rust
-use cuda_async::launch::AsyncKernelLaunch;
+use cuda_async::launch::AsyncKernelLaunchBuilder;
 
-let mut launcher = AsyncKernelLaunch::new(function.clone());
+let mut launcher = AsyncKernelLaunchBuilder::new(function.clone());
 launcher.push_arg(num_elements as u32);
 launcher.push_arg(scale);
 let input_ptr = input.device_pointer();
@@ -311,7 +311,7 @@ gemm(z, x, y).generics(generics).sync_on(&stream)?;
 <a id="programmatic-dependent-launch"></a>
 ### 程序化依赖启动（PDL）
 
-生成的 kernel builder 上有一个 unsafe、消耗 self 的 `.programmatic_dependent_launch()` 方法。它默认关闭，并且与 `CompileOptions` 相互独立。它要求 Tile IR 13.4、sm_90 或更新，以及提供 `cuLaunchKernelEx` 的驱动；不受支持的请求会失败，而不是静默退化成普通的串行化。`cuda_async::AsyncKernelLaunch` 也为更底层的调用者暴露了一个 unsafe 的可变 builder 方法。
+生成的 kernel builder 上有一个 unsafe、消耗 self 的 `.programmatic_dependent_launch()` 方法。它默认关闭，并且与 `CompileOptions` 相互独立。它要求 Tile IR 13.4、sm_90 或更新，以及提供 `cuLaunchKernelEx` 的驱动；不受支持的请求会失败，而不是静默退化成普通的串行化。`cuda_async::AsyncKernelLaunchBuilder` 也为更底层的调用者暴露了一个 unsafe 的可变 builder 方法。
 
 把两个 kernel 入队到同一条流上，在**消费者**上启用 PDL：
 
@@ -329,7 +329,7 @@ unsafe {
 
 等待之前的工作不得与尚未完成的生产者工作发生竞争。两个 kernel 都不得依赖实际的重叠来推进，并且所有资源都必须在两个 kernel 都用完它们之后仍然存活。裸指针不会保留拥有它们的 tensor。PDL 是一项 unsafe 的 opt-in，因为这些义务超出了安全 tensor API 的常规流顺序保证。
 
-完整可执行的生产者/消费者示例见 `cutile-rs-examples/examples/pdl.rs`（含流顺序与 PDL 的计时对比），或者测试 `cutile/tests/gpu/tile_ir_13_4.rs::dependent_launch_waits_for_producer_data`。
+完整可执行的生产者/消费者示例见 `cutile-examples/examples/pdl.rs`（含流顺序与 PDL 的计时对比），或者测试 `cutile/tests/gpu/tile_ir_13_4.rs::dependent_launch_waits_for_producer_data`。
 
 ## Future 类比
 

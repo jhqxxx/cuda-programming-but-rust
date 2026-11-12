@@ -58,7 +58,7 @@ A 中每个被加载的元素会被复用 BN 次，B 中每个元素会被复用
 
 ```rust
 use cuda_async::device_operation::DeviceOp;
-use cuda_core::Device;
+use cuda_core::Context;
 use std::sync::Arc;
 use cutile;
 use cutile::api;
@@ -96,7 +96,7 @@ mod my_module {
 use my_module::gemm;
 
 fn main() -> Result<(), Error> {
-    let device = Device::new(0)?;
+    let device = Context::new(0)?;
     let stream = device.new_stream()?;
 
     let (bm, bn, bk) = (16usize, 16usize, 8usize);
@@ -306,7 +306,7 @@ let (z, _x, _y) = gemm_persistent(z, x, y)
 
 改变运行时的完整 tensor 维度不需要重新编译。只有类型层面的参数（例如 tile 尺寸和映射形状）才产生 JIT 编译特化。
 
-完整示例见 [`cutile-rs-examples/examples/persistent_gemm.rs`](https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-rs-examples/examples/persistent_gemm.rs)。
+完整示例见 [`cutile-examples/examples/persistent_gemm.rs`](https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-examples/examples/persistent_gemm.rs)。
 
 ### 方案 2：关闭边界检查（unsafe）
 
@@ -403,7 +403,7 @@ let (z, _x, _y) = gemm(z, x, y)
     .sync_on(&stream)?;
 ```
 
-旧式静态示例见 [`cutile-rs-examples/examples/gemm_static.rs`](https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-rs-examples/examples/gemm_static.rs)。
+旧式静态示例见 [`cutile-examples/examples/gemm_static.rs`](https://github.com/NVIDIA/cuda-rust/blob/main/cutile-rs/cutile-examples/examples/gemm_static.rs)。
 
 ### 如何在几种方案之间选择
 

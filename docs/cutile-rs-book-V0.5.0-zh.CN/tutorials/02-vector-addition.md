@@ -8,7 +8,7 @@
 
 ```rust
 use cuda_async::device_operation::DeviceOp;
-use cuda_core::Device;
+use cuda_core::Context;
 use std::sync::Arc;
 use cutile;
 use cutile::api::{ones, zeros};
@@ -35,7 +35,7 @@ mod my_module {
 use my_module::add;
 
 fn main() -> Result<(), Error> {
-    let device = Device::new(0)?;
+    let device = Context::new(0)?;
     let stream = device.new_stream()?;
     
     // 创建输入 tensor：两个填满 1.0 的 32×32 矩阵

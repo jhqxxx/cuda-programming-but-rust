@@ -62,7 +62,7 @@ bool vectorApproximatelyEqual(T *A, T *B, int length)
         {
             if (dif > 0.00001)
             {
-                printf("Index %d mismatch: %f != %f", i, A[i], B[i]);
+                printf("Index %d mismatch: %f != %f \n", i, A[i], B[i]);
                 return false;
             }
         }
@@ -70,7 +70,7 @@ bool vectorApproximatelyEqual(T *A, T *B, int length)
         {
             if (dif != 0)
             {
-                printf("Index %d mismatch: %d != %d", i, A[i], B[i]);
+                printf("Index %d mismatch: %d != %d \n", i, A[i], B[i]);
                 return false;
             }
         }

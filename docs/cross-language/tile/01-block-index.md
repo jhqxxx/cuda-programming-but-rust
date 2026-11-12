@@ -89,9 +89,9 @@ def hello_world_kernel():
 | --- | --- | --- | --- |
 | 写法 | `kernel().grid((2,2,1)).sync_on(&stream)?` | `kernel<<<dim3(2,2,1), 1>>>()` | `ct.launch(stream, (2,2,1), kernel, ())` |
 | grid 参数 | tuple | `dim3` | tuple |
-| 流从哪来 | `Device::new(0)?` + `device.new_stream()?` | **不用给**，传统默认流 | 必须显式传，且 **context 得先存在** |
+| 流从哪来 | `Context::new(0)?` + `ctx.new_stream()?` | **不用给**，传统默认流 | 必须显式传，且 **context 得先存在** |
 | 同步 | `.sync_on()` 自带 | `cudaDeviceSynchronize()` | `stream.synchronize()` |
-| 坑 | — | **第二个 chevron 参数必须是 `1`** | `launch` 要 **4 个位置参数**；context 不自动创建 |
+| 坑 | cutile 0.5 起是 `Context`，不是 `Device` | **第二个 chevron 参数必须是 `1`** | `launch` 要 **4 个位置参数**；context 不自动创建 |
 
 ## 实测输出（三个语言一致）
 

@@ -117,6 +117,6 @@ Bad:  memory[0], memory[1024], memory[2048], ...
 | 共享内存中转 | tile 加载与编译器托管的中转 |
 | Tensor Core 的放置 | `mma` / `mmaf_scaled` |
 | kernel 流水线组合 | `DeviceOp` 组合子与 CUDA 图 |
-| 外部 kernel | 通过 `AsyncKernelLaunch` 做 PTX/CUBIN 互操作 |
+| 外部 kernel | 通过 `AsyncKernelLaunchBuilder` 做 PTX/CUBIN 互操作 |
 
 当某个算法需要手写的 CUDA kernel，或者需要来自其它编译器的 PTX/CUBIN 产物时，请参见[互操作](interoperability.md)。

@@ -71,7 +71,7 @@ NVIDIA GPU 架构之间保持可移植性 —— 无需改动代码即可用上�
 
 | 文档 | 说明 |
 | --- | --- |
-| [cuTile Rust 手册](../cutile-rs-book-zh.CN/README.md) | 同一编程模型的 Rust 版本（tile 模型） |
+| [cuTile Rust 手册](../cutile-rs-book-V0.5.0-zh.CN/README.md) | 同一编程模型的 Rust 版本（tile 模型） |
 | [cuda-oxide 手册](../cuda-oxide-book-zh.CN/README.md) | Rust 的 SIMT 路线（自定义 rustc codegen 后端） |
 | [CUDA 编程指南 v13.3](../CUDA编程指南-V13.3-zh.CN/README.md) | NVIDIA CUDA C++ 编程指南（SIMT） |
 

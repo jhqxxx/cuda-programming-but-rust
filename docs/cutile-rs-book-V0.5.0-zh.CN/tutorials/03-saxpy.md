@@ -22,7 +22,7 @@ cuTile 的算术是在 tile 上进行的。要用一个标量去乘一个 tile�
 
 ```rust
 use cuda_async::device_operation::DeviceOp;
-use cuda_core::Device;
+use cuda_core::Context;
 use std::sync::Arc;
 use cutile;
 use cutile::api::arange;
@@ -49,7 +49,7 @@ mod my_module {
 use my_module::saxpy;
 
 fn main() -> Result<(), Error> {
-    let device = Device::new(0)?;
+    let device = Context::new(0)?;
     let stream = device.new_stream()?;
     
     let a = 2.0f32;  // 我们的标量乘数

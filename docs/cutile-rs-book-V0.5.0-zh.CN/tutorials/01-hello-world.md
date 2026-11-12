@@ -37,7 +37,7 @@ mod hello_world_module {
 use hello_world_module::hello_world_kernel;
 
 fn main() -> Result<(), Error> {
-    let device = Device::new(0)?;
+    let device = Context::new(0)?;
     let stream = device.new_stream()?;
     let launcher = hello_world_kernel();
     launcher.grid((2, 2, 1)).sync_on(&stream)?;
@@ -85,7 +85,7 @@ mod hello_world_module {
 
 ```rust
 fn main() -> Result<(), Error> {
-    let device = Device::new(0)?;             // 连接 GPU
+    let device = Context::new(0)?;             // 连接 GPU
     let stream = device.new_stream()?;             // 创建一条工作队列
     let launcher = hello_world_kernel();   // 拿到 kernel 启动器
     launcher.grid((2, 2, 1)).sync_on(&stream)?; // 启动 2×2×1 = 4 个程序

@@ -97,7 +97,7 @@ model in the same way:
 ├── docs/                       # Chinese documentation
 │   ├── cross-language/                # cross-language comparison (original, not a translation)
 │   ├── cuda-oxide-book-zh.CN/         # cuda-oxide book (42 pages)
-│   ├── cutile-rs-book-zh.CN/          # cuTile Rust book (29 pages)
+│   ├── cutile-rs-book-V0.5.0-zh.CN/   # cuTile Rust book (31 pages, cutile 0.5.x)
 │   ├── cutile-python-book-zh.CN/      # cuTile Python book (13 pages)
 │   ├── CUDA编程指南-V13.3-zh.CN/      # CUDA Programming Guide (15 pages)
 │   ├── atomic.md                      # atomics and memory ordering
@@ -129,7 +129,7 @@ Chinese translations of four official books live under `docs/`:
 | Document | Description |
 | --- | --- |
 | [cuda-oxide book](./docs/cuda-oxide-book-zh.CN/README.md) | Official cuda-oxide book |
-| [cuTile Rust book](./docs/cutile-rs-book-zh.CN/README.md) | Official cuTile Rust book |
+| [cuTile Rust book](./docs/cutile-rs-book-V0.5.0-zh.CN/README.md) | Official cuTile Rust book (cutile 0.5.x) |
 | [cuTile Python book](./docs/cutile-python-book-zh.CN/README.md) | Official cuTile Python (`cuda.tile`) documentation |
 | [CUDA Programming Guide v13.3](./docs/CUDA编程指南-V13.3-zh.CN/README.md) | NVIDIA CUDA C++ Programming Guide |
 

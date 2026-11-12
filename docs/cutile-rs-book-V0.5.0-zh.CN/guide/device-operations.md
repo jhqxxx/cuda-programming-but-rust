@@ -324,7 +324,7 @@ let data = z.to_host_vec().sync_on(&stream)?;
 
 **默认设备。** 每个 `DeviceOp` 落在哪台设备上是线程局部的。`set_default_device(id)` 会为当前线程改变它 —— 这是"一个线程对应一块 GPU"的 worker 池的常见做法。如果想按操作路由而不改动线程默认值，用 `global_policy(id)` 或 `with_device_policy(id, |policy| ...)` 拿到一个策略，再调用 `op.schedule(&policy)?`。
 
-来自其他框架的句柄（cudarc、Candle、手写的 FFI）可以通过 `Device::borrow_raw` / `Stream::borrow_raw` 包装成 cuTile 的 `Device` 或 `Stream`，而无需转移所有权 —— 参见[互操作](interoperability.md)。
+来自其他框架的句柄（cudarc、Candle、手写的 FFI）可以通过 `Context::borrow_raw` / `Stream::borrow_raw` 包装成 cuTile 的 `Context` 或 `Stream`，而无需转移所有权 —— 参见[互操作](interoperability.md)。
 
 ---
 

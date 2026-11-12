@@ -86,15 +86,6 @@ cuTile Python 直接吃实现了 CUDA Array Interface / DLPack 的对象 ——
 - `00-add/` —— 向量加法，和 `cutile-rs-example/00-add.rs`、`cpp/examples/simt/00-add.cu` 同主题
 - 之后往矩阵乘、softmax、LayerNorm 走（tile 模型的主场）
 
-## 更正
-
-> 本文件早先有一节把 `cuda-tile` 写成「IR 层的 Python 绑定，编译器视角」，**那是错的**。
->
-> PyPI 上的 `cuda-tile` 就是**完整的用户级 kernel DSL**（本目录要用的就是它）。
-> 写错的原因是我把它和上游 Rust monorepo 里那个同名的 MLIR 项目
-> （`cutile-rs/cuda-tile-rs/cuda-tile`，提供 Tile IR dialect 的 C++/Python 绑定）
-> 混为一谈了 —— 那个是编译器基础设施，和这里的 kernel DSL 不是一回事。
-
 ## 状态
 
 ✅ `01-hello-world.py` —— 块索引 / grid 尺寸，三个语言版本输出一致。

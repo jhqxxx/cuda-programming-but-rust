@@ -140,6 +140,6 @@ async fn main() -> Result<(), cutile::error::Error> {
 
 ## 参见
 
-- [互操作](../guide/interoperability.md) —— 用 `AsyncKernelLaunch` 而非裸指针来集成预编译 CUDA C++ kernel 的结构化做法
+- [互操作](../guide/interoperability.md) —— 用 `AsyncKernelLaunchBuilder` 而非裸指针来集成预编译 CUDA C++ kernel 的结构化做法
 - [张量与 tile](../guide/tensors-and-tiles.md) —— 使用基于指针的 kernel 之前，先了解 tensor 与 tile 的基础
 - [DSL API](../reference/dsl-api.md#low-level-memory-ops) —— 指针 tile、tensor 视图、指针加载/存储以及原子操作

@@ -155,7 +155,7 @@ cuda-gdb --args ./target/debug/my_program
 
 可接受的取值是 `none`、`line` 和 `full`。未设置时跟随 Cargo；其它取值会让构建失败。Cargo 会跟踪变化，因此不需要 `cargo clean`。该设置是在构建目标 `cutile-compiler` 库时捕获的，而不是在构建 proc macro 时。针对 `cutile-compiler` 的包级 profile 覆盖会影响这个共享默认值；只针对某个 kernel 所在 crate 的覆盖则不会。仅在运行已经构建好的二进制时设置该环境变量，不会改变设备编译。
 
-`CompileOptions::new()` 与 `CompileOptions::default()` 会继承这个构建默认值。用 `debug_info()` 可以为单次启动替换它。它会同时设置两个调试标志，因此也能关掉构建时的 `full` 默认值：
+`CompileOptions::new()` 与 `CompileOptions::default()` 会继承这个构建默认值。用 `debug_info()` 可以为单次启动替换它。它会替换继承来的模式，因此也能关掉构建时的 `full` 默认值：
 
 ```rust
 use cutile::tile_kernel::{CompileOptions, DebugInfoLevel};
@@ -165,7 +165,7 @@ my_kernel(args)
     .sync()?;
 ```
 
-每个选项都是 JIT 缓存键的一部分，所以这些模式不会共享同一个已编译 kernel 的缓存。各个单独的标志仍然可用，sanitizer 插桩也一样：
+每个选项都是 JIT 缓存键的一部分，所以这些模式不会共享同一个已编译 kernel 的缓存。sanitizer 插桩是另一个独立的选项：
 
 ```rust
 use cutile::tile_kernel::{CompileOptions, DebugInfoLevel};
@@ -184,11 +184,26 @@ my_kernel(args)
 my_kernel(args).compile_options(CompileOptions::new().sanitize_memcheck(true)).sync()?;
 ```
 
-- `debug_info(level)` 会替换两个调试标志。而单独的 `device_debug(bool)` 与 `lineinfo(bool)` setter 只改自己那一个标志，保留其它继承来的设置。
-- `device_debug(true)` 会向设备编译器传 `--device-debug`，并隐含优化级别 0。显式的 `opt_level` 优先级更高，但 `tileiras` 目前在优化级别下会拒绝完整的调试信息。前端也会停止把边界检查提升出循环。它已证明多余、或已移到启动时执行的检查不受影响；无论哪种模式，它们都不会进入设备代码。
-- `lineinfo(true)` 会传 `--lineinfo`：为 Nsight Compute 和 Nsight Systems 提供源码行关联，而不改变代码生成。这是用于分析优化后 kernel 的选项。
+- `debug_info(DebugInfoLevel::Full)` 选择设备调试模式，它会传 `--opt-level 0 --device-debug`。前端同时会停止把边界检查提升出循环。它已证明多余、或已移到启动时执行的检查不受影响；无论哪种模式，它们都不会进入设备代码。
+- `debug_info(DebugInfoLevel::Line)` 传 `--lineinfo`：为 Nsight Compute 和 Nsight Systems 提供源码行关联，而不改变代码生成。这是用于分析优化后 kernel 的选项。
+- `debug_info(DebugInfoLevel::None)` 与 `Line` 保持当前优化级别；离开设备调试模式时使用级别 3。
+- `opt_level(n)` 传 `--opt-level n` 并保留行号信息。`tileiras` 只支持在级别 0 做设备调试，所以这也会离开设备调试模式。`debug_info` 和 `opt_level` 谁最后被调用，谁说了算。
 - `sanitize_memcheck(true)` 会传 `--sanitize=memcheck`，配合 `compute-sanitizer --tool memcheck` 使用。
-- `opt_level(n)` 直接选择 `--opt-level`；默认是 3。
+
+要在不改代码的前提下切换一个已经构建好的应用，请在运行它时设置下面这些变量。每个变量的效果都作用在代码里的选项之后，就像对应的 setter 最后被调用一样。它们在每个进程里只读一次：
+
+| 变量 | 取值 | 等价于 |
+| --- | --- | --- |
+| `CUTILE_JIT_DEBUG` | `none`、`line`、`full` | `debug_info(...)` |
+| `CUTILE_JIT_OPT_LEVEL` | `0`、`1`、`2`、`3` | `opt_level(n)` |
+| `CUTILE_JIT_SANITIZE` | `memcheck`、`none` | `sanitize_memcheck(...)` |
+
+```bash
+CUTILE_JIT_DEBUG=full cuda-gdb --args ./target/release/my_program
+CUTILE_JIT_SANITIZE=memcheck compute-sanitizer --tool memcheck ./target/release/my_program
+```
+
+变量未设置时保留代码里的选择。取值非法，或者同时设置 `CUTILE_JIT_DEBUG=full` 与 `CUTILE_JIT_OPT_LEVEL`，会让 JIT 编译失败，并给出一个指明变量名的错误。
 
 完整调试模式描述的是源码位置与内联帧，而**不是** Rust 变量或取值。Tile IR 目前支持对未优化代码做控制流调试，但不支持查看用户变量；参见 [Tile IR 调试信息文档][tile-debug-info]。
 
@@ -226,6 +241,7 @@ Tile IR 显示与 Rust 源码行关联是两件事。NVIDIA 把 Tile IR Source �
 
 ```bash
 cargo test -p cutile --test debug_info
+cargo test -p cutile --test jit_env_overrides
 bash scripts/test_debug_defaults.sh
 ```
 
@@ -262,3 +278,9 @@ cargo test -p cutile --test debug_info cuda_gdb_stops_in_cross_file_helper -- --
 ---
 
 性能优化策略见[性能](performance.md)，自定义 CUDA kernel 见[互操作](interoperability.md)。
+
+## 迁移到 v0.5.0 的编译选项
+
+用 `debug_info(DebugInfoLevel::Full)` 代替 `device_debug(true)`，用 `debug_info(DebugInfoLevel::Line)` 代替 `lineinfo(true)`。要用 `debug_info(DebugInfoLevel::None)` 才能同时关掉两类调试信息。原来公开的 `opt_level`、`device_debug`、`lineinfo` 字段被 `codegen: CodegenMode` 取代；构造选项时优先用 builder 上的 setter。
+
+setter 的顺序有影响：`.debug_info(Full).opt_level(3)` 选中的是优化后的代码，而 `.opt_level(3).debug_info(Full)` 选中的是级别 0 的完整调试。运行时的 `CUTILE_JIT_*` 覆盖会在这两个程序化选项之后应用。

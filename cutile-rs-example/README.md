@@ -17,7 +17,7 @@
 | --- | --- | --- |
 | `00-add.rs` | 向量加法 `z = x + y` | `00-add` |
 | `01-hello-world.rs` | `program_id` / `num_programs` | `01-hello-world` |
-| `02-vec-add.rs` | 🚧 空文件，还没写、也没注册 | — |
+| `02-vec-add.rs` | 一维/二维分区 + `load_like`，3 个用例 | `02-vec-add` |
 
 ## 目录约定
 

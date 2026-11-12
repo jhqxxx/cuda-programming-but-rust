@@ -163,7 +163,22 @@ mod my_kernels {
 }
 ```
 
-可运行的版本见 `cutile-rs-examples/examples/inter_module.rs`。
+可运行的版本见 `cutile-examples/examples/inter_module.rs`。
+
+<a id="name-resolution"></a>
+
+### 名字解析
+
+调用、标签类型和外部函数都按它们书写处的路径解析，与 Rust 一致：通过 `use` 导入（含重命名与 glob）、`pub use` 再导出，以及 `crate::` 或 `super::` 路径。两个模块可以各自定义同名的条目；每一次使用只会到达它所指名的那个。
+
+- 宿主作为 kernel 泛型实参传入的类型，在 kernel 所在的模块里解析。如果有两个已加载的模块都声明了它，而 kernel 所在模块又没有导入它，那就是编译错误；请改为传它的模块路径（`upper_fill::Fill`）。
+- 不同位置的 `#[cutile::module]` 可以共用 `kernels` 这样的短名：每个 `use` 只会到达它路径所指名的那个模块。若某个路径以多个已加载模块共用的短名开头、又没有 `use`（例如 `helpers::f(x)`，或宿主命名的标签 `helpers::Fill`），那就是编译错误：请写出它的 crate 或绝对路径，或者 `use` 那个模块。
+- 同一个 `#[cutile::module]` 里的内联 `mod` 共享它的命名空间，所以其中两个不能声明同名的函数、const 或 static。请把这类声明放进不同的 `#[cutile::module]`。它们可以声明同名的 struct、trait 或类型别名，但一旦去指称其中之一就是编译错误。
+- JIT 不跟踪某次调用是由哪个内联 `mod` 提供的。若某个名字只有内联 `mod` 声明，而导入、glob 导入或 `cutile::core` 也提供了它，那就是编译错误，且错误信息会同时点名两者：请按路径调用（`approx::exp(x)`），或者按名字导入（`use self::approx::exp;`）。
+
+### 外部 Tile 库函数
+
+一个标了 `#[cutile::foreign]`、没有函数体的 `unsafe fn` 声明的是由某个 tile 库（`.tilelib`）实现的函数。声明方式、宿主侧配置与安全性见 [Tile 库](../guide/tile-libraries.md)。
 
 ### `cutile::core` 的内部机制
 
@@ -366,7 +381,11 @@ Tile IR 的属性，例如内存顺序、内存作用域、比较谓词、舍入
 
 ### 裸 Tile IR 的版本化表面
 
-裸内建函数位于 `cutile::core`；视图构造函数及其类型也位于 `cutile::tileir`。它们面向的是那些能够维持文档所述 unsafe 不变式的调用者。既有的便捷 API 保持不变。JIT 会同时检查选定汇编器的字节码版本与实际的目标架构。即使某个操作本身出现得更早，其类型、属性与操作数配置要求依然适用。
+裸内建函数位于 `cutile::core`；视图构造函数及其类型也位于 `cutile::tileir`。它们面向的是那些能够维持文档所述 unsafe 不变式的调用者。既有的便捷 API 保持不变。
+
+CUDA 13.5 的对等与多播访存，见[不安全的 GPU 通信](unsafe-comms.md)，其中包括同步原语、映射契约以及可运行的双 GPU 示例。
+
+JIT 会同时检查选定汇编器的字节码版本与实际的目标架构。即使某个操作本身出现得更早，其类型、属性与操作数配置要求依然适用。
 
 | API / 选项 | 要求 | 含义 |
 |---|---|---|

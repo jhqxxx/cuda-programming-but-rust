@@ -6,7 +6,36 @@
 cutile = { version = "...", features = ["experimental-tune"] }
 ```
 
-你可以用闭包来调优单个 kernel，也可以实现 `Objective` 来测量整个请求。`autotune` 示例用的是闭包：`cargo run -p cutile-rs-examples --example autotune --features experimental-tune`。
+你可以用闭包来调优单个 kernel，也可以实现 `Objective` 来测量整个请求。这些同步接口及其恢复日志仍然受支持。下面这个可选的准备流水线会把 CPU 编译与前台 GPU 评估重叠起来。
+
+## 并行准备候选
+
+`autotune` 示例会把 RMSNorm 的输出与 CPU 参考实现做校验，并确认它的第一次启动复用了已经准备好的二进制。请在 `cutile-rs/` 工作区里运行它：
+
+```sh
+cargo run --release -p cutile-examples --example autotune --features experimental-tune
+# 用同一套测量协议对比更多 CPU worker：
+cargo run --release -p cutile-examples --example autotune --features experimental-tune -- --workers 4 --budget-ms 30000
+cargo run --release -p cutile-examples --example autotune --features experimental-tune -- --serial
+```
+
+`tune::pipeline::Pipeline` 负责调度。它的三个回调各有分工：
+
+1. `resolve` 在前台线程运行。先用 `.specialize_on(&stream)` 解析出真正要用的启动元数据，再调用 `.into_compile_job()` 把目标与编译器设置捕获下来。这一步可以查询设备、可以执行与输入相关的操作；不要把它挪到准备 worker 里。
+2. `prepare` 在 CPU worker 上运行。`job.compile(control)` 会跑 Rust 前端和汇编器，产出宿主侧持有的 `PreparedKernel`。它不加载 CUDA 模块，也不同步 CUDA 流。
+3. `evaluate` 在前台线程运行，一次只评估一个候选。先把产物的 key 与实际启动参数核对，再调用 `prepared.install(control)`，做一次正确性检查，然后用 `bench::do_bench_controlled` 计时。
+
+默认只有一个 worker：评估 A 的时候 B 正在编译；观测完 A 之后，策略会在 B 被评估的同时选出 C。用 `workers(k)` 时，除当前正在评估的候选外，最多还有 k 个候选处于准备中或已就绪。worker 越多吞吐可能越高，但也会干扰短 kernel 的计时；这个取舍要在你自己的负载上实测。`overlap(false)` 用同一套回调给出串行对照。
+
+`Strategy::suggest` 能看到已完成的观测、所有待处理的索引（含当前正在评估的那个）以及剩余时间。`observe` 接收每一次结果。`RandomOrder::new(seed).with_initial([baseline_index])` 提供带种子的无放回采样，预算允许时会把整个空间穷尽。每次运行都要新建一个策略。初始索引只是建议，并不保证一定覆盖到现任配置。
+
+预算包含解析、排队、准备、加载、正确性检查和测量。`trial_limit` 也在解析之前就开始计时，所以等待也算在内。示例里的夹具和 CPU 参考实现是在这个计时开始之前搭好的。截止时间一旦过期就停止派发，并把迟到的测量排除在评分之外。汇编器进程可以被杀掉并回收；前端 pass 和基准重复之间会在各阶段检查取消。任意回调、CUDA 调用和正在运行的 GPU kernel 无法被强制中断。返回时会等待尚未完成的 worker，所以这是一个协作式截止时间，而不是硬性墙钟保证。
+
+只有显式的 `Failure::invalid` 结果才会把候选标记为无效。成功时请返回一个已测量的 `Trial`：旧式的 invalid trial 也表示非有限计时，所以流水线会把它们当作基础设施错误。超时和取消不计分；基础设施错误会终止整次运行。通用的编译器/驱动错误默认归为基础设施错误，因为它们反映的可能是环境而不是候选本身。调用方可以显式地把某个已知的候选项级拒绝归类。观测记录里包含分阶段耗时；未经过的阶段是 `None`，且重叠的阶段时间不能相加当作墙钟耗时。评估耗时包含加载、检查和测量，而不是假装这些开销是被单独测出来的。
+
+**`best_observed` 是暂定值。** 这条流水线目前还没有为筛选或配对决赛确认预留时间。在采纳某个结果之前，请在没有后台编译的情况下重新测量决赛者和现任配置。未完成的运行没有最佳结果。同步恢复日志的 schema 没有变化；流水线既不读也不写它。如果你需要审计记录，请连同工作负载、源码和工具链的来源信息一起保存观测。
+
+准备好的产物由流水线限定数量，但已安装的模块仍沿用原有的全局缓存生命周期。这里刻意不做自动驱逐：其他流可能仍在使用某个特化。参见下面的缓存管理。
 
 ## 声明空间并运行搜索
 

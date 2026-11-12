@@ -73,7 +73,7 @@ nvcc 13.3 的 tile 相关开关：
 | `ct::irange` + `partition_view`（指南 2.4.7.1 的 `tile_sum`，`int` 边界） | ✅ 正确 |
 | `ct::irange` 用 **`std::size_t` 边界** | ❌ **死循环挂死** |
 
-`sm_86` 是官方支持目标：[cuTile Rust 的兼容性表](../../../docs/cutile-rs-book-zh.CN/reference/compatibility.md)
+`sm_86` 是官方支持目标：[cuTile Rust 的兼容性表](../../../docs/cutile-rs-book-V0.5.0-zh.CN/reference/compatibility.md)
 里 `baseline Tile IR` 要求 `sm_80+`。FP8 / block-scaled MMA / `num_cta_in_cga > 1`
 这些要 `sm_90+` 或 `sm_100+`，在 3080 上不可用。
 

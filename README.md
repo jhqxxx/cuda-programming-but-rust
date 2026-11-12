@@ -90,7 +90,7 @@ Rust 之外还有两条并行维护的线，示例同样按模型分目录：
 ├── docs/                       # 中文文档
 │   ├── cross-language/                # 三语言对照（自己写的）：同一主题在 Rust/C++/Python 里怎么写
 │   ├── cuda-oxide-book-zh.CN/         # cuda-oxide 手册（42 篇）
-│   ├── cutile-rs-book-zh.CN/          # cuTile Rust 手册（29 篇）
+│   ├── cutile-rs-book-V0.5.0-zh.CN/   # cuTile Rust 手册（31 篇，对应 cutile 0.5.x）
 │   ├── cutile-python-book-zh.CN/      # cuTile Python 手册（13 篇）
 │   ├── CUDA编程指南-V13.3-zh.CN/      # CUDA 编程指南（15 篇）
 │   ├── atomic.md                      # 原子操作与内存序详解
@@ -122,7 +122,7 @@ cd cpp && mkdir -p build && cd build && cmake .. && make
 | 文档 | 说明 |
 | --- | --- |
 | [cuda-oxide 手册](./docs/cuda-oxide-book-zh.CN/README.md) | cuda-oxide 官方 Book |
-| [cuTile Rust 手册](./docs/cutile-rs-book-zh.CN/README.md) | cuTile Rust 官方 Book |
+| [cuTile Rust 手册](./docs/cutile-rs-book-V0.5.0-zh.CN/README.md) | cuTile Rust 官方 Book（对应 cutile 0.5.x） |
 | [cuTile Python 手册](./docs/cutile-python-book-zh.CN/README.md) | cuTile Python（`cuda.tile`）官方文档 |
 | [CUDA 编程指南 v13.3](./docs/CUDA编程指南-V13.3-zh.CN/README.md) | NVIDIA CUDA C++ 编程指南 |
 

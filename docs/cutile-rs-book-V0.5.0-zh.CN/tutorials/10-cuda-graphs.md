@@ -249,7 +249,7 @@ impl Module for GraphModel {
 
 ```rust
 fn main() -> Result<(), Error> {
-    let device = Device::new(0)?;
+    let device = Context::new(0)?;
     let stream = device.new_stream()?;
 
     let cfg = Config { d: 2048, n_layers: 22, block: 128, bn: 16, bk: 16, eps: 1e-5 };
@@ -383,13 +383,13 @@ graph.launch().sync_on(&stream)?;
 基于作用域的参考示例（带基准测试）：
 
 ```bash
-cargo run -p cutile-rs-examples --example cuda_graphs
+cargo run -p cutile-examples --example cuda_graphs
 ```
 
 DeviceOp 组合子版本：
 
 ```bash
-cargo run -p cutile-rs-examples --example cuda_graphs_deviceop
+cargo run -p cutile-examples --example cuda_graphs_deviceop
 ```
 
 ---

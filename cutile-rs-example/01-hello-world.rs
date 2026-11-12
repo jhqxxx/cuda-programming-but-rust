@@ -34,8 +34,13 @@ mod hello_world_module {
 
 fn main() -> Result<()> {
     // 宿主侧代码负责准备 GPU、指定 kernel 的启动网格，并启动 kernel。
-    let device = Device::new(0)?; // 连接GPU
-    let stream = device.new_stream()?; // 创建一条工作队列
+    //
+    // cutile 0.5.0（cuda-core 0.5）把 0.4.0 的 Device 拆成了两个类型：
+    //   Device  = 物理设备身份，不持有 CUDA context，不能建 stream
+    //   Context = 执行上下文，持有 primary context，new_stream / default_stream 在它上面
+    // 所以旧版那句 Device::new(0)?.new_stream() 现在对应的是 Context::new(0)?。
+    let ctx = Context::new(0)?; // 连接 GPU 并保留其 primary context
+    let stream = ctx.new_stream()?; // 创建一条工作队列
     let launcher = hello_world_kernel(); // 拿到kernel启动器
     launcher.grid((2, 2, 1)).sync_on(&stream)?; // 启动 2x2x1 = 4 个 tile program
     // let launcher = hello_world_kernel();
